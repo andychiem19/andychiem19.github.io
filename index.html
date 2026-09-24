@@ -7,37 +7,32 @@
   <meta name="description" content="Portfolio of Andy Chiem, computer engineer.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Side dot nav: one dot per panel -->
-  <nav class="dots" aria-label="Sections">
-    <a href="#home" aria-label="Home"></a>
-    <a href="#about" aria-label="About"></a>
-    <a href="#project-1" aria-label="Project 1"></a>
-    <a href="#project-2" aria-label="Project 2"></a>
-    <a href="#project-3" aria-label="Project 3"></a>
-    <a href="#project-4" aria-label="Project 4"></a>
-    <a href="#resume" aria-label="Resume"></a>
+  <!-- Pin nav: one pin per panel, active pin goes high -->
+  <nav class="pins" aria-label="Sections">
+    <a href="#home"><span>Home</span></a>
+    <a href="#about"><span>About</span></a>
+    <a href="#project-1"><span>Project One</span></a>
+    <a href="#project-2"><span>Project Two</span></a>
+    <a href="#project-3"><span>Project Three</span></a>
+    <a href="#project-4"><span>Project Four</span></a>
+    <a href="#resume"><span>Resume</span></a>
   </nav>
 
   <main>
-    <!-- HERO -->
     <section class="panel hero" id="home">
       <div class="reveal">
-        <p class="eyebrow">Computer Engineering</p>
         <h1>Andy Chiem</h1>
-        <p class="tagline">I build things where hardware meets software.</p>
+        <p class="tagline">Computer engineer. I build things where hardware meets software.</p>
       </div>
-      <a class="scroll-hint" href="#about" aria-label="Scroll down">scroll ↓</a>
     </section>
 
-    <!-- ABOUT -->
     <section class="panel" id="about">
       <div class="content reveal">
-        <p class="eyebrow">About</p>
-        <h2>Hey, I'm Andy.</h2>
+        <h2>About me</h2>
         <p>
           Placeholder: a couple sentences on who you are — school/year or current role,
           what areas of computer engineering you're into (embedded, digital design,
@@ -55,55 +50,51 @@
     <section class="panel project" id="project-1">
       <div class="visual reveal">
         <!-- <img src="assets/project-1.png" alt="Block diagram of Project One"> -->
-        <span>diagram / results</span>
+        <span>Add a block diagram or results plot</span>
       </div>
       <div class="content reveal">
-        <p class="eyebrow">Project 01</p>
         <h2>Project One</h2>
         <p>
           Placeholder: what problem it solves, your approach, and the headline result
           (e.g. "cut latency 40%", "runs at 100 MHz on an Artix-7").
         </p>
-        <ul class="tags"><li>Verilog</li><li>FPGA</li><li>Vivado</li></ul>
+        <p class="stack">Verilog, FPGA, Vivado</p>
         <p class="links">
-          <a href="#">Writeup →</a>
-          <a href="#" target="_blank" rel="noopener">GitHub →</a>
+          <a href="#">Read the writeup</a>
+          <a href="#" target="_blank" rel="noopener">View code on GitHub</a>
         </p>
       </div>
     </section>
 
     <section class="panel project flip" id="project-2">
-      <div class="visual reveal"><span>diagram / results</span></div>
+      <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
       <div class="content reveal">
-        <p class="eyebrow">Project 02</p>
         <h2>Project Two</h2>
         <p>Placeholder: short description, approach, and result.</p>
-        <ul class="tags"><li>C</li><li>STM32</li><li>RTOS</li></ul>
-        <p class="links"><a href="#">Writeup →</a></p>
+        <p class="stack">C, STM32, RTOS</p>
+        <p class="links"><a href="#">Read the writeup</a></p>
       </div>
     </section>
 
     <section class="panel project" id="project-3">
-      <div class="visual reveal"><span>diagram / results</span></div>
+      <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
       <div class="content reveal">
-        <p class="eyebrow">Project 03</p>
         <h2>Project Three</h2>
         <p>Placeholder: short description, approach, and result.</p>
-        <ul class="tags"><li>PCB Design</li><li>KiCad</li></ul>
-        <p class="links"><a href="#">Writeup →</a></p>
+        <p class="stack">PCB design, KiCad</p>
+        <p class="links"><a href="#">Read the writeup</a></p>
       </div>
     </section>
 
     <section class="panel project flip" id="project-4">
-      <div class="visual reveal"><span>diagram / results</span></div>
+      <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
       <div class="content reveal">
-        <p class="eyebrow">Project 04</p>
         <h2>Project Four</h2>
         <p>Placeholder: short description, approach, and result.</p>
-        <ul class="tags"><li>Python</li><li>Linux</li></ul>
+        <p class="stack">Python, Linux</p>
         <p class="links">
-          <a href="#">Writeup →</a>
-          <a href="#" target="_blank" rel="noopener">GitHub →</a>
+          <a href="#">Read the writeup</a>
+          <a href="#" target="_blank" rel="noopener">View code on GitHub</a>
         </p>
       </div>
     </section>
@@ -111,15 +102,12 @@
     <!-- RESUME: drop your PDF at the repo root as resume.pdf -->
     <section class="panel resume" id="resume">
       <div class="resume-head reveal">
-        <div>
-          <p class="eyebrow">Resume</p>
-          <h2>Experience &amp; Education</h2>
-        </div>
-        <a class="button" href="resume.pdf" download>Download PDF</a>
+        <h2>Resume</h2>
+        <a class="button" href="resume.pdf" download>Download resume (PDF)</a>
       </div>
-      <object class="resume-frame reveal" data="resume.pdf" type="application/pdf">
+      <object class="resume-frame" data="resume.pdf" type="application/pdf">
         <p class="fallback">
-          Can't preview the PDF here — <a href="resume.pdf">open it directly</a>.
+          This browser can't show the resume inline. <a href="resume.pdf">Open the PDF</a> instead.
         </p>
       </object>
       <footer>© <span id="year"></span> Andy Chiem</footer>
