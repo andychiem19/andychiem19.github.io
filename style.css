@@ -99,7 +99,12 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 }
 .chips li::before { top: -4px; }
 .chips li::after { bottom: -4px; }
-.content .org { color: var(--silk); font-size: 0.95rem; margin: -0.25rem 0 1rem; }
+/* Titles stay on one line: the text column is sized to fit the longest title (~20.2em) */
+.project { --title: clamp(1.25rem, 2.05vw, 2rem); }
+.project .content { flex: 0 0 auto; width: calc(var(--title) * 20.6); max-width: none; }
+.project h2 { white-space: nowrap; font-size: var(--title); margin-bottom: 0.75rem; }
+.content .subtitle { color: var(--silk); font-size: 1.15rem; line-height: 1.45; margin: 0 0 0.75rem; }
+.content .org { font-size: 0.95rem; margin: 0 0 1rem; }
 .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
 
 /* Hero */
@@ -204,6 +209,8 @@ footer { font-size: 0.85rem; color: var(--muted); }
 
 /* Mobile: stack visual over text, relax snapping */
 @media (max-width: 800px) {
+  .project h2 { white-space: normal; }
+  .project .content { width: auto; }
   html { scroll-snap-type: y proximity; }
   .panel, .project.flip { flex-direction: column; align-items: flex-start; gap: 2rem; padding: 4rem 1.25rem 4rem 2.75rem; }
   .hero { justify-content: center; }
