@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" class="doc">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>100G Ethernet Verification — Andy Chiem</title>
+  <title>Ethernet Verification</title>
   <meta name="description" content="Open-source verification environment for 100G Ethernet, built in Python and cocotb">
   <link rel="stylesheet" href="../style.css">
 </head>
+
 <body>
   <main class="doc-page">
     <a class="back" href="../index.html#project-1">Back to projects</a>
@@ -15,41 +17,69 @@
       <h1>100G Ethernet Verification</h1>
       <p class="subtitle">Open-source verification environment for 100G Ethernet, built in Python and cocotb</p>
       <dl class="spec">
-        <dt>Organization</dt><dd>Woodward McCoach Inc.</dd>
-        <dt>Role</dt><dd>FPGA Development Engineer Co-op, sole contributor</dd>
-        <dt>Timeline</dt><dd>Mar 2026 – Aug 2026</dd>
-        <dt>Stack</dt><dd><ul class="chips"><li>Python</li><li>cocotb</li><li>Ethernet</li></ul></dd>
+        <dt>Organization</dt>
+        <dd>Woodward McCoach Inc.</dd>
+        <dt>Role</dt>
+        <dd>FPGA Development Engineer Co-op</dd>
+        <dt>Timeline</dt>
+        <dd>Mar 2026 – Aug 2026</dd>
+        <dt>Skills</dt>
+        <dd>
+          <ul class="chips">
+            <li>Python</li>
+            <li>cocotb</li>
+            <li>Ethernet</li>
+          </ul>
+        </dd>
       </dl>
     </header>
 
     <!-- Each <h2> is numbered automatically. A list with class="path" draws as a signal-path diagram. -->
     <article class="doc-body">
-      <!-- DRAFT: written from your resume and project blurb. Check every technical claim before publishing. -->
 
       <h2>Overview</h2>
-      <p>At Woodward McCoach I owned development of a 100G Ethernet verification suite, written in Python and cocotb and intended for open-source release. The suite builds a CAUI-4 transmit stream from scratch by implementing the IEEE 802.3 transmit path, and it was tested against the Versal DCMAC subsystem.</p>
+      <p>My first project at Woodward McCoach Inc., meant to enable high-speed Ethernet design verification for
+        hobbyists
+        or as an alternative to expensive Ethernet verification IPs. Primarily a software networking project that
+        required deep understanding of the Physical Layer (Layer 1) of the OSI Networking Model.
+      </p>
+      <p>
+        The existing development was done for CAUI-4, a 100G 4-lane electrical interface commonly used in optical
+        telecom, carrying a line rate of 25.78125G (data + overhead) across each of four lanes and NRZ modulation.
+      </p>
       <!-- DRAFT: add the "why". What problem did the team have before this existed? -->
-      <p>The goal was a reusable, standards-driven source of 100G traffic that could exercise the MAC end-to-end in simulation.</p>
+      <p>The goal was a reusable, standards-driven source of 100G traffic that could exercise the MAC end-to-end in
+        simulation. Refer to IEEE 802.3 Clause 82/83 for specifications.</p>
 
       <h2>Transmit path</h2>
-      <p>Each stage below is its own model, so it can be checked in isolation and chained into the full path.</p>
+      <p>Each stage below was developed following loose coupling design principles, allowing for rigorous unit and
+        integration
+        testing.</p>
       <ol class="path">
         <li>Packet generation</li>
         <li>Virtual MAC</li>
-        <li>64b/66b encode</li>
-        <li>Scrambler</li>
+        <li>64b/66b encoding</li>
+        <li>Scrambling</li>
         <li>Lane distribution</li>
         <li>AM insertion</li>
         <li>DCMAC interface</li>
       </ol>
 
-      <h3>Virtual MAC</h3>
-      <p>An IEEE 802.3-compliant MAC layer built in Scapy adds the preamble, enforces the interframe gap and computes the frame check sequence, so every frame entering the PCS models is valid Ethernet.</p>
+      <h3>Packet generation & Virtual MAC</h3>
+      <p>Scapy was used to generate Ethernet packets, and a virtual MAC layer adds the preamble, enforces the interframe
+        gap and computes
+        the frame check sequence, so every frame entering the PCS is valid Ethernet.</p>
 
       <h3>PCS: encoding, scrambling, distribution</h3>
       <!-- DRAFT: check clause numbers and constants against your notes. -->
-      <p>Frames are split into 64-bit blocks and given a 2-bit sync header (64b/66b). The payload is scrambled with the self-synchronizing polynomial <code>1 + x^39 + x^58</code>, then blocks are distributed round-robin across the PCS virtual lanes. Alignment markers are inserted periodically on each lane so the receiver can deskew and reorder lanes.</p>
-      <pre><code># Illustrative sketch of the scrambler model, not the suite's source
+      <p>The PCS, or Physical Coding Sublayer is responsible for processing data for high-speed Ethernet transmission.
+        Frames are split into 64-bit blocks and prepended with a 2-bit sync header.</p>
+      <p>That data is then scrambled using a
+        self-synchronizing scrambler (to preserve DC electrical characteristics and facilitate clock and data recovery),
+        and distributed across 20 virtual PCS lanes.</p>
+      <p>To support lane deskew and alignment on the receiving side,
+        encoded alignment markers are inserted every 16383 66-bit blocks.</p>
+      <pre><code># Not source code; example of a self-synchronizing scrambler implementation
 def scramble(block: int, state: int) -&gt; tuple[int, int]:
     out = 0
     for i in range(64):
@@ -60,30 +90,41 @@ def scramble(block: int, state: int) -&gt; tuple[int, int]:
 
       <h2>Verification approach</h2>
       <!-- DRAFT: fill in how the testbench was structured. -->
-      <ul>
-        <li>How cocotb drove the DCMAC interface and what was checked on the other side</li>
-        <li>How each stage model was validated on its own (reference vectors, spec examples)</li>
-        <li>Which test scenarios were covered</li>
-      </ul>
+      <p>
+        Healthy software design principles, like loose coupling and code reuse, allowed for effective and accurate
+        initial software development. I was able to apply directed and constrained random tests at nearly every level to
+        reduce hardware debugging work needed later down the line.
+      </p>
+      <p>e.g. A key constrained-random test I did was the generation of packets with randomized fields and payloads,
+        from
+        length 64 to 1500, interleaving the four transmission lanes into a software script that rasterizes and checks
+        for valid Ethernet
+        traffic.</p>
+      <p>I used Wireshark on .pcap files to verify my Ethernet packet generator and virtual MAC, and ultimately
+        integration tested
+        in cocotb using my custom Ethernet stimulus to lock up an Ethernet
+        MAC (Versal DCMAC Subsystem), checking data on the other side.</p>
       <figure>
         <div class="visual"><span>Add a testbench block diagram</span></div>
-        <figcaption>Figure 1. Testbench structure.</figcaption>
-      </figure>
-
-      <h2>Results</h2>
-      <!-- DRAFT: add concrete outcomes (tests passing, bugs found, coverage). -->
-      <p class="pending">Results coming soon.</p>
-      <figure>
-        <div class="visual"><span>Add a waveform or results plot</span></div>
-        <figcaption>Figure 2. Simulation waveform.</figcaption>
+        <figcaption>Figure 1. Testing process.</figcaption>
       </figure>
 
       <h2>Takeaways</h2>
-      <p>Beyond the code, I documented the project's standards and progress so future developers can extend the suite after my co-op.</p>
+      <p>A key purpose this project served early on was allowing me to demo common optical telecom themes in
+        software. Data in optical telecommunications is frequently encoded, scrambled, marked, and
+        interleaved/de-interleaved to various widths, and implementing them in software while reading about the theory
+        behind Ethernet allowed me to understand, early on, why and how data is moved digitally.</p>
+      <p>Another key takeaway was comfortability working from a spec. IEEE 802.3 is quite verbose, and extracting the
+        necessary elements to create my own Ethernet protocol taught me to understand what's important, and by extension
+        the underlying reasoning present in every spec.</p>
+      <p>Beyond the code, I documented the project's standards and progress so future developers can extend the
+        environment, hopefully to include a comprehensive set of 100G, 400G, and OTN protocols,
+        after my co-op.</p>
       <!-- DRAFT: add what you learned or would do differently. -->
     </article>
 
     <footer class="doc-foot">© 2026 Andy Chiem</footer>
   </main>
 </body>
+
 </html>
