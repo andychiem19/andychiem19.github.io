@@ -185,4 +185,16 @@ document.querySelectorAll(".diagram-box").forEach((box) => {
     el.addEventListener("click", () => show(el));
   });
   box.addEventListener("mouseleave", () => show(null));
+
+  // Print and the PDF can't hover, so list every description under the diagram (shown only in print)
+  const details = document.createElement("dl");
+  details.className = "diagram-details";
+  blocks.forEach((el) => {
+    const dt = document.createElement("dt");
+    dt.textContent = el.dataset.name || el.textContent.trim();
+    const dd = document.createElement("dd");
+    dd.textContent = el.dataset.info;
+    details.append(dt, dd);
+  });
+  box.append(details);
 });
