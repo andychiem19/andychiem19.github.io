@@ -2,7 +2,6 @@
   "private": true,
   "description": "Builds portfolio.pdf from the site (see build-pdf.js)",
   "dependencies": {
-    "pdf-lib": "^1.17.1",
     "playwright": "^1.47.0"
   }
 }
