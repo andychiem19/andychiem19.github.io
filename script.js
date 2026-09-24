@@ -150,19 +150,19 @@ if (detent) {
 document.querySelectorAll(".diagram-box").forEach((box) => {
   const info = box.querySelector(".diagram-info");
   const idle = info.textContent;
-  const blocks = box.querySelectorAll(".diagram li");
-  const show = (li) => {
-    blocks.forEach((b) => b.classList.toggle("active", b === li));
-    if (!li) return (info.textContent = idle);
+  const blocks = box.querySelectorAll("[data-info]");
+  const show = (el) => {
+    blocks.forEach((b) => b.classList.toggle("active", b === el));
+    if (!el) return (info.textContent = idle);
     const name = document.createElement("strong");
-    name.textContent = li.textContent + ": ";
-    info.replaceChildren(name, li.dataset.info);
+    name.textContent = el.textContent + ": ";
+    info.replaceChildren(name, el.dataset.info);
   };
-  blocks.forEach((li) => {
-    li.tabIndex = 0;
-    li.addEventListener("mouseenter", () => show(li));
-    li.addEventListener("focus", () => show(li));
-    li.addEventListener("click", () => show(li));
+  blocks.forEach((el) => {
+    el.tabIndex = 0;
+    el.addEventListener("mouseenter", () => show(el));
+    el.addEventListener("focus", () => show(el));
+    el.addEventListener("click", () => show(el));
   });
   box.addEventListener("mouseleave", () => show(null));
 });

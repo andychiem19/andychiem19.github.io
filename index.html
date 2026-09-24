@@ -52,17 +52,22 @@
 
     <!-- PROJECTS: copy/paste a section to add more; swap the .visual placeholder for an <img> -->
     <section class="panel project" id="project-1">
-      <!-- Interactive block diagram: each li is a block, data-info is its description -->
+      <!-- Interactive block diagram: each [data-info] element is a block; hover or tap shows its description -->
       <div class="visual diagram-box reveal">
-        <div class="diagram-wrap">
-          <span class="pulse" aria-hidden="true"></span>
-          <ol class="diagram" aria-label="Transmit path into the Versal DCMAC">
-            <li data-info="Generates IEEE 802.3 frames with preamble, interframe gap and frame check sequence.">Scapy packet generation</li>
-            <li data-info="64b/66b encoding, scrambling, virtual lane distribution and alignment marker insertion for CAUI-4 transmit.">Virtual PCS/PMA</li>
-            <li data-info="Drives the encoded lanes into the DCMAC in simulation.">cocotb interface</li>
-            <li class="dut" data-info="The Versal Ethernet MAC subsystem under test.">Versal DCMAC</li>
-          </ol>
+        <div class="diagram" role="group" aria-label="Transmit path into the Versal DCMAC">
+          <div class="group">
+            <span class="group-label">Python testbench</span>
+            <div class="node process" data-info="Generates IEEE 802.3 frames with preamble, interframe gap and frame check sequence.">Scapy packet generation</div>
+            <div class="node process" data-info="64b/66b encoding, scrambling, virtual lane distribution and alignment marker insertion for CAUI-4 transmit.">Virtual PCS/PMA</div>
+            <div class="node io" data-info="Drives the encoded lanes into the DCMAC in simulation.">cocotb interface</div>
+          </div>
+          <div class="node hw" data-info="The Versal Ethernet MAC subsystem under test.">Versal DCMAC</div>
         </div>
+        <ul class="legend">
+          <li><i class="process"></i>Software model</li>
+          <li><i class="io"></i>Interface</li>
+          <li><i class="hw"></i>Hardware IP</li>
+        </ul>
         <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
       </div>
       <div class="content reveal">
