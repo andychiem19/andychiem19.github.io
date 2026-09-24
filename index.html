@@ -16,7 +16,6 @@
     <a href="#project-2"><span>GTM-to-GTYP SerDes Protocol Debug</span></a>
     <a href="#project-3"><span>AXI-Lite Performance Monitor</span></a>
     <a href="#project-4"><span>swiftGreeks</span></a>
-    <a href="#resume"><span>Resume</span></a>
   </nav>
 
   <main>
@@ -52,17 +51,22 @@
 
     <!-- PROJECTS: copy/paste a section to add more; swap the .visual placeholder for an <img> -->
     <section class="panel project" id="project-1">
-      <!-- Interactive block diagram: each li is a block, data-info is its description -->
+      <!-- Interactive block diagram: each [data-info] element is a block; hover or tap shows its description -->
       <div class="visual diagram-box reveal">
-        <div class="diagram-wrap">
-          <span class="pulse" aria-hidden="true"></span>
-          <ol class="diagram" aria-label="Transmit path into the Versal DCMAC">
-            <li data-info="Generates IEEE 802.3 frames with preamble, interframe gap and frame check sequence.">Scapy packet generation</li>
-            <li data-info="64b/66b encoding, scrambling, virtual lane distribution and alignment marker insertion for CAUI-4 transmit.">Virtual PCS/PMA</li>
-            <li data-info="Drives the encoded lanes into the DCMAC in simulation.">cocotb interface</li>
-            <li class="dut" data-info="The Versal Ethernet MAC subsystem under test.">Versal DCMAC</li>
-          </ol>
+        <div class="diagram" role="group" aria-label="Transmit path into the Versal DCMAC">
+          <div class="group">
+            <span class="group-label">Python testbench</span>
+            <div class="node process" data-info="Generates IEEE 802.3 frames with preamble, interframe gap and frame check sequence.">Scapy packet generation</div>
+            <div class="node process" data-info="64b/66b encoding, scrambling, virtual lane distribution and alignment marker insertion for CAUI-4 transmit.">Virtual PCS/PMA</div>
+            <div class="node io" data-info="Drives the encoded lanes into the DCMAC in simulation.">cocotb interface</div>
+          </div>
+          <div class="node hw" data-info="The Versal Ethernet MAC subsystem under test.">Versal DCMAC</div>
         </div>
+        <ul class="legend">
+          <li><i class="process"></i>Software model</li>
+          <li><i class="io"></i>Interface</li>
+          <li><i class="hw"></i>Hardware IP</li>
+        </ul>
         <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
       </div>
       <div class="content reveal">
@@ -75,7 +79,28 @@
     </section>
 
     <section class="panel project flip" id="project-2">
-      <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
+      <div class="visual diagram-box reveal">
+        <div class="diagram serdes" role="group" aria-label="GTM and GTYP transceivers cross-connected between custom protocol blocks">
+          <div class="group">
+            <span class="group-label">SystemVerilog simulation</span>
+            <div class="node rtl" data-name="Custom protocol (GTM side)" data-info="Proprietary chip-to-chip protocol logic driving the GTM transceiver.">Custom protocol</div>
+            <span class="wire" aria-hidden="true"></span>
+            <div class="node hw xcvr gtm" data-name="GTM transceiver" data-info="Its TX drives the GTYP's RX, and its RX receives from the GTYP's TX.">GTM<span class="port tx">TX</span><span class="port rx">RX</span></div>
+            <svg class="cross" data-name="Serial links" data-info="Cross-connected lanes between the two transceiver families. The bug: a bit-order incompatibility in the protocol across this link." viewBox="0 0 100 100" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="100" y2="100" vector-effect="non-scaling-stroke"/>
+              <line x1="0" y1="100" x2="100" y2="0" vector-effect="non-scaling-stroke"/>
+            </svg>
+            <div class="node hw xcvr gtyp" data-name="GTYP transceiver" data-info="Its TX drives the GTM's RX, and its RX receives from the GTM's TX.">GTYP<span class="port tx">TX</span><span class="port rx">RX</span></div>
+            <span class="wire" aria-hidden="true"></span>
+            <div class="node rtl" data-name="Custom protocol (GTYP side)" data-info="The same protocol logic on the GTYP side of the link.">Custom protocol</div>
+          </div>
+        </div>
+        <ul class="legend">
+          <li><i class="rtl"></i>RTL module</li>
+          <li><i class="hw"></i>Transceiver (hard IP)</li>
+        </ul>
+        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+      </div>
       <div class="content reveal">
         <h2>GTM-to-GTYP SerDes Protocol Debug</h2>
         <p class="subtitle">Diagnosed and resolved a critical high-speed serial bug in proprietary chip-to-chip communication protocol before release</p>
@@ -86,7 +111,26 @@
     </section>
 
     <section class="panel project" id="project-3">
-      <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
+      <div class="visual diagram-box reveal">
+        <div class="sdiagram-wrap">
+          <svg class="sdiagram" viewBox="0 0 480 232" role="group" aria-label="Performance monitor on a snapshot interface, an AXI-Lite slave, probed by a Vivado ILA"><defs><marker id="ax-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z"/></marker></defs>
+            <path class="link" d="M132 52H310" marker-start="url(#ax-arrow)" marker-end="url(#ax-arrow)"/>
+            <text class="label" x="221" y="40">AXI-Lite bus</text>
+            <path class="link dashed" d="M290 52V158" marker-end="url(#ax-arrow)"/><text class="label" x="284" y="108" style="text-anchor:end">snoop</text>
+            <path class="link dashed" d="M132 188H238" marker-end="url(#ax-arrow)"/><text class="label" x="185" y="178">probe</text>
+            <g class="snode" data-name="AXI-Lite master" data-info="Issues AXI-Lite reads to the snapshot interface."><rect x="12" y="22" width="120" height="60"/><text x="72.0" y="52.0">AXI-Lite master</text></g>
+            <g class="snode" data-name="Snapshot interface" data-info="The AXI-Lite slave used to read out the board's performance data."><path d="M320 22H470L460 82H310Z"/><text x="390.0" y="44.5">Snapshot interface</text><text x="390.0" y="59.5">(AXI-Lite slave)</text></g>
+            <g class="snode" data-name="Performance monitor" data-info="Sits on the snapshot interface and measures AXI-Lite performance through it. An off-by-one error made it pass in simulation but fail in hardware; fixing it took measured bandwidth from 70% to 100% of expected."><rect x="240" y="158" width="150" height="60"/><text x="315.0" y="180.5">Performance</text><text x="315.0" y="195.5">monitor</text></g>
+            <g class="snode" data-name="Vivado ILA" data-info="Probed the monitor on hardware to compare it against simulation and root-cause the error."><rect class="dotted" x="12" y="158" width="120" height="60"/><text x="72.0" y="188.0">Vivado ILA</text></g>
+          </svg>
+        </div>
+        <ul class="legend">
+          <li><i class="rtl"></i>RTL module</li>
+          <li><i class="io"></i>Interface</li>
+          <li><i class="debug"></i>Debug core</li>
+        </ul>
+        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+      </div>
       <div class="content reveal">
         <h2>Debugging an AXI-Lite Performance Monitor</h2>
         <p class="subtitle">Root-caused an RTL issue, resolving differing behavior in simulation and hardware and recovering expected bandwidth using Vivado ILAs</p>
@@ -97,7 +141,40 @@
     </section>
 
     <section class="panel project flip" id="project-4">
-      <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
+      <div class="visual diagram-box reveal">
+        <div class="sdiagram-wrap">
+          <svg class="sdiagram" viewBox="0 0 490 350" role="group" aria-label="swiftGreeks data path from market data API to the FPGA CORDIC core and back"><defs><marker id="sg-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z"/></marker></defs>
+            <rect class="grp" x="4" y="74" width="142" height="160"/><rect class="grp-bg" x="12" y="66" width="64" height="16"/><text class="grp-label" x="16" y="74">main.cpp</text>
+            <rect class="grp" x="384" y="74" width="102" height="262"/><rect class="grp-bg" x="392" y="66" width="92" height="16"/><text class="grp-label" x="396" y="74">cordic_top.sv</text>
+            <path class="link" d="M75 50V94" marker-end="url(#sg-arrow)"/>
+            <path class="link" d="M132 190H196V304H223" marker-start="url(#sg-arrow)" marker-end="url(#sg-arrow)"/>
+            <text class="label" x="190" y="250" style="text-anchor:end">Ethernet</text><text class="label" x="190" y="264" style="text-anchor:end">cable</text>
+            <path class="link" d="M258 278V172" marker-end="url(#sg-arrow)"/>
+            <path class="link" d="M290 172V278" marker-end="url(#sg-arrow)"/>
+            <text class="label" x="298" y="226" style="text-anchor:start">RGMII</text>
+            <path class="link" d="M327 126H392" marker-end="url(#sg-arrow)"/>
+            <text class="label" x="330" y="114" style="text-anchor:start; font-size:10px">AXI-Stream</text>
+            <path class="link" d="M392 290H352V156H327" marker-end="url(#sg-arrow)"/>
+            <path class="link" d="M434 146V172" marker-end="url(#sg-arrow)"/>
+            <path class="link" d="M434 232V268" marker-end="url(#sg-arrow)"/>
+            <g class="snode" data-name="API" data-info="Live market data source."><rect x="20" y="10" width="110" height="40" rx="12"/><text x="75.0" y="30.0">API</text></g>
+            <g class="snode" data-name="Websocket" data-info="main.cpp subscribes to the market data feed over a WebSocket."><rect x="18" y="94" width="114" height="44"/><line x1="24" y1="94" x2="24" y2="138"/><line x1="126" y1="94" x2="126" y2="138"/><text x="75.0" y="116.0">Websocket</text></g>
+            <g class="snode" data-name="Serializer (main.cpp)" data-info="Packs quotes into packets and sends them to the board over Ethernet."><rect x="18" y="168" width="114" height="44"/><line x1="24" y1="168" x2="24" y2="212"/><line x1="126" y1="168" x2="126" y2="212"/><text x="75.0" y="190.0">Serializer</text></g>
+            <g class="snode" data-name="Zybo Z7 PHY" data-info="The board's Ethernet PHY."><rect x="223" y="282" width="104" height="44"/><rect x="226" y="285" width="98" height="38"/><text x="275.0" y="304.0">Zybo Z7 PHY</text></g>
+            <g class="snode" data-name="Gigabit Ethernet MAC" data-info="Bridges RGMII from the PHY and AXI-Stream inside the FPGA."><rect x="223" y="108" width="104" height="64"/><text x="275.0" y="132.5">Gigabit</text><text x="275.0" y="147.5">Ethernet MAC</text></g>
+            <g class="snode" data-name="Parser" data-info="Extracts option parameters from incoming packets."><rect x="392" y="106" width="84" height="40"/><text x="434.0" y="126.0">Parser</text></g>
+            <g class="snode" data-name="CORDIC" data-info="Parameterized Q16.16 fixed-point CORDIC core (circular, hyperbolic and linear modes) that computes Black-Scholes Greeks. Delta takes about 63 cycles, 630 ns at 100 MHz."><rect x="392" y="172" width="84" height="60"/><text x="434.0" y="202.0">CORDIC</text></g>
+            <g class="snode" data-name="Serializer (cordic_top.sv)" data-info="Packs computed Greeks into packets and sends them back through the MAC."><rect x="392" y="268" width="84" height="44"/><text x="434.0" y="290.0">Serializer</text></g>
+          </svg>
+        </div>
+        <ul class="legend">
+          <li><i class="ext"></i>External service</li>
+          <li><i class="process"></i>Software</li>
+          <li><i class="rtl"></i>RTL module</li>
+          <li><i class="hw"></i>Board hardware</li>
+        </ul>
+        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+      </div>
       <div class="content reveal">
         <h2>swiftGreeks: Options Pricing Accelerator</h2>
         <p class="subtitle">Fixed-point CORDIC engine for real-time options Greeks calculation</p>
@@ -105,20 +182,6 @@
         <ul class="chips"><li>Python</li><li>Systems design</li><li>Ethernet</li><li>SystemVerilog</li></ul>
         <p class="links"><a href="writeups/swiftgreeks.html">Read the writeup</a></p>
       </div>
-    </section>
-
-    <!-- RESUME: drop your PDF at the repo root as resume.pdf -->
-    <section class="panel resume" id="resume">
-      <div class="resume-head reveal">
-        <h2>Resume</h2>
-        <a class="button" href="resume.pdf" download>Download resume (PDF)</a>
-      </div>
-      <object class="resume-frame" data="resume.pdf" type="application/pdf">
-        <p class="fallback">
-          This browser can't show the resume inline. <a href="resume.pdf">Open the PDF</a> instead.
-        </p>
-      </object>
-      <footer>© <span id="year"></span> Andy Chiem</footer>
     </section>
   </main>
 
