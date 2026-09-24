@@ -57,7 +57,15 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 
 /* Hero */
 .hero { justify-content: flex-start; }
-.tagline { color: var(--muted); font-size: 1.3rem; margin-top: 1rem; max-width: 30rem; }
+.tagline { color: var(--muted); font-size: 1.3rem; margin-top: 1rem; max-width: 36rem; }
+.school {
+  color: var(--wafer);
+  font-stretch: 125%;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  margin-top: 1.75rem;
+}
 
 /* Projects: the visual leads */
 .project.flip { flex-direction: row-reverse; }
