@@ -25,6 +25,7 @@
   --muted: #8a90a0;    /* secondary text */
   --wafer: #9aa5ff;    /* accent: silicon wafer sheen */
   --amber: #f0b94a;    /* status LED: in progress */
+  --green: #6fcf97;    /* status LED: complete */
   --body: #c5c9d3;     /* long-form reading text */
   --font: "Charter", "Bitstream Charter", "Sitka Text", Cambria, serif;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -108,7 +109,8 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .project .content { flex: 0 0 auto; width: calc(var(--title) * 20.6); max-width: none; }
 .project h2 { white-space: nowrap; font-size: var(--title); margin-bottom: 0.75rem; }
 .content .subtitle { color: var(--silk); font-size: 1.15rem; line-height: 1.45; margin: 0 0 0.75rem; }
-.content .org { font-size: 0.95rem; margin: 0 0 1rem; }
+.content .org { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.6rem; font-size: 0.95rem; margin: 0 0 1rem; }
+.content .org .status { margin-left: 0; }
 .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
 
 /* Hero */
@@ -362,6 +364,10 @@ footer { font-size: 0.85rem; color: var(--muted); }
   animation: blink 1.2s steps(1) infinite;
 }
 @keyframes blink { 50% { opacity: 0.2; } }
+/* complete: a steady LED whose glow breathes */
+.status.done { border-color: rgba(111, 207, 151, 0.4); color: var(--green); }
+.status.done::before { background: var(--green); animation: glow 2.4s ease-in-out infinite; }
+@keyframes glow { 50% { box-shadow: 0 0 9px 3px var(--green); } }
 
 /* Writeup pages: datasheet-style long-form */
 html.doc { scroll-snap-type: none; }
@@ -443,7 +449,7 @@ html.doc { scroll-snap-type: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .status::before { animation: none; }
+  .status::before, .status.done::before { animation: none; box-shadow: none; }
 }
 
 /* Touch devices: plain native scrolling, no snapping or smooth scroll */
