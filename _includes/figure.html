@@ -1,8 +1,0 @@
-<figure>
-  {%- if include.src %}
-  <img src="{{ include.src | relative_url }}" alt="{{ include.alt | default: include.caption }}">
-  {%- else %}
-  <div class="visual"><span>{{ include.placeholder | default: "Add a figure" }}</span></div>
-  {%- endif %}
-  <figcaption>{{ include.caption }}</figcaption>
-</figure>
