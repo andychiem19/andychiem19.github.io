@@ -34,9 +34,14 @@ function build(el) {
 }
 
 if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  // Build in once 25% is visible; cover again only after fully leaving the screen
   const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((e) => (e.isIntersecting ? build(e.target) : cover(e.target)));
-  }, { threshold: 0.25 });
+    entries.forEach((e) => {
+      const el = e.target;
+      if (e.intersectionRatio >= 0.25 && !el._shown) { el._shown = true; build(el); }
+      else if (!e.isIntersecting && el._shown) { el._shown = false; cover(el); }
+    });
+  }, { threshold: [0, 0.25] });
   document.querySelectorAll(".reveal").forEach((el) => {
     el._px = el.appendChild(document.createElement("canvas"));
     el._px.className = "px";

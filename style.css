@@ -36,6 +36,8 @@
 html {
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;  /* stop iOS from enlarging text past its boxes */
+  text-size-adjust: 100%;
 }
 /* script.js drives panel-to-panel motion on desktop */
 html.detent { scroll-snap-type: none; scroll-behavior: auto; }
@@ -149,9 +151,8 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 }
 .visual img { width: 100%; height: 100%; object-fit: contain; }
 
-/* Interactive block diagram inside a project visual: draw.io-style shapes, switches to vertical when narrow */
+/* Interactive block diagram inside a project visual: draw.io-style shapes, stacks vertically below 1400px */
 .visual.diagram-box {
-  container-type: inline-size;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -249,8 +250,6 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .snode:focus { outline: none; }
 .snode:focus-visible :is(rect, path) { stroke: var(--wafer); stroke-width: 2; }
 
-@container (max-width: 360px) { .sdiagram { width: 400px; } }
-
 .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; list-style: none; color: var(--muted); font-size: 0.8rem; }
 .legend li { display: flex; align-items: center; gap: 0.5rem; }
 .legend i { width: 1.4rem; height: 0.9rem; border: 1px solid var(--muted); }
@@ -260,7 +259,7 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .legend .debug { border-style: dotted; }
 .legend .ext { border-radius: 0.4rem; }
 
-@container (max-width: 440px) {
+@media (max-width: 1399px) {
   .diagram, .diagram .group { flex-direction: column; align-items: stretch; }
   .diagram { margin-top: 0.75rem; }
   .diagram .group { flex: none; padding: 1.6rem 1rem 1rem; }
@@ -438,11 +437,18 @@ html.doc { scroll-snap-type: none; }
   .status::before { animation: none; }
 }
 
-/* Mobile: stack visual over text, relax snapping */
+/* Touch devices: plain native scrolling, no snapping or smooth scroll */
+@media (max-width: 800px), (pointer: coarse) {
+  html { scroll-snap-type: none; scroll-behavior: auto; }
+  .panel { scroll-snap-align: none; }
+}
+
+/* Mobile: stack visual over text */
 @media (max-width: 800px) {
   .project h2 { white-space: normal; }
   .project .content { width: auto; }
-  html { scroll-snap-type: y proximity; }
+  .visual.diagram-box { aspect-ratio: auto; }
+  .sdiagram { width: 400px; }  /* 2D diagrams keep readable text and scroll sideways in their box */
   .panel, .project.flip { flex-direction: column; align-items: flex-start; gap: 2rem; padding: 4rem 1.25rem 4rem 2.75rem; }
   .hero { justify-content: center; }
   .visual { width: 100%; flex: none; }
