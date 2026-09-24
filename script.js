@@ -1,3 +1,17 @@
+// Home page opens on the title card: ignore restored scroll positions and leftover #section
+// links, except when arriving via a writeup's "Back to projects" link
+if (document.querySelector(".panel")) {
+  history.scrollRestoration = "manual";
+  const clearHash = () => location.hash && history.replaceState(null, "", location.pathname + location.search);
+  if (document.referrer.includes("/writeups/")) {
+    addEventListener("load", () => setTimeout(clearHash, 0));
+  } else {
+    clearHash();
+    scrollTo(0, 0);
+    addEventListener("load", () => scrollTo(0, 0));
+  }
+}
+
 // Pixel build-in: cover each block with cells, clear them in a diagonal ripple on enter
 const CELL = 10;
 const DURATION = 500;
