@@ -45,10 +45,23 @@
         directions using GTM and GTYP transceivers, the receive side PMD was failing to align in both directions.</p>
 
       <h2>Investigation</h2>
-      <p class="pending">Write-up in progress.</p>
+      <p>Objective was to narrow down possible causes with datapath tests. Initial waveform inspection showed the sync
+        bit and header bits
+        appearing in the wrong order, and spliced across the width of the bus.
+      </p>
+      <p>Possible causes I identified:</p>
+      <ul>
+        <li>Differing parallel to serial bit-ordering between GTM family and GTYP transceivers</li>
+        <li>Some issue introduced by the protocol word structure itself, incompatibility with the internal serialization
+          process</li>
+        <li>Gearboxing on the GTM side, from 80 to the protocol bit width and back, could introduce bit ordering issues
+          or present spliced parts of words</li>
+      </ul>
+      <p>I used WMI simulation drivers, as well as PRBS stimulus generators and checkers, to validate portions of the
+        datapath as shown below.</p>
       <figure>
         <div class="visual"><span>Add a diagram or waveform</span></div>
-        <figcaption>Figure 1. Caption.</figcaption>
+        <figcaption>Figure 1. Investigation process.</figcaption>
       </figure>
 
       <h2>Root cause</h2>
