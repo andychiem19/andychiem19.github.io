@@ -140,14 +140,12 @@ footer { font-size: 0.85rem; color: var(--muted); }
 }
 .pins a:hover span, .pins a:focus-visible span { opacity: 1; }
 
-/* Content switches on in discrete steps, like a signal toggling */
-.reveal { opacity: 0; transition: opacity 0.4s steps(4, end); }
-.reveal.visible { opacity: 1; }
-.panel .reveal + .reveal { transition-delay: 0.1s; }
+/* Pixel build-in: a canvas of background-colored cells over each block (see script.js) */
+.reveal { position: relative; }
+.px { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transition: none; }
 }
 
 /* Mobile: stack visual over text, relax snapping */
