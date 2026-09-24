@@ -66,8 +66,64 @@
         had shown about 60%, while expected efficiency was about 83%.</p>
       <p>This led me to find several issues in the RTL via ILA debugging and a simulation I developed, detailed in the
         diagram below.</p>
+      <!-- Debug diagram: hover text lives in each data-info attribute; findings are the g.fp elements. -->
       <figure>
-        <div class="visual"><span>Add a diagram or waveform</span></div>
+        <div class="visual diagram-box">
+          <div class="sdiagram-wrap">
+            <svg class="sdiagram" viewBox="0 0 690 512" role="group" aria-label="Debug process: simulation-first iteration loop, and ILA probes inside the AXI-Lite performance monitor with findings marked">
+              <defs><marker id="pm-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z"/></marker></defs>
+              <rect class="grp" x="5" y="22" width="680" height="150"/><rect class="grp-bg" x="13" y="13" width="72" height="18"/><text class="grp-label" x="17" y="22">Iteration loop</text>
+              <path class="link" d="M130 84H170" marker-end="url(#pm-arrow)"/>
+              <path class="link" d="M320 84H360" marker-end="url(#pm-arrow)"/>
+              <text class="label" x="340" y="72" style="text-anchor:middle">passes</text>
+              <path class="link" d="M490 84H530" marker-end="url(#pm-arrow)"/>
+              <path class="link dashed" d="M595 108V142H75V108" marker-end="url(#pm-arrow)"/>
+              <text class="label" x="335" y="130" style="text-anchor:middle">findings</text>
+              <text class="label" x="245" y="124" style="text-anchor:middle">minutes per run</text>
+              <g class="snode" data-name="RTL change" data-info="Each fix to the performance monitor RTL."><rect x="20" y="60" width="110" height="48"/><text x="75.0" y="84.0">RTL change</text></g>
+              <g class="snode" data-name="Simulation testbench" data-info="My simulation of the performance monitor under AXI-Lite stimulus. Every RTL change was sanity-tested here first, in minutes, because each hardware iteration took about 5–6 hours to build."><rect x="170" y="60" width="150" height="48"/><line x1="176" y1="60" x2="176" y2="108"/><line x1="314" y1="60" x2="314" y2="108"/><text x="245.0" y="76.5">Simulation</text><text x="245.0" y="91.5">testbench</text></g>
+              <g class="snode" data-name="Vivado build" data-info="Synthesis, implementation and bitstream for board X: about 5–6 hours per iteration."><rect x="360" y="60" width="130" height="48"/><line x1="366" y1="60" x2="366" y2="108"/><line x1="484" y1="60" x2="484" y2="108"/><text x="425.0" y="76.5">Vivado build</text><text x="425.0" y="91.5">~5–6 h</text></g>
+              <g class="snode" data-name="Board X + ILA" data-info="Hardware test on board X with the ILA capturing the monitor&#39;s signals. Findings fed the next RTL change."><rect x="530" y="60" width="130" height="48"/><rect x="533" y="63" width="124" height="42"/><text x="595.0" y="76.5">Board X</text><text x="595.0" y="91.5">+ ILA</text></g>
+              <rect class="grp" x="5" y="214" width="680" height="288"/><rect class="grp-bg" x="13" y="205" width="161" height="18"/><text class="grp-label" x="17" y="214">Performance monitor (ILA view)</text>
+              <path class="link" d="M130 300H160" marker-end="url(#pm-arrow)"/>
+              <path class="link" d="M270 290H285V260H300" marker-end="url(#pm-arrow)"/>
+              <path class="link" d="M270 310H285V320H300" marker-end="url(#pm-arrow)"/>
+              <text class="label" x="292" y="340" style="text-anchor:middle">start</text>
+              <path class="link" d="M420 320H450" marker-end="url(#pm-arrow)"/>
+              <path class="link" d="M510 320H540" marker-end="url(#pm-arrow)"/>
+              <path class="link" d="M595 262V282" marker-end="url(#pm-arrow)"/>
+              <path class="link dashed" d="M595 358V400H360V340" marker-end="url(#pm-arrow)"/>
+              <text class="label" x="478" y="389" style="text-anchor:middle">stop</text>
+              <path class="link dashed" d="M200 440V420H75V324" marker-end="url(#pm-arrow)"/>
+              <path class="link dashed" d="M250 440V420H320V340" marker-end="url(#pm-arrow)"/>
+              <path class="link dashed" d="M310 470H672V242H660" marker-end="url(#pm-arrow)"/>
+              <text class="label" x="490" y="459" style="text-anchor:middle">ILA probes</text>
+              <g class="snode" data-name="AXI-Lite bus" data-info="The snapshot interface&#39;s AXI-Lite bus. The ILA probed AXI_VALID and AXI_READY here."><path d="M30 276H130L120 324H20Z"/><text x="75.0" y="292.5">AXI-Lite</text><text x="75.0" y="307.5">VALID / READY</text></g>
+              <g class="snode" data-name="Handshake detect" data-info="Detects VALID and READY both high, a completed transfer."><rect x="160" y="276" width="110" height="48"/><text x="215.0" y="292.5">Handshake</text><text x="215.0" y="307.5">detect</text></g>
+              <g class="snode" data-name="Transaction counter" data-info="Counts completed handshakes during the snapshot. Probed with the ILA."><rect x="300" y="240" width="120" height="40"/><text x="360.0" y="252.5">Transaction</text><text x="360.0" y="267.5">counter</text></g>
+              <g class="snode" data-name="Cycle counter" data-info="Counts clock cycles while the snapshot runs, until the stop condition fires. Probed with the ILA."><rect x="300" y="300" width="120" height="40"/><text x="360.0" y="320.0">Cycle counter</text></g>
+              <g class="snode" data-name="+1 adder" data-info="Adds one to the count, stacked directly in front of the 32-bit compare."><rect x="450" y="300" width="60" height="40"/><text x="480.0" y="320.0">+1</text></g>
+              <g class="snode" data-name="32-bit compare" data-info="Compares the count + 1 against the snapshot size to trigger the stop."><path d="M540 320.0L595.0 282L650 320.0L595.0 358Z"/><text x="595.0" y="312.5">32-bit</text><text x="595.0" y="327.5">compare</text></g>
+              <g class="snode" data-name="Configuration registers" data-info="Hold the snapshot size and other monitor settings. Probed with the ILA."><path d="M540 218H648L660 230V262H540Z"/><line x1="648" y1="218" x2="648" y2="230"/><line x1="648" y1="230" x2="660" y2="230"/><text x="600.0" y="232.5">Config registers</text><text x="600.0" y="247.5">(snapshot size)</text></g>
+              <g class="snode" data-name="Vivado ILA" data-info="Probed AXI_VALID, AXI_READY, the monitor&#39;s internal counters and its configuration registers in hardware."><rect class="dotted" x="160" y="440" width="150" height="40"/><text x="235.0" y="460.0">Vivado ILA</text></g>
+              <!-- Findings: edit each data-info to change the hover text -->
+              <g class="snode fp" data-name="Finding: off-by-one in the stop condition" data-info="An off-by-one in the stop condition meant the clock-cycle counter never stopped in hardware, even though it did in simulation."><circle cx="650" cy="320" r="10"/><text x="650" y="320">1</text></g>
+              <g class="snode fp" data-name="Finding: add stacked on a 32-bit compare" data-info="The +1 add sat directly in front of a 32-bit compare, with the stop gated on the result. A bad timing practice, which I fixed."><circle cx="510" cy="300" r="10"/><text x="510" y="300">2</text></g>
+              <g class="snode fp" data-name="Hypothesis: stop check never re-entered" data-info="My best guess at the hardware failure: the gate was read before the +1 had settled, so the stop never fired. When the snapshot reached exactly the expected size, VALID and READY went low, so the nested loop that checked the stop condition was never entered again."><circle cx="160" cy="276" r="10"/><text x="160" y="276">3</text></g>
+            </svg>
+          </div>
+          <ul class="legend">
+            <li><i class="rtl"></i>RTL module</li>
+            <li><i class="io"></i>Interface</li>
+            <li><i class="process"></i>Software / tool</li>
+            <li><i class="hw"></i>Board hardware</li>
+            <li><i class="config"></i>Configuration</li>
+            <li><i class="check"></i>Check</li>
+            <li><i class="debug"></i>Debug core</li>
+            <li><i class="fp"></i>Finding</li>
+          </ul>
+          <p class="diagram-info" aria-live="polite">Select a block or finding to see details.</p>
+        </div>
         <figcaption>Figure 1. Debug process.</figcaption>
       </figure>
 
@@ -83,6 +139,7 @@
 
     <footer class="doc-foot">© 2026 Andy Chiem</footer>
   </main>
+  <script src="../script.js"></script>
 </body>
 
 </html>
