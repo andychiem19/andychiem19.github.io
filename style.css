@@ -149,6 +149,52 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 }
 .visual img { width: 100%; height: 100%; object-fit: contain; }
 
+/* Interactive block diagram inside a project visual */
+.visual.diagram-box { display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 2rem; padding: 2.5rem 1.75rem 1.5rem; }
+.diagram-wrap { position: relative; }
+.diagram-wrap::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--wafer); opacity: 0.6; }
+.diagram { position: relative; z-index: 2; display: flex; gap: 1.5rem; list-style: none; }
+.diagram li {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.5rem;
+  padding: 0.6rem 0.4rem;
+  background: radial-gradient(circle at 5px 5px, var(--muted) 1.5px, transparent 2px), var(--package);
+  border: 1px solid var(--grid);
+  color: var(--silk);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.diagram li.active, .diagram li:hover { border-color: var(--wafer); color: var(--wafer); }
+.diagram li:focus-visible { outline: 2px solid var(--wafer); outline-offset: 3px; }
+/* the device under test is drawn as a chip with pins */
+.diagram .dut { position: relative; flex-grow: 1.2; min-height: 5.5rem; }
+.diagram .dut::before,
+.diagram .dut::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 5px;
+  background: repeating-linear-gradient(to right, var(--muted) 0 2px, transparent 2px 7px);
+  opacity: 0.6;
+}
+.diagram .dut::before { top: -6px; }
+.diagram .dut::after { bottom: -6px; }
+/* a packet travelling the wires; it disappears into each block */
+.pulse { position: absolute; z-index: 1; top: 50%; left: 0; width: 8px; height: 8px; margin-top: -4px; background: var(--wafer); animation: flow 3.2s linear infinite; }
+@keyframes flow { to { left: calc(100% - 8px); } }
+.diagram-info { min-height: 3em; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+.diagram-info strong { color: var(--silk); font-weight: 700; }
+
 /* Resume */
 .resume { flex-direction: column; align-items: stretch; gap: 1.5rem; height: 100vh; height: 100svh; }
 .resume-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
@@ -307,6 +353,7 @@ html.doc { scroll-snap-type: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .status::before { animation: none; }
+  .pulse { display: none; }
 }
 
 /* Mobile: stack visual over text, relax snapping */
@@ -317,6 +364,13 @@ html.doc { scroll-snap-type: none; }
   .panel, .project.flip { flex-direction: column; align-items: flex-start; gap: 2rem; padding: 4rem 1.25rem 4rem 2.75rem; }
   .hero { justify-content: center; }
   .visual { width: 100%; flex: none; }
+  .visual.diagram-box { aspect-ratio: auto; }
+  .diagram { flex-direction: column; gap: 1.25rem; }
+  .diagram li, .diagram .dut { flex: none; min-height: 0; padding: 0.75rem; }
+  .diagram .dut { padding: 1.25rem 0.75rem; }
+  .diagram-wrap::before { top: 0; bottom: 0; left: 50%; right: auto; width: 1px; height: auto; }
+  .pulse { top: 0; left: 50%; margin: 0 0 0 -4px; animation-name: flow-down; }
+  @keyframes flow-down { to { top: calc(100% - 8px); } }
   .pins { left: 0.9rem; gap: 0.7rem; }
   .pins a { width: 8px; height: 8px; }
   .doc-body .path { flex-direction: column; align-items: flex-start; gap: 1rem; }

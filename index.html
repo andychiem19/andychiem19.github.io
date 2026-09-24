@@ -52,9 +52,18 @@
 
     <!-- PROJECTS: copy/paste a section to add more; swap the .visual placeholder for an <img> -->
     <section class="panel project" id="project-1">
-      <div class="visual reveal">
-        <!-- <img src="assets/project-1.png" alt="Block diagram of the 100G Ethernet verification suite"> -->
-        <span>Add a block diagram or results plot</span>
+      <!-- Interactive block diagram: each li is a block, data-info is its description -->
+      <div class="visual diagram-box reveal">
+        <div class="diagram-wrap">
+          <span class="pulse" aria-hidden="true"></span>
+          <ol class="diagram" aria-label="Transmit path into the Versal DCMAC">
+            <li data-info="Generates IEEE 802.3 frames with preamble, interframe gap and frame check sequence.">Scapy packet generation</li>
+            <li data-info="64b/66b encoding, scrambling, virtual lane distribution and alignment marker insertion for CAUI-4 transmit.">Virtual PCS/PMA</li>
+            <li data-info="Drives the encoded lanes into the DCMAC in simulation.">cocotb interface</li>
+            <li class="dut" data-info="The Versal Ethernet MAC subsystem under test.">Versal DCMAC</li>
+          </ol>
+        </div>
+        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
       </div>
       <div class="content reveal">
         <h2>100G Ethernet Verification</h2>

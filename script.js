@@ -146,4 +146,25 @@ if (detent) {
   }));
 }
 
+// Block diagrams: hover, focus or tap a block to read what it does
+document.querySelectorAll(".diagram-box").forEach((box) => {
+  const info = box.querySelector(".diagram-info");
+  const idle = info.textContent;
+  const blocks = box.querySelectorAll(".diagram li");
+  const show = (li) => {
+    blocks.forEach((b) => b.classList.toggle("active", b === li));
+    if (!li) return (info.textContent = idle);
+    const name = document.createElement("strong");
+    name.textContent = li.textContent + ": ";
+    info.replaceChildren(name, li.dataset.info);
+  };
+  blocks.forEach((li) => {
+    li.tabIndex = 0;
+    li.addEventListener("mouseenter", () => show(li));
+    li.addEventListener("focus", () => show(li));
+    li.addEventListener("click", () => show(li));
+  });
+  box.addEventListener("mouseleave", () => show(null));
+});
+
 document.getElementById("year").textContent = new Date().getFullYear();
