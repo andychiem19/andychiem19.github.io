@@ -1,25 +1,40 @@
 <!DOCTYPE html>
 <html lang="en" class="doc">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Debugging an AXI-Lite Performance Monitor — Andy Chiem</title>
-  <meta name="description" content="Root-caused an RTL issue, resolving differing behavior in simulation and hardware and recovering expected bandwidth using Vivado ILAs">
+  <title>AXI Perfmon</title>
+  <meta name="description"
+    content="Root-caused an RTL issue, resolving differing behavior in simulation and hardware and recovering expected bandwidth using Vivado ILAs">
   <link rel="stylesheet" href="../style.css">
 </head>
+
 <body>
   <main class="doc-page">
     <a class="back" href="../index.html#project-3">Back to projects</a>
 
     <header class="doc-head">
       <h1>Debugging an AXI-Lite Performance Monitor</h1>
-      <p class="subtitle">Root-caused an RTL issue, resolving differing behavior in simulation and hardware and recovering expected bandwidth using Vivado ILAs</p>
+      <p class="subtitle">Resolved differing behavior in simulation and hardware using Vivado ILAs; increased bandwidth
+        measurements from 70% to 100% of expected.</p>
       <dl class="spec">
-        <dt>Organization</dt><dd>Woodward McCoach Inc.</dd>
-        <dt>Role</dt><dd>FPGA Development Engineer Co-op</dd>
-        <dt>Status</dt><dd><span class="status done">Complete</span></dd>
-        <dt>Timeline</dt><dd>Mar 2026 – Aug 2026</dd>
-        <dt>Stack</dt><dd><ul class="chips"><li>Vivado</li><li>ILAs</li><li>SystemVerilog</li></ul></dd>
+        <dt>Organization</dt>
+        <dd>Woodward McCoach Inc.</dd>
+        <dt>Role</dt>
+        <dd>FPGA Development Engineer Co-op</dd>
+        <dt>Status</dt>
+        <dd><span class="status done">Complete</span></dd>
+        <dt>Timeline</dt>
+        <dd>Mar 2026 – Aug 2026</dd>
+        <dt>Stack</dt>
+        <dd>
+          <ul class="chips">
+            <li>Vivado</li>
+            <li>ILAs</li>
+            <li>SystemVerilog</li>
+          </ul>
+        </dd>
       </dl>
     </header>
 
@@ -27,13 +42,33 @@
     <article class="doc-body">
 
       <h2>Problem</h2>
-      <p class="pending">Write-up in progress.</p>
+      <p>A new addition to the IP library, our AXI-Lite Performance Monitor, had recently been tested on a variety of
+        our boards' AXI-Lite interfaces. The performance monitor had returned reasonable test results on all our boards,
+        except one (let's call it board X), where it was reading about 70% of the expected bandwidth. </p>
+      <p>This could mean one of two things:</p>
+      <ol>
+        <li>Board X's AXI-Lite interface was genuinely running at 70% of the rated bandwidth
+        </li>
+        <li>An issue exists in the Performance Monitor IP that only emerged on one board</li>
+      </ol>
+      <p>Preliminary testing revealed that data wasn't being lost on board X's AXI-Lite interface, so it was most likely
+        running at expected bandwidth, leading me to focus on the second possibility. </p>
 
       <h2>Investigation</h2>
-      <p class="pending">Write-up in progress.</p>
+      <p>I started with hardware testing through our software for controlling the boards, running sets of commands to
+        configure the snapshot interface and simulate an
+        AXI-Lite link for long enough to monitor it over a given snapshot size.</p>
+      <p>On 4G PRBS testing, I replicated the previous results after inserting and building board X with the performance
+        monitor embedded.</p>
+      <p>However, when I moved to the 50G 100GAUI test that had returned lower than expected results, I got unreasonably
+        low
+        bandwidth numbers, even lower than prior tests had found, in the range of 10% to 50% efficiency. Prior testing
+        had shown about 60%, while expected efficiency was about 83%.</p>
+      <p>This led me to find several issues in the RTL via ILA debugging and a simulation I developed, detailed in the
+        diagram below.</p>
       <figure>
         <div class="visual"><span>Add a diagram or waveform</span></div>
-        <figcaption>Figure 1. Caption.</figcaption>
+        <figcaption>Figure 1. Debug process.</figcaption>
       </figure>
 
       <h2>Root cause</h2>
@@ -49,4 +84,5 @@
     <footer class="doc-foot">© 2026 Andy Chiem</footer>
   </main>
 </body>
+
 </html>

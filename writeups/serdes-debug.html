@@ -26,8 +26,8 @@
         <dt>Status</dt>
         <dd><span class="status done">Complete</span></dd>
         <dt>Timeline</dt>
-        <dd>Mar 2026 – Aug 2026</dd>
-        <dt>Stack</dt>
+        <dd>Apr 2026 – Aug 2026</dd>
+        <dt>Skills</dt>
         <dd>
           <ul class="chips">
             <li>SystemVerilog</li>
@@ -41,7 +41,7 @@
     <article class="doc-body">
 
       <h2>Problem</h2>
-      <p>During a routine edge case test of our proprietary chip-to-chip protocol: running custom protocol words in both
+      <p>During a routine test of our proprietary chip-to-chip protocol: running custom protocol words in both
         directions using GTM and GTYP transceivers, the receive side PMD was failing to align in both directions.</p>
 
       <h2>Investigation</h2>
@@ -58,46 +58,110 @@
           or present spliced parts of words</li>
       </ul>
       <p>I used WMI simulation drivers, as well as PRBS stimulus generators and checkers, to validate portions of the
-        datapath as shown below.</p>
+        datapath as shown below. Hover over failure points to see how I eliminated them as potential causes.</p>
       <!-- Investigation diagram: hover text lives in each data-info attribute. Failure points are the
            g.fp elements; replace "[describe the test]" with how you ruled each one out. -->
       <figure>
         <div class="visual diagram-box">
           <div class="sdiagram-wrap">
-            <svg class="sdiagram" viewBox="0 0 690 404" role="group" aria-label="GTM and GTYP transceivers cross-connected between custom protocol blocks, with the GTM-side gearbox, GTM protocol configuration, test drivers and suspected failure points">
-              <defs><marker id="sd-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z"/></marker></defs>
-              <rect class="grp" x="5" y="22" width="680" height="372"/><rect class="grp-bg" x="13" y="13" width="129" height="18"/><text class="grp-label" x="17" y="22">SystemVerilog simulation</text>
-              <path class="link" d="M120 180H150" marker-start="url(#sd-arrow)" marker-end="url(#sd-arrow)"/>
+            <svg class="sdiagram" viewBox="0 0 690 404" role="group"
+              aria-label="GTM and GTYP transceivers cross-connected between custom protocol blocks, with the GTM-side gearbox, GTM protocol configuration, test drivers and suspected failure points">
+              <defs>
+                <marker id="sd-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8"
+                  markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+                  <path d="M0 0L8 4L0 8z" />
+                </marker>
+              </defs>
+              <rect class="grp" x="5" y="22" width="680" height="372" />
+              <rect class="grp-bg" x="13" y="13" width="129" height="18" /><text class="grp-label" x="17"
+                y="22">SystemVerilog simulation</text>
+              <path class="link" d="M120 180H150" marker-start="url(#sd-arrow)" marker-end="url(#sd-arrow)" />
               <text class="label" x="135" y="168" style="text-anchor:middle">N-bit</text>
-              <path class="link" d="M246 180H280" marker-start="url(#sd-arrow)" marker-end="url(#sd-arrow)"/>
+              <path class="link" d="M246 180H280" marker-start="url(#sd-arrow)" marker-end="url(#sd-arrow)" />
               <text class="label" x="263" y="168" style="text-anchor:middle">80-bit</text>
-              <path class="link" d="M370 124L460 236" marker-end="url(#sd-arrow)"/>
-              <path class="link" d="M460 124L370 236" marker-end="url(#sd-arrow)"/>
-              <path class="link" d="M550 180H580" marker-start="url(#sd-arrow)" marker-end="url(#sd-arrow)"/>
-              <path class="link dashed" d="M325 84V110" marker-end="url(#sd-arrow)"/>
-              <path class="link dashed" d="M70 300V210" marker-end="url(#sd-arrow)"/>
-              <path class="link dashed" d="M95 344V376H630V210" marker-end="url(#sd-arrow)"/>
-              <path class="link dashed" d="M370 300V272H325V250" marker-end="url(#sd-arrow)"/>
-              <path class="link dashed" d="M460 300V272H505V250" marker-end="url(#sd-arrow)"/>
-              <g class="snode" data-name="Custom protocol (GTM side)" data-info="Proprietary chip-to-chip protocol logic. Sends and receives protocol words through the gearbox."><rect x="20" y="150" width="100" height="60"/><text x="70.0" y="172.5">Custom</text><text x="70.0" y="187.5">protocol</text></g>
-              <g class="snode" data-name="Gearbox" data-info="Converts between the GTM&#39;s 80-bit interface and the protocol word width, in both directions."><rect x="150" y="150" width="96" height="60"/><text x="198.0" y="172.5">Gearbox</text><text x="198.0" y="187.5">80 ↔ N</text></g>
-              <g class="snode" data-name="GTM transceiver" data-info="Serializes the 80-bit parallel data. Its TX drives the GTYP&#39;s RX, and its RX receives from the GTYP&#39;s TX."><rect x="280" y="110" width="90" height="140"/><rect x="283" y="113" width="84" height="134"/><text x="325.0" y="180.0">GTM</text></g>
-              <g class="snode" data-name="GTYP transceiver" data-info="The other transceiver family. Its TX drives the GTM&#39;s RX, and its RX receives from the GTM&#39;s TX."><rect x="460" y="110" width="90" height="140"/><rect x="463" y="113" width="84" height="134"/><text x="505.0" y="180.0">GTYP</text></g>
-              <g class="snode" data-name="Custom protocol (GTYP side)" data-info="The same protocol logic on the GTYP side. Receive-side PMD alignment failed here, and on the GTM side."><rect x="580" y="150" width="100" height="60"/><text x="630.0" y="172.5">Custom</text><text x="630.0" y="187.5">protocol</text></g>
-              <g class="snode" data-name="GTM protocol configuration" data-info="Protocol and transceiver settings applied to the GTM. This is where the root cause was."><path d="M255 40H383L395 52V84H255Z"/><line x1="383" y1="40" x2="383" y2="52"/><line x1="383" y1="52" x2="395" y2="52"/><text x="325.0" y="54.5">GTM protocol</text><text x="325.0" y="69.5">configuration</text></g>
-              <g class="snode" data-name="WMI simulation drivers" data-info="Used to drive and check the protocol blocks on both sides in simulation."><rect x="20" y="300" width="150" height="44"/><line x1="26" y1="300" x2="26" y2="344"/><line x1="164" y1="300" x2="164" y2="344"/><text x="95.0" y="314.5">WMI simulation</text><text x="95.0" y="329.5">drivers</text></g>
-              <g class="snode" data-name="PRBS generator / checker" data-info="Drove PRBS patterns through the transceivers directly, to validate the serial path without the protocol or gearbox."><rect x="345" y="300" width="140" height="44"/><line x1="351" y1="300" x2="351" y2="344"/><line x1="479" y1="300" x2="479" y2="344"/><text x="415.0" y="314.5">PRBS generator</text><text x="415.0" y="329.5">/ checker</text></g>
+              <path class="link" d="M370 124L460 236" marker-end="url(#sd-arrow)" />
+              <path class="link" d="M460 124L370 236" marker-end="url(#sd-arrow)" />
+              <path class="link" d="M550 180H580" marker-start="url(#sd-arrow)" marker-end="url(#sd-arrow)" />
+              <path class="link dashed" d="M325 84V110" marker-end="url(#sd-arrow)" />
+              <path class="link dashed" d="M70 300V210" marker-end="url(#sd-arrow)" />
+              <path class="link dashed" d="M95 344V376H630V210" marker-end="url(#sd-arrow)" />
+              <path class="link dashed" d="M370 300V272H325V250" marker-end="url(#sd-arrow)" />
+              <path class="link dashed" d="M460 300V272H505V250" marker-end="url(#sd-arrow)" />
+              <g class="snode" data-name="Custom protocol (GTM side)"
+                data-info="Proprietary chip-to-chip protocol logic. Sends and receives protocol words through the gearbox.">
+                <rect x="20" y="150" width="100" height="60" /><text x="70.0" y="172.5">Custom</text><text x="70.0"
+                  y="187.5">protocol</text>
+              </g>
+              <g class="snode" data-name="Gearbox"
+                data-info="Converts between the GTM&#39;s 80-bit interface and the protocol word width, in both directions.">
+                <rect x="150" y="150" width="96" height="60" /><text x="198.0" y="172.5">Gearbox</text><text x="198.0"
+                  y="187.5">80 ↔ N</text>
+              </g>
+              <g class="snode" data-name="GTM transceiver"
+                data-info="Serializes the 80-bit parallel data. Its TX drives the GTYP&#39;s RX, and its RX receives from the GTYP&#39;s TX.">
+                <rect x="280" y="110" width="90" height="140" />
+                <rect x="283" y="113" width="84" height="134" /><text x="325.0" y="180.0">GTM</text>
+              </g>
+              <g class="snode" data-name="GTYP transceiver"
+                data-info="The other transceiver family. Its TX drives the GTM&#39;s RX, and its RX receives from the GTM&#39;s TX.">
+                <rect x="460" y="110" width="90" height="140" />
+                <rect x="463" y="113" width="84" height="134" /><text x="505.0" y="180.0">GTYP</text>
+              </g>
+              <g class="snode" data-name="Custom protocol (GTYP side)"
+                data-info="The same protocol logic on the GTYP side. Receive-side PMD alignment failed here, and on the GTM side.">
+                <rect x="580" y="150" width="100" height="60" /><text x="630.0" y="172.5">Custom</text><text x="630.0"
+                  y="187.5">protocol</text>
+              </g>
+              <g class="snode" data-name="GTM protocol configuration"
+                data-info="Protocol and transceiver settings applied to the GTM. This is where the root cause was.">
+                <path d="M255 40H383L395 52V84H255Z" />
+                <line x1="383" y1="40" x2="383" y2="52" />
+                <line x1="383" y1="52" x2="395" y2="52" /><text x="325.0" y="54.5">GTM protocol</text><text x="325.0"
+                  y="69.5">configuration</text>
+              </g>
+              <g class="snode" data-name="WMI simulation drivers"
+                data-info="Used to drive and check the protocol blocks on both sides in simulation.">
+                <rect x="20" y="300" width="150" height="44" />
+                <line x1="26" y1="300" x2="26" y2="344" />
+                <line x1="164" y1="300" x2="164" y2="344" /><text x="95.0" y="314.5">WMI simulation</text><text x="95.0"
+                  y="329.5">drivers</text>
+              </g>
+              <g class="snode" data-name="PRBS generator / checker"
+                data-info="Drove PRBS patterns through the transceivers directly, to validate the serial path without the protocol or gearbox.">
+                <rect x="345" y="300" width="140" height="44" />
+                <line x1="351" y1="300" x2="351" y2="344" />
+                <line x1="479" y1="300" x2="479" y2="344" /><text x="415.0" y="314.5">PRBS generator</text><text
+                  x="415.0" y="329.5">/ checker</text>
+              </g>
               <text class="label" x="362" y="128" style="text-anchor:end">TX</text>
               <text class="label" x="362" y="232" style="text-anchor:end">RX</text>
               <text class="label" x="468" y="128" style="text-anchor:start">TX</text>
               <text class="label" x="468" y="232" style="text-anchor:start">RX</text>
               <!-- Failure points: edit each data-info to describe the test that ruled it out -->
-              <g class="snode fp" data-name="Suspect 1: Protocol word structure" data-info="The protocol word structure might be incompatible with the transceivers&#39; internal serialization. Ruled out by: [describe the test]."><circle cx="120" cy="150" r="10"/><text x="120" y="150">1</text></g>
-              <g class="snode fp" data-name="Suspect 2: Gearbox (80 ↔ N)" data-info="Gearboxing on the GTM side, from 80 bits to the protocol width and back, could reorder bits or present spliced parts of words. Ruled out by: [describe the test]."><circle cx="246" cy="150" r="10"/><text x="246" y="150">2</text></g>
-              <g class="snode fp" data-name="Suspect 3: Bit ordering across families" data-info="Parallel-to-serial bit ordering might differ between the GTM and GTYP transceiver families. Ruled out by: [describe the test]."><circle cx="415" cy="180" r="10"/><text x="415" y="180">3</text></g>
-              <g class="snode fp" data-name="Suspect 4: Line rate or reference clock" data-info="A line rate or reference clock mismatch between the two transceivers would also break alignment. Ruled out by: [describe the test]."><circle cx="550" cy="110" r="10"/><text x="550" y="110">4</text></g>
-              <g class="snode fp" data-name="Suspect 5: RX alignment logic" data-info="The protocol&#39;s receive-side alignment logic itself could be at fault. Ruled out by: [describe the test]."><circle cx="680" cy="150" r="10"/><text x="680" y="150">5</text></g>
-              <g class="snode fp root" data-name="Root cause: GTM protocol configuration" data-info="[What was misconfigured, how you found it, and what the fix was.]"><circle cx="395" cy="40" r="10"/><text x="395" y="40">R</text></g>
+              <g class="snode fp" data-name="Suspect 1: Protocol word structure"
+                data-info="The protocol word structure might be incompatible with the transceivers&#39; internal serialization. Ruled out by: loopback testing proved that the words were serialized correctly by both families of transceivers.">
+                <circle cx="120" cy="150" r="10" /><text x="120" y="150">1</text>
+              </g>
+              <g class="snode fp" data-name="Suspect 2: Gearbox (80 ↔ N)"
+                data-info="Gearboxing on the GTM side, from 80 bits to the protocol width and back, could reorder bits or present spliced parts of words. Ruled out by: PRBS and custom protocol word generation and checking on the isolated gearbox. Words and PRBS traversed correctly.">
+                <circle cx="246" cy="150" r="10" /><text x="246" y="150">2</text>
+              </g>
+              <g class="snode fp" data-name="Suspect 3: Bit ordering across families"
+                data-info="Parallel-to-serial bit ordering might differ between the GTM and GTYP transceiver families. Ruled out by: PRBS generation and checking across the SerDes modules themselves. Differences in parallel to serial would cause bit errors, and none occurred.">
+                <circle cx="415" cy="180" r="10" /><text x="415" y="180">3</text>
+              </g>
+              <g class="snode fp" data-name="Suspect 4: Line rate or reference clock"
+                data-info="A line rate or reference clock mismatch between the two transceivers would also break alignment. Ruled out by: GTM and GTYP transceivers were already clocked to exactly match data throughput. Did find and resolve a small frequency error causing slight misalignment here.">
+                <circle cx="550" cy="110" r="10" /><text x="550" y="110">4</text>
+              </g>
+              <g class="snode fp" data-name="Suspect 5: RX alignment logic"
+                data-info="The protocol&#39;s receive-side alignment logic itself could be at fault. Not completely ruled out, it was part of the issue. Caused the half-word splicing and misalignment, but was a one-line fix after the SerDes testing.">
+                <circle cx="680" cy="150" r="10" /><text x="680" y="150">5</text>
+              </g>
+              <g class="snode fp root" data-name="Root cause: GTM protocol configuration"
+                data-info="The root cause! (see below)">
+                <circle cx="395" cy="40" r="10" /><text x="395" y="40">R</text>
+              </g>
             </svg>
           </div>
           <ul class="legend">
@@ -114,13 +178,39 @@
       </figure>
 
       <h2>Root cause</h2>
-      <p class="pending">Write-up in progress.</p>
+      <p>An earlier artifact had been left in from the development of the protocol's configuration for GTM transceivers:
+        a bit-reversal prior to gearboxing, and bit-reversal on receive post-gearboxing, included to achieve correct
+        bit-ordering for the gearbox.</p>
+
+      <p>This led to an anomaly where GTM loopback simulations were succeeding and passing verification, but any other
+        configuration attempting to work with a protocol block configured with GTM would either receive bit-reversed
+        protocol data or send legitimate protocol data that would then be bit-reversed.</p>
 
       <h2>Fix and results</h2>
-      <p class="pending">Write-up in progress.</p>
-
+      <p>First, I confirmed the issue by forcing an additional bit-reversal into the cross-connect configuration. The
+        receive PMDs on either side locked up, and PRBS data was checked correctly. This confirmed that the issue was
+        the bit-reversal.</p>
+      <p>Working with an existing GTM loopback simulation, I bypassed the bit-reversal and ran PRBS across in
+        simulation, proving
+        that there was no need for the bit-reversals before and after the gearboxing step. My mentor also confirmed this
+        in hardware. I pushed up the changes to the GTM configuration and a fix to the GTYP PMD module, and finally
+        verified cross-family compatibility prior to release.</p>
       <h2>Takeaways</h2>
-      <p class="pending">Write-up in progress.</p>
+      <p>My main professional takeaway was that I need to trust my technical instincts more quickly.
+        Despite me noticing what appeared to be a bit-reversal early on, in discussions with my mentor we were
+        unconvinced that a bit-reversal was possible, as no mechanism in the protocol supposedly modified bit ordering.
+      </p>
+      <p>Had I forced a bit-reversal earlier on, I would have identified the issue and been able to close this project
+        much sooner than I did.
+      </p>
+      <p>I also learned the importance of working incrementally from functional designs. I burnt a lot of time on this
+        project trying to
+        make an initial simulation work, when several parts of it were constantly falling apart because they hadn't been
+        tested.</p>
+      <p>My
+        final simulation was built from the ground up, starting with just the two SerDes modules and expanded to include
+        protocol blocks and PRBS generators/checkers, verified as I went. This meant I could isolate bugs and catch
+        issues before they propagated through the rest of the system.</p>
     </article>
 
     <footer class="doc-foot">© 2026 Andy Chiem</footer>
