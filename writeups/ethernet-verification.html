@@ -40,17 +40,19 @@
     <article class="doc-body">
 
       <h2>Overview</h2>
-      <p>My first project at Woodward McCoach Inc., meant to enable high-speed Ethernet design verification for
+      <p>This was my first project at Woodward McCoach Inc., meant to enable high-speed Ethernet design verification for
         hobbyists
-        or as an alternative to expensive Ethernet verification IPs. Primarily a software networking project that
-        required deep understanding of the Physical Layer (Layer 1) of the OSI Networking Model.
+        or as an alternative to expensive Ethernet verification IPs. Primarily a software networking project, requiring
+        deep understanding of the Physical Layer (Layer 1) of the OSI Networking Model.
       </p>
       <p>
         The existing development was done for CAUI-4, a 100G 4-lane electrical interface commonly used in optical
         telecom, carrying a line rate of 25.78125G (data + overhead) across each of four lanes with NRZ modulation.
       </p>
       <!-- DRAFT: add the "why". What problem did the team have before this existed? -->
-      <p>The goal was a reusable, standards-driven source of 100G traffic that could exercise the MAC end-to-end in
+      <p>The goal was a reusable, standards-driven source of 100G traffic that could exercise any vendor or custom MAC
+        end-to-end
+        in
         simulation. Refer to IEEE 802.3 Clause 82/83 for specifications.</p>
 
       <h2>Transmit path</h2>
@@ -94,15 +96,15 @@ def scramble(block: int, state: int) -&gt; tuple[int, int]:
       <!-- DRAFT: fill in how the testbench was structured. -->
       <p>
         Healthy software design principles, like loose coupling and code reuse, allowed for effective and accurate
-        initial software development. I was able to apply directed and constrained random tests at nearly every level to
+        initial software development. I was able to apply directed and constrained random tests at nearly every step to
         reduce hardware debugging work needed later down the line.
       </p>
-      <p>e.g. A key constrained-random test I did was the generation of packets with randomized fields and payloads,
+      <p>e.g. A key constrained random test I did was the generation of packets with randomized fields and payloads,
         from
         length 64 to 1500, interleaving the four transmission lanes into a software script that rasterizes and checks
         for valid Ethernet
         traffic.</p>
-      <p>I used Wireshark on .pcap files to verify my Ethernet packet generator and virtual MAC, and ultimately
+      <p>I also used Wireshark on .pcap files to verify my Ethernet packet generator and virtual MAC, and ultimately
         integration tested
         in cocotb using my custom Ethernet stimulus to lock up an Ethernet
         MAC (Versal DCMAC Subsystem), checking data on the other side.</p>
@@ -223,14 +225,16 @@ def scramble(block: int, state: int) -&gt; tuple[int, int]:
       </figure>
 
       <h2>Takeaways</h2>
-      <p>A key purpose this project served early on was allowing me to demo common optical telecom themes in
+      <p>This project allowed me to demo common optical telecom digital hardware themes in
         software. Data in optical telecommunications is frequently encoded, scrambled, marked, and
-        interleaved/de-interleaved to various widths, and implementing them in software while reading about the theory
+        interleaved/de-interleaved to various widths, and implementing these themes in software while reading about the
+        theory
         behind Ethernet allowed me to understand, early on, why and how data is moved digitally.</p>
       <p>Another key takeaway was comfortability working from a spec. IEEE 802.3 is quite verbose, and extracting the
-        necessary elements to create my own Ethernet protocol taught me to understand what's important, and by extension
+        necessary elements to create my own Ethernet protocol taught me to understand what's important, and
+        by extension
         the underlying reasoning present in every spec.</p>
-      <p>Beyond the code, I documented the project's standards and progress so future developers can extend the
+      <p>I also documented the project's standards and progress so future developers can extend the
         environment, hopefully to include a comprehensive set of 100G, 400G, and OTN protocols,
         after my co-op.</p>
       <!-- DRAFT: add what you learned or would do differently. -->
