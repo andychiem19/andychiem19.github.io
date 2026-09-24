@@ -55,4 +55,95 @@ const panelObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.6 });
 document.querySelectorAll(".panel").forEach((p) => panelObserver.observe(p));
 
+// Detented scrolling (desktop): wheel input presses against a detent, then clicks to the next panel
+const detent =
+  matchMedia("(pointer: fine) and (min-width: 801px)").matches &&
+  !matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if (detent) {
+  const THRESHOLD = 150;  // px of wheel travel to actuate
+  const RESIST = 0.12;    // how much the page gives before actuating
+  const MAX_NUDGE = 18;
+  const GLIDE = 700;      // ms to travel between panels
+
+  const panels = [...document.querySelectorAll(".panel")];
+  const main = document.querySelector("main");
+  document.documentElement.classList.add("detent");
+
+  let acc = 0, nudge = 0, animating = false, locked = false, lastWheel = 0, quiet;
+
+  const ease = (t) => (t < 0.5 ? 8 * t ** 4 : 1 - (-2 * t + 2) ** 4 / 2);
+
+  const setNudge = (px, transition) => {
+    nudge = px;
+    main.style.transition = transition || "none";
+    main.style.transform = px ? `translateY(${-px}px)` : "";
+  };
+
+  const currentIndex = () => {
+    const y = scrollY + innerHeight / 2;
+    const i = panels.findIndex((p) => y >= p.offsetTop && y < p.offsetTop + p.offsetHeight);
+    return i < 0 ? panels.length - 1 : i;
+  };
+
+  function goTo(i) {
+    i = Math.max(0, Math.min(panels.length - 1, i));
+    const from = scrollY, to = panels[i].offsetTop, n0 = nudge, start = performance.now();
+    animating = locked = true;
+    acc = 0;
+    const step = (t) => {
+      const k = Math.min(1, (t - start) / GLIDE), e = ease(k);
+      scrollTo(0, from + (to - from) * e);
+      setNudge(n0 * (1 - e));
+      if (k < 1) requestAnimationFrame(step);
+      else animating = false;
+    };
+    requestAnimationFrame(step);
+  }
+
+  addEventListener("wheel", (e) => {
+    const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    const now = performance.now(), gap = now - lastWheel;
+    lastWheel = now;
+
+    // Let a panel taller than the screen scroll natively until its edge
+    const p = panels[currentIndex()];
+    const inside = dy > 0
+      ? scrollY + innerHeight < p.offsetTop + p.offsetHeight - 2
+      : scrollY > p.offsetTop + 2;
+    if (inside && !animating) return;
+
+    e.preventDefault();
+    // Swallow trackpad momentum from the gesture that just actuated
+    if (animating || (locked && gap < 150)) return;
+    locked = false;
+
+    if (Math.sign(dy) !== Math.sign(acc)) acc = 0;
+    acc += dy;
+    setNudge(Math.sign(acc) * Math.min(Math.abs(acc) * RESIST, MAX_NUDGE), "transform 0.1s ease-out");
+
+    clearTimeout(quiet);
+    quiet = setTimeout(() => {
+      if (animating) return;
+      acc = 0;
+      setNudge(0, "transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)");  // spring back
+    }, 300);
+
+    if (Math.abs(acc) >= THRESHOLD) goTo(currentIndex() + Math.sign(acc));
+  }, { passive: false });
+
+  addEventListener("keydown", (e) => {
+    const step = { ArrowDown: 1, PageDown: 1, " ": 1, ArrowUp: -1, PageUp: -1 }[e.key];
+    const jump = { Home: 0, End: panels.length - 1 }[e.key];
+    if (step === undefined && jump === undefined) return;
+    e.preventDefault();
+    if (!animating) goTo(jump ?? currentIndex() + (e.shiftKey && e.key === " " ? -1 : step));
+  });
+
+  pins.forEach((a) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    goTo(panels.indexOf(document.querySelector(a.getAttribute("href"))));
+  }));
+}
+
 document.getElementById("year").textContent = new Date().getFullYear();

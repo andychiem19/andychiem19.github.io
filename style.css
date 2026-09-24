@@ -35,6 +35,8 @@ html {
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
+/* script.js drives panel-to-panel motion on desktop */
+html.detent { scroll-snap-type: none; scroll-behavior: auto; }
 
 body {
   background: var(--package);
