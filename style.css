@@ -255,6 +255,16 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .sdiagram .badge circle { fill: var(--die); stroke: var(--wafer); }
 .sdiagram .badge text { fill: var(--wafer); font-size: 11px; }
 
+/* failure-point markers (writeup investigation diagrams) */
+.snode.fp circle { fill: var(--package); stroke: var(--amber); stroke-width: 1.5; transition: stroke 0.15s; }
+.snode.fp text { fill: var(--amber); font-size: 11px; }
+.snode.fp.root circle { fill: var(--amber); }
+.snode.fp.root text { fill: var(--package); font-weight: 700; }
+.snode.fp:hover circle, .snode.fp.active circle { stroke: var(--wafer); }
+.snode.fp:hover text, .snode.fp.active text { fill: var(--wafer); }
+.snode.fp.root:hover text, .snode.fp.root.active text { fill: var(--package); }
+.snode.fp:focus-visible circle { stroke: var(--wafer); stroke-width: 2.5; }
+
 .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; list-style: none; color: var(--muted); font-size: 0.8rem; }
 .legend li { display: flex; align-items: center; gap: 0.5rem; }
 .legend i { width: 1.4rem; height: 0.9rem; border: 1px solid var(--muted); }
@@ -263,6 +273,9 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .legend .hw { border: 3px double var(--muted); }
 .legend .debug { border-style: dotted; }
 .legend .ext { border-radius: 0.4rem; }
+.legend .fp, .legend .root { width: 0.8rem; height: 0.8rem; margin: 0 0.3rem; border: 1.5px solid var(--amber); border-radius: 50%; }
+.legend .root { background: var(--amber); }
+.legend .config { background: linear-gradient(225deg, var(--muted) 0 5px, transparent 5px); }
 .legend .check { width: 0.75rem; height: 0.75rem; margin: 0 0.3rem; transform: rotate(45deg); }
 
 @media (max-width: 1399px) {
