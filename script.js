@@ -62,6 +62,7 @@ document.querySelectorAll(".panel").forEach((p) => panelObserver.observe(p));
 
 // Detented scrolling (desktop): wheel input presses against a detent, then clicks to the next panel
 const detent =
+  document.querySelector(".panel") &&
   matchMedia("(pointer: fine) and (min-width: 801px)").matches &&
   !matchMedia("(prefers-reduced-motion: reduce)").matches;
 

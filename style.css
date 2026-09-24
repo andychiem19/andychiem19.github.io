@@ -250,6 +250,9 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .snode:focus { outline: none; }
 .snode:focus-visible :is(rect, path) { stroke: var(--wafer); stroke-width: 2; }
 
+.sdiagram .badge circle { fill: var(--die); stroke: var(--wafer); }
+.sdiagram .badge text { fill: var(--wafer); font-size: 11px; }
+
 .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; list-style: none; color: var(--muted); font-size: 0.8rem; }
 .legend li { display: flex; align-items: center; gap: 0.5rem; }
 .legend i { width: 1.4rem; height: 0.9rem; border: 1px solid var(--muted); }
@@ -258,6 +261,7 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .legend .hw { border: 3px double var(--muted); }
 .legend .debug { border-style: dotted; }
 .legend .ext { border-radius: 0.4rem; }
+.legend .check { width: 0.75rem; height: 0.75rem; margin: 0 0.3rem; transform: rotate(45deg); }
 
 @media (max-width: 1399px) {
   .diagram, .diagram .group { flex-direction: column; align-items: stretch; }
@@ -399,6 +403,11 @@ html.doc { scroll-snap-type: none; }
 .doc-body figure { margin: 1.75rem 0; }
 .doc-body figure .visual { max-width: none; aspect-ratio: 16 / 9; }
 .doc-body figure img { display: block; width: 100%; border: 1px solid var(--grid); }
+/* diagrams inside writeups keep their home-page look */
+.doc-body figure .diagram-box { aspect-ratio: auto; }
+.doc-body .diagram-info { color: var(--muted); }
+.doc-body .legend { margin: 0; padding: 0; }
+.doc-body .legend li { margin: 0; color: var(--muted); }
 .doc-body figcaption { margin-top: 0.6rem; color: var(--muted); font-size: 0.9rem; }
 
 /* Signal path: a Markdown list tagged {: .path}, drawn as blocks wired left to right */
@@ -449,6 +458,7 @@ html.doc { scroll-snap-type: none; }
   .project .content { width: auto; }
   .visual.diagram-box { aspect-ratio: auto; }
   .sdiagram { width: 400px; }  /* 2D diagrams keep readable text and scroll sideways in their box */
+  .doc-body .sdiagram { width: 640px; }
   .panel, .project.flip { flex-direction: column; align-items: flex-start; gap: 2rem; padding: 4rem 1.25rem 4rem 2.75rem; }
   .hero { justify-content: center; }
   .visual { width: 100%; flex: none; }

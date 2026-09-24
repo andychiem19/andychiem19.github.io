@@ -105,8 +105,49 @@ def scramble(block: int, state: int) -&gt; tuple[int, int]:
         in cocotb using my custom Ethernet stimulus to lock up an Ethernet
         MAC (Versal DCMAC Subsystem), checking data on the other side.</p>
       <figure>
-        <div class="visual"><span>Add a testbench block diagram</span></div>
-        <figcaption>Figure 1. Testing process.</figcaption>
+        <div class="visual diagram-box">
+          <div class="sdiagram-wrap">
+            <svg class="sdiagram" viewBox="0 0 680 392" role="group" aria-label="Testing process: unit tests, Wireshark pcap checks, reference-model integration test, and cocotb simulation against the Versal DCMAC with PRBS checking">
+              <defs><marker id="tp-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z"/></marker></defs>
+              <rect class="grp" x="10" y="74" width="500" height="100"/><rect class="grp-bg" x="16" y="65" width="158" height="18"/>
+              <g class="badge"><circle cx="28" cy="74" r="9"/><text x="28" y="74">1</text></g><text class="grp-label" x="42" y="74">Python models, unit tested</text>
+              <rect class="grp" x="10" y="262" width="660" height="112"/><rect class="grp-bg" x="16" y="253" width="115" height="18"/>
+              <g class="badge"><circle cx="28" cy="262" r="9"/><text x="28" y="262">4</text></g><text class="grp-label" x="42" y="262">cocotb simulation</text>
+              <path class="link" d="M154 124H194" marker-end="url(#tp-arrow)"/>
+              <path class="link" d="M314 124H354" marker-end="url(#tp-arrow)"/>
+              <path class="link" d="M494 124H546" marker-end="url(#tp-arrow)"/>
+              <path class="link dashed" d="M334 124V56" marker-end="url(#tp-arrow)"/><text class="label" x="340" y="92" style="text-anchor:start">.pcap</text>
+              <path class="link" d="M334 124V214H525" marker-end="url(#tp-arrow)"/>
+              <path class="link" d="M590 192V158" marker-end="url(#tp-arrow)"/>
+              <g class="badge"><circle cx="268" cy="38" r="9"/><text x="268" y="38">2</text></g>
+              <g class="badge"><circle cx="668" cy="214" r="9"/><text x="668" y="214">3</text></g>
+              <path class="link" d="M124 318H150" marker-end="url(#tp-arrow)"/>
+              <path class="link" d="M260 318H288" marker-end="url(#tp-arrow)"/>
+              <path class="link" d="M406 318H432" marker-end="url(#tp-arrow)"/>
+              <path class="link" d="M542 318H566" marker-end="url(#tp-arrow)"/>
+              <g class="snode" data-name="Scapy packet generation" data-info="Generates Ethernet frames, including constrained-random packets with randomized fields and payloads from 64 to 1500 bytes. Unit tested on its own."><rect x="24" y="99" width="130" height="50"/><line x1="30" y1="99" x2="30" y2="149"/><line x1="148" y1="99" x2="148" y2="149"/><text x="89.0" y="116.5">Scapy packet</text><text x="89.0" y="131.5">generation</text></g>
+              <g class="snode" data-name="Virtual MAC" data-info="Adds the preamble, enforces the interframe gap and computes the frame check sequence. Unit tested on its own."><rect x="194" y="99" width="120" height="50"/><line x1="200" y1="99" x2="200" y2="149"/><line x1="308" y1="99" x2="308" y2="149"/><text x="254.0" y="124.0">Virtual MAC</text></g>
+              <g class="snode" data-name="Virtual PCS/PMA" data-info="64b/66b encoding, scrambling, lane distribution and alignment marker insertion. Each stage is unit tested on its own."><rect x="354" y="99" width="140" height="50"/><line x1="360" y1="99" x2="360" y2="149"/><line x1="488" y1="99" x2="488" y2="149"/><text x="424.0" y="124.0">Virtual PCS/PMA</text></g>
+              <g class="snode" data-name="Wireshark (.pcap)" data-info="Frames from the packet generator and virtual MAC are saved as .pcap files and inspected in Wireshark to confirm they are valid Ethernet."><rect x="284" y="20" width="130" height="36" rx="12"/><text x="349.0" y="38.0">Wireshark</text></g>
+              <g class="snode" data-name="Compare" data-info="Software integration test: the pipeline output must match the reference model for the same frames."><path d="M546 124L590 90L634 124L590 158Z"/><text x="590.0" y="124.0">Compare</text></g>
+              <g class="snode" data-name="Reference model" data-info="Produces the expected output for the same frames, so the full software pipeline can be checked end to end."><rect x="525" y="192" width="130" height="44"/><line x1="531" y1="192" x2="531" y2="236"/><line x1="649" y1="192" x2="649" y2="236"/><text x="590.0" y="214.0">Reference model</text></g>
+              <g class="snode" data-name="PRBS generator" data-info="Generates a pseudo-random bit sequence as the data entering the pipeline."><rect x="24" y="293" width="100" height="50"/><line x1="30" y1="293" x2="30" y2="343"/><line x1="118" y1="293" x2="118" y2="343"/><text x="74.0" y="310.5">PRBS</text><text x="74.0" y="325.5">generator</text></g>
+              <g class="snode" data-name="Python TX pipeline" data-info="The full software transmit path, from framing through alignment marker insertion."><rect x="150" y="293" width="110" height="50"/><line x1="156" y1="293" x2="156" y2="343"/><line x1="254" y1="293" x2="254" y2="343"/><text x="205.0" y="310.5">Python TX</text><text x="205.0" y="325.5">pipeline</text></g>
+              <g class="snode" data-name="cocotb interface" data-info="Drives the encoded lanes into the DCMAC in simulation."><path d="M298 293H406L396 343H288Z"/><text x="347.0" y="310.5">cocotb</text><text x="347.0" y="325.5">interface</text></g>
+              <g class="snode" data-name="Versal DCMAC" data-info="The Versal Ethernet MAC subsystem. The custom stimulus has to bring it to lock."><rect x="432" y="293" width="110" height="50"/><rect x="435" y="296" width="104" height="44"/><text x="487.0" y="318.0">Versal DCMAC</text></g>
+              <g class="snode" data-name="PRBS checker" data-info="Checks the PRBS pattern on the other side of the DCMAC. Any mismatch means data was corrupted along the way."><rect x="566" y="293" width="94" height="50"/><line x1="572" y1="293" x2="572" y2="343"/><line x1="654" y1="293" x2="654" y2="343"/><text x="613.0" y="310.5">PRBS</text><text x="613.0" y="325.5">checker</text></g>
+            </svg>
+          </div>
+          <ul class="legend">
+            <li><i class="process"></i>Software model</li>
+            <li><i class="io"></i>Interface</li>
+            <li><i class="hw"></i>Hardware IP</li>
+            <li><i class="ext"></i>External tool</li>
+            <li><i class="check"></i>Check</li>
+          </ul>
+          <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+        </div>
+        <figcaption>Figure 1. Testing process, in order ①–④.</figcaption>
       </figure>
 
       <h2>Takeaways</h2>
@@ -125,6 +166,7 @@ def scramble(block: int, state: int) -&gt; tuple[int, int]:
 
     <footer class="doc-foot">© 2026 Andy Chiem</footer>
   </main>
+  <script src="../script.js"></script>
 </body>
 
 </html>
