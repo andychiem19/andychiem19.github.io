@@ -306,6 +306,8 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 }
 .diagram-info { min-height: 3em; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
 .diagram-info strong { color: var(--silk); font-weight: 700; }
+/* every block's description, listed for print/PDF where hover isn't possible (built by script.js) */
+.diagram-details { display: none; }
 
 footer { font-size: 0.85rem; color: var(--muted); }
 
@@ -385,7 +387,7 @@ footer { font-size: 0.85rem; color: var(--muted); }
 /* Writeup pages: datasheet-style long-form */
 html.doc { scroll-snap-type: none; }
 .doc-page { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem 5rem; }
-.doc-page .back { font-size: 0.95rem; }
+.doc-nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem; font-size: 0.95rem; }
 .doc-head { margin: 2.5rem 0 1rem; }
 .doc-head h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; }
 .doc-head .subtitle { font-size: 1.2rem; line-height: 1.45; margin-top: 0.75rem; }
@@ -487,4 +489,42 @@ html.doc { scroll-snap-type: none; }
   .doc-body .path { flex-direction: column; align-items: flex-start; gap: 1rem; }
   .doc-body .path li { flex: none; padding: 0.6rem 0.8rem 0.55rem; }
   .doc-body .path li + li::before { top: calc(-1rem - 1px); left: 1.25rem; width: 1px; height: 1rem; }
+}
+
+/* Print / PDF: a light, paper-friendly version of the same design (tools/build-pdf.js prints with this) */
+@media print {
+  :root {
+    --package: #ffffff; --die: #f4f5f8; --grid: #b9bec9;
+    --silk: #16181d; --muted: #555b69; --body: #2a2e37;
+    --wafer: #3b47c4; --amber: #a86a00; --green: #1f8a4c;
+  }
+  @page { size: letter; margin: 0.6in 0.65in 0.75in; }
+  html { scroll-snap-type: none; }
+  html, body { background: #fff; font-size: 15px; }
+  .pins, .px, .diagram-info, .pdf-link, .doc-nav { display: none !important; }
+  .status::before { animation: none; box-shadow: none; }
+
+  /* home page: title and about first, then one project per page */
+  .panel, .project.flip { display: block; min-height: 0; height: auto; padding: 0; scroll-snap-align: none; }
+  .hero { padding-top: 0.3in; }
+  #about { margin-top: 0.45in; }
+  .content, .project .content { width: auto; max-width: none; }
+  .project { break-before: page; }
+  .project, .project.flip { display: flex; flex-direction: column; gap: 0.3in; }
+  .project .content { order: -1; }  /* title and text before the diagram */
+  .project h2 { white-space: normal; font-size: 1.7rem; }
+  .visual { width: 100%; max-width: none; }
+  .visual.diagram-box { aspect-ratio: auto; break-inside: avoid; padding: 1.75rem 1.5rem 1.25rem; }
+  .sdiagram, .doc-body .sdiagram { width: 100% !important; }
+  .sdiagram-wrap { overflow: visible; }
+
+  .diagram-details { display: grid; grid-template-columns: max-content 1fr; gap: 0.3rem 1rem; margin: 0; font-size: 0.8rem; line-height: 1.45; }
+  .diagram-details dt { color: var(--silk); font-weight: 700; }
+  .diagram-details dd { margin: 0; color: var(--muted); }
+
+  /* writeups */
+  .doc-page { max-width: none; padding: 0; }
+  .doc-body figure, .spec, .doc-body pre, .doc-body .path { break-inside: avoid; }
+  .doc-body h2, .doc-body h3 { break-after: avoid; }
+  .doc-foot { display: none; }
 }
