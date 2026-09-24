@@ -228,12 +228,37 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .cross:focus-visible { outline: 2px solid var(--wafer); outline-offset: 4px; }
 .cross:focus:not(:focus-visible) { outline: none; }
 
+/* SVG block diagrams (for 2D layouts): same shapes and hover as the HTML ones */
+.sdiagram-wrap { flex: none; overflow-x: auto; }
+.sdiagram { display: block; width: 100%; height: auto; font-family: var(--font); }
+.sdiagram text { fill: var(--silk); font-size: 13px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.sdiagram .label { fill: var(--muted); font-size: 11px; }
+.sdiagram .grp { fill: none; stroke: var(--muted); stroke-dasharray: 4 3; }
+.sdiagram .grp-bg { fill: var(--die); }
+.sdiagram .grp-label { fill: var(--muted); font-size: 11px; text-anchor: start; }
+.sdiagram .link { fill: none; stroke: var(--muted); }
+.sdiagram .dashed { stroke-dasharray: 4 3; }
+.sdiagram marker path { fill: var(--muted); }
+.snode { cursor: pointer; }
+.snode rect, .snode path, .snode line { fill: var(--package); stroke: var(--grid); transition: stroke 0.15s; }
+.snode rect + rect { fill: none; }
+.snode .dotted { stroke: var(--muted); stroke-dasharray: 2 3; }
+.snode text { transition: fill 0.15s; }
+.snode:hover :is(rect, path, line), .snode.active :is(rect, path, line) { stroke: var(--wafer); }
+.snode:hover text, .snode.active text { fill: var(--wafer); }
+.snode:focus { outline: none; }
+.snode:focus-visible :is(rect, path) { stroke: var(--wafer); stroke-width: 2; }
+
+@container (max-width: 360px) { .sdiagram { width: 400px; } }
+
 .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; list-style: none; color: var(--muted); font-size: 0.8rem; }
 .legend li { display: flex; align-items: center; gap: 0.5rem; }
 .legend i { width: 1.4rem; height: 0.9rem; border: 1px solid var(--muted); }
 .legend .process { background: linear-gradient(to right, transparent 3px, var(--muted) 3px 4px, transparent 4px calc(100% - 4px), var(--muted) calc(100% - 4px) calc(100% - 3px), transparent calc(100% - 3px)); }
 .legend .io { transform: skewX(-14deg); }
 .legend .hw { border: 3px double var(--muted); }
+.legend .debug { border-style: dotted; }
+.legend .ext { border-radius: 0.4rem; }
 
 @container (max-width: 440px) {
   .diagram, .diagram .group { flex-direction: column; align-items: stretch; }

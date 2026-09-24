@@ -112,7 +112,33 @@
     </section>
 
     <section class="panel project" id="project-3">
-      <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
+      <div class="visual diagram-box reveal">
+        <div class="sdiagram-wrap">
+          <svg class="sdiagram" viewBox="0 0 480 312" role="group" aria-label="AXI-Lite performance monitor snooping a bus, read out through a snapshot interface"><defs><marker id="ax-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z"/></marker></defs>
+            <rect class="grp" x="2" y="14" width="476" height="218"/><rect class="grp-bg" x="10" y="6" width="108" height="16"/><text class="grp-label" x="14" y="14">Production board</text>
+            <path class="link" d="M132 62H348" marker-start="url(#ax-arrow)" marker-end="url(#ax-arrow)"/>
+            <text class="label" x="240" y="50">AXI-Lite bus</text>
+            <path class="link dashed" d="M240 62V158"/><text class="label" x="246" y="112" style="text-anchor:start">snoop</text>
+            <path class="link dashed" d="M122 188H173" marker-end="url(#ax-arrow)"/>
+            <text class="label" x="147" y="178">probe</text>
+            <path class="link" d="M307 188H350" marker-end="url(#ax-arrow)"/>
+            <path class="link" d="M410 218V262" marker-end="url(#ax-arrow)"/>
+            <g class="snode" data-name="AXI-Lite master" data-info="Issues AXI-Lite transactions on the board."><rect x="12" y="38" width="120" height="48"/><text x="72.0" y="62.0">AXI-Lite master</text></g>
+            <g class="snode" data-name="AXI-Lite slave" data-info="The peripheral whose traffic is being measured."><rect x="348" y="38" width="120" height="48"/><text x="408.0" y="62.0">AXI-Lite slave</text></g>
+            <g class="snode" data-name="Performance monitor" data-info="Snoops the AXI-Lite bus and counts transactions to measure utilization. An off-by-one error made it pass in simulation but fail in hardware."><rect x="175" y="158" width="130" height="60"/><text x="240.0" y="180.5">Performance</text><text x="240.0" y="195.5">monitor</text></g>
+            <g class="snode" data-name="Vivado ILA" data-info="Probed the monitor on hardware to compare it against simulation and root-cause the error."><rect class="dotted" x="12" y="158" width="110" height="60"/><text x="67.0" y="188.0">Vivado ILA</text></g>
+            <g class="snode" data-name="Snapshot interface" data-info="Captures the monitor's counters so they can be read out."><path d="M360 158H470L460 218H350Z"/><text x="410.0" y="180.5">Snapshot</text><text x="410.0" y="195.5">interface</text></g>
+            <g class="snode" data-name="Host readout" data-info="Reads snapshots to report bus performance. After the fix, measured bandwidth went from 70% to 100% of expected."><rect x="350" y="262" width="120" height="44"/><line x1="356" y1="262" x2="356" y2="306"/><line x1="464" y1="262" x2="464" y2="306"/><text x="410.0" y="284.0">Host readout</text></g>
+          </svg>
+        </div>
+        <ul class="legend">
+          <li><i class="rtl"></i>RTL module</li>
+          <li><i class="io"></i>Interface</li>
+          <li><i class="debug"></i>Debug core</li>
+          <li><i class="process"></i>Software</li>
+        </ul>
+        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+      </div>
       <div class="content reveal">
         <h2>Debugging an AXI-Lite Performance Monitor</h2>
         <p class="subtitle">Root-caused an RTL issue, resolving differing behavior in simulation and hardware and recovering expected bandwidth using Vivado ILAs</p>
@@ -123,7 +149,40 @@
     </section>
 
     <section class="panel project flip" id="project-4">
-      <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
+      <div class="visual diagram-box reveal">
+        <div class="sdiagram-wrap">
+          <svg class="sdiagram" viewBox="0 0 490 350" role="group" aria-label="swiftGreeks data path from market data API to the FPGA CORDIC core and back"><defs><marker id="sg-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z"/></marker></defs>
+            <rect class="grp" x="4" y="74" width="142" height="160"/><rect class="grp-bg" x="12" y="66" width="64" height="16"/><text class="grp-label" x="16" y="74">main.cpp</text>
+            <rect class="grp" x="384" y="74" width="102" height="262"/><rect class="grp-bg" x="392" y="66" width="92" height="16"/><text class="grp-label" x="396" y="74">cordic_top.sv</text>
+            <path class="link" d="M75 50V94" marker-end="url(#sg-arrow)"/>
+            <path class="link" d="M132 190H196V304H223" marker-start="url(#sg-arrow)" marker-end="url(#sg-arrow)"/>
+            <text class="label" x="190" y="250" style="text-anchor:end">Ethernet</text><text class="label" x="190" y="264" style="text-anchor:end">cable</text>
+            <path class="link" d="M258 278V172" marker-end="url(#sg-arrow)"/>
+            <path class="link" d="M290 172V278" marker-end="url(#sg-arrow)"/>
+            <text class="label" x="298" y="226" style="text-anchor:start">RGMII</text>
+            <path class="link" d="M327 126H392" marker-end="url(#sg-arrow)"/>
+            <text class="label" x="330" y="114" style="text-anchor:start; font-size:10px">AXI-Stream</text>
+            <path class="link" d="M392 290H352V156H327" marker-end="url(#sg-arrow)"/>
+            <path class="link" d="M434 146V172" marker-end="url(#sg-arrow)"/>
+            <path class="link" d="M434 232V268" marker-end="url(#sg-arrow)"/>
+            <g class="snode" data-name="API" data-info="Live market data source."><rect x="20" y="10" width="110" height="40" rx="12"/><text x="75.0" y="30.0">API</text></g>
+            <g class="snode" data-name="Websocket" data-info="main.cpp subscribes to the market data feed over a WebSocket."><rect x="18" y="94" width="114" height="44"/><line x1="24" y1="94" x2="24" y2="138"/><line x1="126" y1="94" x2="126" y2="138"/><text x="75.0" y="116.0">Websocket</text></g>
+            <g class="snode" data-name="Serializer (main.cpp)" data-info="Packs quotes into packets and sends them to the board over Ethernet."><rect x="18" y="168" width="114" height="44"/><line x1="24" y1="168" x2="24" y2="212"/><line x1="126" y1="168" x2="126" y2="212"/><text x="75.0" y="190.0">Serializer</text></g>
+            <g class="snode" data-name="Zybo Z7 PHY" data-info="The board's Ethernet PHY."><rect x="223" y="282" width="104" height="44"/><rect x="226" y="285" width="98" height="38"/><text x="275.0" y="304.0">Zybo Z7 PHY</text></g>
+            <g class="snode" data-name="Gigabit Ethernet MAC" data-info="Bridges RGMII from the PHY and AXI-Stream inside the FPGA."><rect x="223" y="108" width="104" height="64"/><text x="275.0" y="132.5">Gigabit</text><text x="275.0" y="147.5">Ethernet MAC</text></g>
+            <g class="snode" data-name="Parser" data-info="Extracts option parameters from incoming packets."><rect x="392" y="106" width="84" height="40"/><text x="434.0" y="126.0">Parser</text></g>
+            <g class="snode" data-name="CORDIC" data-info="Parameterized Q16.16 fixed-point CORDIC core (circular, hyperbolic and linear modes) that computes Black-Scholes Greeks. Delta takes about 63 cycles, 630 ns at 100 MHz."><rect x="392" y="172" width="84" height="60"/><text x="434.0" y="202.0">CORDIC</text></g>
+            <g class="snode" data-name="Serializer (cordic_top.sv)" data-info="Packs computed Greeks into packets and sends them back through the MAC."><rect x="392" y="268" width="84" height="44"/><text x="434.0" y="290.0">Serializer</text></g>
+          </svg>
+        </div>
+        <ul class="legend">
+          <li><i class="ext"></i>External service</li>
+          <li><i class="process"></i>Software</li>
+          <li><i class="rtl"></i>RTL module</li>
+          <li><i class="hw"></i>Board hardware</li>
+        </ul>
+        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+      </div>
       <div class="content reveal">
         <h2>swiftGreeks: Options Pricing Accelerator</h2>
         <p class="subtitle">Fixed-point CORDIC engine for real-time options Greeks calculation</p>
