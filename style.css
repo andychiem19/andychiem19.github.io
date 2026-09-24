@@ -53,6 +53,7 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .content p + p { margin-top: 1rem; }
 
 .stack { font-size: 0.95rem; }
+.content .org { color: var(--silk); font-size: 0.95rem; margin: -0.5rem 0 1rem; }
 .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
 
 /* Hero */
