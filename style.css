@@ -213,6 +213,21 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .node.hw::before { left: calc(-1 * var(--gap) - 3px); }
 .node.io::before { width: calc(var(--gap) + 6px); }
 
+/* SerDes diagram: transceivers cross-connected between protocol blocks */
+.serdes .group { gap: 0; padding: 1.6rem 0.9rem 1.1rem; }
+.serdes .node { padding: 0.5rem 0.4rem; }
+.serdes .xcvr { min-height: 7.5rem; }
+.port { position: absolute; right: 0.35rem; color: var(--muted); font-size: 0.65rem; line-height: 1; }
+.port.tx { top: 0.45rem; }
+.port.rx { bottom: 0.45rem; }
+.gtyp .port { right: auto; left: 0.35rem; }
+.wire { flex: 0 0 1.4rem; height: 8px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 8'%3E%3Cpath d='M0 0L7 4L0 8z' fill='%238a90a0'/%3E%3C/svg%3E") right center / 7px 8px no-repeat, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 8'%3E%3Cpath d='M7 0L0 4L7 8z' fill='%238a90a0'/%3E%3C/svg%3E") left center / 7px 8px no-repeat, linear-gradient(var(--muted), var(--muted)) center / calc(100% - 12px) 1px no-repeat; }
+.cross { flex: 0 0 2.75rem; height: 7rem; overflow: visible; cursor: pointer; }
+.cross line { stroke: var(--muted); stroke-width: 1; transition: stroke 0.15s; }
+.cross:hover line, .cross.active line { stroke: var(--wafer); }
+.cross:focus-visible { outline: 2px solid var(--wafer); outline-offset: 4px; }
+.cross:focus:not(:focus-visible) { outline: none; }
+
 .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; list-style: none; color: var(--muted); font-size: 0.8rem; }
 .legend li { display: flex; align-items: center; gap: 0.5rem; }
 .legend i { width: 1.4rem; height: 0.9rem; border: 1px solid var(--muted); }
@@ -234,6 +249,17 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M0 0L8 0L4 7z' fill='%238a90a0'/%3E%3C/svg%3E") center bottom / 8px 7px no-repeat, linear-gradient(var(--muted), var(--muted)) center top / 1px calc(100% - 6px) no-repeat;
   }
   .node.hw::before { top: calc(-1 * var(--gap) - 3px); }
+  .serdes .node { min-height: 2.75rem; }
+  .serdes .xcvr { min-height: 3.5rem; }
+  .wire { flex-basis: 1.4rem; width: 8px; height: auto; align-self: center; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M0 0L8 0L4 7z' fill='%238a90a0'/%3E%3C/svg%3E") center bottom / 8px 7px no-repeat, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M0 7L8 7L4 0z' fill='%238a90a0'/%3E%3C/svg%3E") center top / 8px 7px no-repeat, linear-gradient(var(--muted), var(--muted)) center / 1px calc(100% - 12px) no-repeat; }
+  .cross { flex: 0 0 3rem; width: auto; height: 3rem; }
+  .port.tx, .port.rx { top: auto; bottom: auto; }
+  .gtm .port { bottom: 0.4rem; }
+  .gtm .port.tx { left: 0.5rem; right: auto; }
+  .gtm .port.rx { right: 0.5rem; }
+  .gtyp .port { top: 0.4rem; }
+  .gtyp .port.tx { left: 0.5rem; }
+  .gtyp .port.rx { left: auto; right: 0.5rem; }
 }
 .diagram-info { min-height: 3em; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
 .diagram-info strong { color: var(--silk); font-weight: 700; }

@@ -80,7 +80,28 @@
     </section>
 
     <section class="panel project flip" id="project-2">
-      <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
+      <div class="visual diagram-box reveal">
+        <div class="diagram serdes" role="group" aria-label="GTM and GTYP transceivers cross-connected between custom protocol blocks">
+          <div class="group">
+            <span class="group-label">SystemVerilog simulation</span>
+            <div class="node rtl" data-name="Custom protocol (GTM side)" data-info="Proprietary chip-to-chip protocol logic driving the GTM transceiver.">Custom protocol</div>
+            <span class="wire" aria-hidden="true"></span>
+            <div class="node hw xcvr gtm" data-name="GTM transceiver" data-info="Its TX drives the GTYP's RX, and its RX receives from the GTYP's TX.">GTM<span class="port tx">TX</span><span class="port rx">RX</span></div>
+            <svg class="cross" data-name="Serial links" data-info="Cross-connected lanes between the two transceiver families. The bug: a bit-order incompatibility in the protocol across this link." viewBox="0 0 100 100" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="100" y2="100" vector-effect="non-scaling-stroke"/>
+              <line x1="0" y1="100" x2="100" y2="0" vector-effect="non-scaling-stroke"/>
+            </svg>
+            <div class="node hw xcvr gtyp" data-name="GTYP transceiver" data-info="Its TX drives the GTM's RX, and its RX receives from the GTM's TX.">GTYP<span class="port tx">TX</span><span class="port rx">RX</span></div>
+            <span class="wire" aria-hidden="true"></span>
+            <div class="node rtl" data-name="Custom protocol (GTYP side)" data-info="The same protocol logic on the GTYP side of the link.">Custom protocol</div>
+          </div>
+        </div>
+        <ul class="legend">
+          <li><i class="rtl"></i>RTL module</li>
+          <li><i class="hw"></i>Transceiver (hard IP)</li>
+        </ul>
+        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+      </div>
       <div class="content reveal">
         <h2>GTM-to-GTYP SerDes Protocol Debug</h2>
         <p class="subtitle">Diagnosed and resolved a critical high-speed serial bug in proprietary chip-to-chip communication protocol before release</p>

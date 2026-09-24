@@ -155,7 +155,7 @@ document.querySelectorAll(".diagram-box").forEach((box) => {
     blocks.forEach((b) => b.classList.toggle("active", b === el));
     if (!el) return (info.textContent = idle);
     const name = document.createElement("strong");
-    name.textContent = el.textContent + ": ";
+    name.textContent = (el.dataset.name || el.textContent) + ": ";
     info.replaceChildren(name, el.dataset.info);
   };
   blocks.forEach((el) => {
