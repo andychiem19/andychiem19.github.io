@@ -68,21 +68,25 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .chips { display: flex; flex-wrap: wrap; gap: 1rem 0.6rem; list-style: none; margin: 1.5rem 0; padding: 5px 0; }
 .chips li {
   position: relative;
-  padding: 0.3rem 0.75rem;
+  padding: 0.5rem 0.9rem;
+  /* pin-1 dot over the package body */
+  background: radial-gradient(circle at 5px 5px, var(--muted) 1.5px, transparent 2px), var(--die);
   border: 1px solid var(--grid);
   color: var(--silk);
   font-size: 0.85rem;
   font-weight: 400;
+  line-height: 1;
   letter-spacing: 0.02em;
 }
 .chips li::before,
 .chips li::after {
   content: "";
   position: absolute;
-  left: 8px;
-  right: 8px;
-  height: 3px;
-  background: repeating-linear-gradient(to right, var(--grid) 0 2px, transparent 2px 10px);
+  left: 7px;
+  right: 7px;
+  height: 4px;
+  background: repeating-linear-gradient(to right, var(--muted) 0 2px, transparent 2px 7px);
+  opacity: 0.5;
 }
 .chips li::before { top: -4px; }
 .chips li::after { bottom: -4px; }
