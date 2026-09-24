@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" class="doc">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>100G Ethernet Verification — Andy Chiem</title>
+  <meta name="description" content="Open-source verification environment for 100G Ethernet, built in Python and cocotb.">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <main class="doc-page">
+    <a class="back" href="../index.html#project-1">Back to projects</a>
+
+    <header class="doc-head">
+      <h1>100G Ethernet Verification</h1>
+      <p class="subtitle">Open-source verification environment for 100G Ethernet, built in Python and cocotb</p>
+      <dl class="spec">
+        <dt>Organization</dt><dd>Woodward McCoach Inc.</dd>
+        <dt>Role</dt><dd>FPGA Development Engineer Co-op, sole contributor</dd>
+        <dt>Timeline</dt><dd>Mar 2026 – Aug 2026</dd>
+        <dt>Stack</dt><dd><ul class="chips"><li>Python</li><li>cocotb</li><li>Ethernet</li></ul></dd>
+      </dl>
+    </header>
+
+    <!-- DRAFT: written from your resume and project blurb. Check every technical claim before publishing. -->
+
+    <section>
+      <h2><span class="num">1</span>Overview</h2>
+      <p>
+        At Woodward McCoach I owned development of a 100G Ethernet verification suite, written in
+        Python and cocotb and intended for open-source release. The suite builds a CAUI-4 transmit
+        stream from scratch by implementing the IEEE 802.3 transmit path, and it was tested against
+        the Versal DCMAC subsystem.
+      </p>
+      <p>
+        <!-- DRAFT: add the "why". What problem did the team have before this existed? -->
+        The goal was a reusable, standards-driven source of 100G traffic that could exercise the MAC
+        end-to-end in simulation.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">2</span>Transmit path</h2>
+      <p>Each stage below is its own model, so it can be checked in isolation and chained into the full path.</p>
+      <ol class="path">
+        <li><span>Packet generation</span></li>
+        <li><span>Virtual MAC</span></li>
+        <li><span>64b/66b encode</span></li>
+        <li><span>Scrambler</span></li>
+        <li><span>Lane distribution</span></li>
+        <li><span>AM insertion</span></li>
+        <li><span>DCMAC interface</span></li>
+      </ol>
+
+      <h3>Virtual MAC</h3>
+      <p>
+        An IEEE 802.3-compliant MAC layer built in Scapy adds the preamble, enforces the interframe
+        gap and computes the frame check sequence, so every frame entering the PCS models is valid
+        Ethernet.
+      </p>
+
+      <h3>PCS: encoding, scrambling, distribution</h3>
+      <!-- DRAFT: check clause numbers and constants against your notes. -->
+      <p>
+        Frames are split into 64-bit blocks and given a 2-bit sync header (64b/66b). The payload is
+        scrambled with the self-synchronizing polynomial <code>1 + x^39 + x^58</code>, then blocks are
+        distributed round-robin across the PCS virtual lanes. Alignment markers are inserted
+        periodically on each lane so the receiver can deskew and reorder lanes.
+      </p>
+      <pre><code># Illustrative sketch of the scrambler model, not the suite's source
+def scramble(block: int, state: int) -> tuple[int, int]:
+    out = 0
+    for i in range(64):
+        bit = ((block >> i) ^ (state >> 38) ^ (state >> 57)) &amp; 1
+        state = ((state &lt;&lt; 1) | bit) &amp; ((1 &lt;&lt; 58) - 1)
+        out |= bit &lt;&lt; i
+    return out, state</code></pre>
+    </section>
+
+    <section>
+      <h2><span class="num">3</span>Verification approach</h2>
+      <!-- DRAFT: fill in how the testbench was structured. -->
+      <ul>
+        <li>How cocotb drove the DCMAC interface and what was checked on the other side</li>
+        <li>How each stage model was validated on its own (reference vectors, spec examples)</li>
+        <li>Which test scenarios were covered</li>
+      </ul>
+      <figure>
+        <div class="visual"><span>Add a testbench block diagram</span></div>
+        <figcaption>Figure 1. Testbench structure.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2><span class="num">4</span>Results</h2>
+      <!-- DRAFT: add concrete outcomes (tests passing, bugs found, coverage). -->
+      <p class="pending">Results coming soon.</p>
+      <figure>
+        <div class="visual"><span>Add a waveform or results plot</span></div>
+        <figcaption>Figure 2. Simulation waveform.</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2><span class="num">5</span>Takeaways</h2>
+      <p>
+        Beyond the code, I documented the project's standards and progress so future developers
+        can extend the suite after my co-op.
+      </p>
+      <!-- DRAFT: add what you learned or would do differently. -->
+    </section>
+
+    <footer class="doc-foot">© 2026 Andy Chiem</footer>
+  </main>
+</body>
+</html>
