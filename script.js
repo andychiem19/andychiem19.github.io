@@ -166,5 +166,3 @@ document.querySelectorAll(".diagram-box").forEach((box) => {
   });
   box.addEventListener("mouseleave", () => show(null));
 });
-
-document.getElementById("year").textContent = new Date().getFullYear();

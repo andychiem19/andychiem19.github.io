@@ -289,24 +289,6 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .diagram-info { min-height: 3em; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
 .diagram-info strong { color: var(--silk); font-weight: 700; }
 
-/* Resume */
-.resume { flex-direction: column; align-items: stretch; gap: 1.5rem; height: 100vh; height: 100svh; }
-.resume-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
-.resume-head h2 { margin-bottom: 0; }
-.button {
-  font-size: 0.95rem;
-  padding: 0.6rem 1.1rem;
-  border: 1px solid var(--wafer);
-}
-.button:hover { background: var(--wafer); color: var(--package); text-decoration: none; }
-.resume-frame {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  background: var(--die);
-  border: 1px solid var(--grid);
-}
-.fallback { padding: 2rem; color: var(--muted); }
 footer { font-size: 0.85rem; color: var(--muted); }
 
 /* Pin nav */
