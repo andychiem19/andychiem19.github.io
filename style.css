@@ -504,7 +504,7 @@ html.doc { scroll-snap-type: none; }
   .pins, .px, .diagram-info, .pdf-link, .doc-nav { display: none !important; }
   .status::before { animation: none; box-shadow: none; }
 
-  /* home page: a one-glance summary (headlines, diagrams, links); the detail lives on the site */
+  /* home page: headlines, diagrams with their hover details, and links; the full writeups live on the site */
   .panel, .project.flip { display: block; min-height: 0; height: auto; padding: 0; scroll-snap-align: none; }
   .hero { padding-top: 0.15in; }
   #about h2, #about p:not(.links) { display: none; }
@@ -518,7 +518,8 @@ html.doc { scroll-snap-type: none; }
   .visual.diagram-box { aspect-ratio: auto; break-inside: avoid; padding: 1.5rem 1.5rem 1.1rem; gap: 1.25rem; }
   .sdiagram, .doc-body .sdiagram { width: 100% !important; }
   .sdiagram-wrap { overflow: visible; }
-  .panel .diagram-details { display: none !important; }
+  /* the 2D diagrams are capped so each project, with its hover details listed below, fits on one page */
+  .panel .sdiagram { width: auto !important; max-width: 100%; max-height: 3.4in; margin: 0 auto; }
 
   .diagram-details { display: grid; grid-template-columns: max-content 1fr; gap: 0.3rem 1rem; margin: 0; font-size: 0.8rem; line-height: 1.45; }
   .diagram-details dt { color: var(--silk); font-weight: 700; }
