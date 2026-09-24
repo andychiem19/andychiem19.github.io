@@ -1,3 +1,22 @@
+@font-face {
+  font-family: "Charter";
+  src: url("fonts/charter_regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Charter";
+  src: url("fonts/charter_bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+
 :root {
   --package: #15171c;  /* background: chip package epoxy */
   --die: #1c1f26;      /* surfaces */
@@ -5,7 +24,10 @@
   --silk: #e6e8ee;     /* text */
   --muted: #8a90a0;    /* secondary text */
   --wafer: #9aa5ff;    /* accent: silicon wafer sheen */
-  --font: "Archivo", system-ui, sans-serif;
+  --amber: #f0b94a;    /* status LED: in progress */
+  --body: #c5c9d3;     /* long-form reading text */
+  --font: "Charter", "Bitstream Charter", "Sitka Text", Cambria, serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,13 +37,15 @@ html {
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
+/* script.js drives panel-to-panel motion on desktop */
+html.detent { scroll-snap-type: none; scroll-behavior: auto; }
 
 body {
   background: var(--package);
   color: var(--silk);
   font-family: var(--font);
   font-size: 1.125rem;
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -41,8 +65,7 @@ a:focus-visible { outline: 2px solid var(--wafer); outline-offset: 3px; }
 }
 
 h1, h2 {
-  font-stretch: 125%;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.01em;
 }
 h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); line-height: 1.05; }
@@ -52,12 +75,50 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .content p { color: var(--muted); }
 .content p + p { margin-top: 1rem; }
 
-.stack { font-size: 0.95rem; }
+/* Skill chips: small IC packages with pins on top and bottom */
+.chips { display: flex; flex-wrap: wrap; gap: 1rem 0.6rem; list-style: none; margin: 1.5rem 0; padding: 5px 0; }
+.chips li {
+  position: relative;
+  padding: 0.55rem 0.9rem 0.45rem;
+  /* pin-1 dot over the package body */
+  background: radial-gradient(circle at 5px 5px, var(--muted) 1.5px, transparent 2px), var(--die);
+  border: 1px solid var(--grid);
+  color: var(--silk);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1;
+}
+.chips li::before,
+.chips li::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  height: 4px;
+  background: repeating-linear-gradient(to right, var(--muted) 0 2px, transparent 2px 7px);
+  opacity: 0.5;
+}
+.chips li::before { top: -4px; }
+.chips li::after { bottom: -4px; }
+/* Titles stay on one line: the text column is sized to fit the longest title (~20.2em) */
+.project { --title: clamp(1.25rem, 2.05vw, 2rem); }
+.project .content { flex: 0 0 auto; width: calc(var(--title) * 20.6); max-width: none; }
+.project h2 { white-space: nowrap; font-size: var(--title); margin-bottom: 0.75rem; }
+.content .subtitle { color: var(--silk); font-size: 1.15rem; line-height: 1.45; margin: 0 0 0.75rem; }
+.content .org { font-size: 0.95rem; margin: 0 0 1rem; }
 .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
 
 /* Hero */
 .hero { justify-content: flex-start; }
-.tagline { color: var(--muted); font-size: 1.3rem; margin-top: 1rem; max-width: 30rem; }
+.tagline { color: var(--muted); font-size: 1.3rem; margin-top: 1rem; max-width: 36rem; }
+.school {
+  color: var(--wafer);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  margin-top: 1.75rem;
+}
 
 /* Projects: the visual leads */
 .project.flip { flex-direction: row-reverse; }
@@ -87,6 +148,52 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
   background: var(--wafer);
 }
 .visual img { width: 100%; height: 100%; object-fit: contain; }
+
+/* Interactive block diagram inside a project visual */
+.visual.diagram-box { display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 2rem; padding: 2.5rem 1.75rem 1.5rem; }
+.diagram-wrap { position: relative; }
+.diagram-wrap::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--wafer); opacity: 0.6; }
+.diagram { position: relative; z-index: 2; display: flex; gap: 1.5rem; list-style: none; }
+.diagram li {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.5rem;
+  padding: 0.6rem 0.4rem;
+  background: radial-gradient(circle at 5px 5px, var(--muted) 1.5px, transparent 2px), var(--package);
+  border: 1px solid var(--grid);
+  color: var(--silk);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.diagram li.active, .diagram li:hover { border-color: var(--wafer); color: var(--wafer); }
+.diagram li:focus-visible { outline: 2px solid var(--wafer); outline-offset: 3px; }
+/* the device under test is drawn as a chip with pins */
+.diagram .dut { position: relative; flex-grow: 1.2; min-height: 5.5rem; }
+.diagram .dut::before,
+.diagram .dut::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 5px;
+  background: repeating-linear-gradient(to right, var(--muted) 0 2px, transparent 2px 7px);
+  opacity: 0.6;
+}
+.diagram .dut::before { top: -6px; }
+.diagram .dut::after { bottom: -6px; }
+/* a packet travelling the wires; it disappears into each block */
+.pulse { position: absolute; z-index: 1; top: 50%; left: 0; width: 8px; height: 8px; margin-top: -4px; background: var(--wafer); animation: flow 3.2s linear infinite; }
+@keyframes flow { to { left: calc(100% - 8px); } }
+.diagram-info { min-height: 3em; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+.diagram-info strong { color: var(--silk); font-weight: 700; }
 
 /* Resume */
 .resume { flex-direction: column; align-items: stretch; gap: 1.5rem; height: 100vh; height: 100svh; }
@@ -144,16 +251,129 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .reveal { position: relative; }
 .px { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 
+/* Status badge: a blinking LED for work in progress */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: 0.6rem;
+  padding: 0.3rem 0.55rem 0.25rem;
+  border: 1px solid rgba(240, 185, 74, 0.4);
+  color: var(--amber);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  vertical-align: 0.1em;
+}
+.status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--amber);
+  animation: blink 1.2s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0.2; } }
+
+/* Writeup pages: datasheet-style long-form */
+html.doc { scroll-snap-type: none; }
+.doc-page { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem 5rem; }
+.doc-page .back { font-size: 0.95rem; }
+.doc-head { margin: 2.5rem 0 1rem; }
+.doc-head h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; }
+.doc-head .subtitle { font-size: 1.2rem; line-height: 1.45; margin-top: 0.75rem; }
+.doc-head .status { margin-left: 0; }
+
+.spec { display: grid; grid-template-columns: max-content 1fr; margin-top: 2rem; border-top: 1px solid var(--grid); }
+.spec dt, .spec dd { display: flex; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid var(--grid); font-size: 0.95rem; }
+.spec dt { color: var(--muted); padding-right: 2.5rem; }
+.spec .chips { margin: 0; }
+
+/* Writeup body comes from Markdown: ## headings are numbered like datasheet sections */
+.doc-body { counter-reset: section; }
+.doc-body h2 {
+  counter-increment: section;
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  font-size: 1.6rem;
+  margin: 3.5rem 0 1.25rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--grid);
+}
+.doc-body h2::before { content: counter(section); font-family: var(--mono); font-size: 0.9rem; font-weight: 500; color: var(--wafer); }
+.doc-body h3 { font-size: 1.15rem; margin: 2rem 0 0.5rem; }
+.doc-body p, .doc-body li { color: var(--body); }
+.doc-body p + p { margin-top: 1rem; }
+.doc-body ul, .doc-body ol:not(.path) { padding-left: 1.25rem; margin: 1rem 0; }
+.doc-body ul li + li, .doc-body ol:not(.path) li + li { margin-top: 0.4rem; }
+.doc-body .pending { color: var(--muted); }
+.doc-body code { font-family: var(--mono); font-size: 0.85em; color: var(--silk); }
+.doc-body pre { margin: 1.25rem 0; padding: 1rem 1.25rem; overflow-x: auto; background: var(--die); border: 1px solid var(--grid); line-height: 1.5; }
+.doc-body pre code { font-size: 0.8rem; }
+.highlight .c, .highlight .c1 { color: var(--muted); }
+.highlight .k, .highlight .kd, .highlight .kn, .highlight .ow { color: var(--wafer); }
+
+.doc-body figure { margin: 1.75rem 0; }
+.doc-body figure .visual { max-width: none; aspect-ratio: 16 / 9; }
+.doc-body figure img { display: block; width: 100%; border: 1px solid var(--grid); }
+.doc-body figcaption { margin-top: 0.6rem; color: var(--muted); font-size: 0.9rem; }
+
+/* Signal path: a Markdown list tagged {: .path}, drawn as blocks wired left to right */
+.doc-body .path { display: flex; gap: 0.9rem; margin: 1.5rem 0; padding: 0; list-style: none; }
+.doc-body .path li {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.7rem 0.3rem 0.6rem;
+  background: radial-gradient(circle at 5px 5px, var(--muted) 1.5px, transparent 2px), var(--die);
+  border: 1px solid var(--grid);
+  color: var(--silk);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+.doc-body .path li + li::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(-0.9rem - 1px);
+  width: 0.9rem;
+  height: 1px;
+  background: var(--wafer);
+}
+
+.doc-foot { margin-top: 5rem; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .status::before { animation: none; }
+  .pulse { display: none; }
 }
 
 /* Mobile: stack visual over text, relax snapping */
 @media (max-width: 800px) {
+  .project h2 { white-space: normal; }
+  .project .content { width: auto; }
   html { scroll-snap-type: y proximity; }
   .panel, .project.flip { flex-direction: column; align-items: flex-start; gap: 2rem; padding: 4rem 1.25rem 4rem 2.75rem; }
   .hero { justify-content: center; }
   .visual { width: 100%; flex: none; }
+  .visual.diagram-box { aspect-ratio: auto; }
+  .diagram { flex-direction: column; gap: 1.25rem; }
+  .diagram li, .diagram .dut { flex: none; min-height: 0; padding: 0.75rem; }
+  .diagram .dut { padding: 1.25rem 0.75rem; }
+  .diagram-wrap::before { top: 0; bottom: 0; left: 50%; right: auto; width: 1px; height: auto; }
+  .pulse { top: 0; left: 50%; margin: 0 0 0 -4px; animation-name: flow-down; }
+  @keyframes flow-down { to { top: calc(100% - 8px); } }
   .pins { left: 0.9rem; gap: 0.7rem; }
   .pins a { width: 8px; height: 8px; }
+  .doc-body .path { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .doc-body .path li { flex: none; padding: 0.6rem 0.8rem 0.55rem; }
+  .doc-body .path li + li::before { top: calc(-1rem - 1px); left: 1.25rem; width: 1px; height: 1rem; }
 }

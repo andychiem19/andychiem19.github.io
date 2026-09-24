@@ -1,0 +1,6 @@
+# Writeups in writeups/*.md are built with _layouts/writeup.html
+markdown: kramdown
+kramdown:
+  input: GFM
+exclude:
+  - README.md

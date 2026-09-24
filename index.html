@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Andy Chiem — Computer Engineering</title>
   <meta name="description" content="Portfolio of Andy Chiem, computer engineer.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,10 +12,10 @@
   <nav class="pins" aria-label="Sections">
     <a href="#home"><span>Home</span></a>
     <a href="#about"><span>About</span></a>
-    <a href="#project-1"><span>Project One</span></a>
-    <a href="#project-2"><span>Project Two</span></a>
-    <a href="#project-3"><span>Project Three</span></a>
-    <a href="#project-4"><span>Project Four</span></a>
+    <a href="#project-1"><span>100G Ethernet Verification</span></a>
+    <a href="#project-2"><span>GTM-to-GTYP SerDes Protocol Debug</span></a>
+    <a href="#project-3"><span>AXI-Lite Performance Monitor</span></a>
+    <a href="#project-4"><span>swiftGreeks</span></a>
     <a href="#resume"><span>Resume</span></a>
   </nav>
 
@@ -26,7 +23,8 @@
     <section class="panel hero" id="home">
       <div class="reveal">
         <h1>Andy Chiem</h1>
-        <p class="tagline">Computer engineer. I build things where hardware meets software.</p>
+        <p class="tagline">Debugging AXI interfaces and craving test coverage.</p>
+        <p class="school">ECE @ Cornell Duffield Engineering, Class of '29</p>
       </div>
     </section>
 
@@ -34,68 +32,78 @@
       <div class="content reveal">
         <h2>About me</h2>
         <p>
-          Placeholder: a couple sentences on who you are — school/year or current role,
-          what areas of computer engineering you're into (embedded, digital design,
-          computer architecture, etc.), and what you're looking for next.
+          I'm an undergraduate studying Electrical and Computer Engineering at Cornell University
+          with a focus on FPGA/ASIC engineering and applications. My project and research work has
+          centered on the implementation/optimization of complex math in hardware, from CORDIC-based
+          options pricing to Ising-model optimization.
+        </p>
+        <p>
+          I recently completed a co-op at Woodward McCoach Inc., where I validated high-speed serial
+          interfaces, worked on production telecommunications hardware, and developed 100G Ethernet
+          verification software.
         </p>
         <p class="links">
           <a href="mailto:andy.chiem19@gmail.com">Email</a>
           <a href="https://github.com/andychiem19" target="_blank" rel="noopener">GitHub</a>
-          <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://www.linkedin.com/in/andychiem2006/" target="_blank" rel="noopener">LinkedIn</a>
         </p>
       </div>
     </section>
 
     <!-- PROJECTS: copy/paste a section to add more; swap the .visual placeholder for an <img> -->
     <section class="panel project" id="project-1">
-      <div class="visual reveal">
-        <!-- <img src="assets/project-1.png" alt="Block diagram of Project One"> -->
-        <span>Add a block diagram or results plot</span>
+      <!-- Interactive block diagram: each li is a block, data-info is its description -->
+      <div class="visual diagram-box reveal">
+        <div class="diagram-wrap">
+          <span class="pulse" aria-hidden="true"></span>
+          <ol class="diagram" aria-label="Transmit path into the Versal DCMAC">
+            <li data-info="Generates IEEE 802.3 frames with preamble, interframe gap and frame check sequence.">Scapy packet generation</li>
+            <li data-info="64b/66b encoding, scrambling, virtual lane distribution and alignment marker insertion for CAUI-4 transmit.">Virtual PCS/PMA</li>
+            <li data-info="Drives the encoded lanes into the DCMAC in simulation.">cocotb interface</li>
+            <li class="dut" data-info="The Versal Ethernet MAC subsystem under test.">Versal DCMAC</li>
+          </ol>
+        </div>
+        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
       </div>
       <div class="content reveal">
-        <h2>Project One</h2>
-        <p>
-          Placeholder: what problem it solves, your approach, and the headline result
-          (e.g. "cut latency 40%", "runs at 100 MHz on an Artix-7").
-        </p>
-        <p class="stack">Verilog, FPGA, Vivado</p>
-        <p class="links">
-          <a href="#">Read the writeup</a>
-          <a href="#" target="_blank" rel="noopener">View code on GitHub</a>
-        </p>
+        <h2>100G Ethernet Verification</h2>
+        <p class="subtitle">Open-source verification environment for 100G Ethernet, built in Python and cocotb</p>
+        <p class="org">Organization: Woodward McCoach Inc.</p>
+        <ul class="chips"><li>Python</li><li>cocotb</li><li>Ethernet</li></ul>
+        <p class="links"><a href="writeups/ethernet-verification.html">Read the writeup</a></p>
       </div>
     </section>
 
     <section class="panel project flip" id="project-2">
       <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
       <div class="content reveal">
-        <h2>Project Two</h2>
-        <p>Placeholder: short description, approach, and result.</p>
-        <p class="stack">C, STM32, RTOS</p>
-        <p class="links"><a href="#">Read the writeup</a></p>
+        <h2>GTM-to-GTYP SerDes Protocol Debug</h2>
+        <p class="subtitle">Diagnosed and resolved a critical high-speed serial bug in proprietary chip-to-chip communication protocol before release</p>
+        <p class="org">Organization: Woodward McCoach Inc.</p>
+        <ul class="chips"><li>SystemVerilog</li><li>High-speed serial communication</li></ul>
+        <p class="links"><a href="writeups/serdes-debug.html">Read the writeup</a></p>
       </div>
     </section>
 
     <section class="panel project" id="project-3">
       <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
       <div class="content reveal">
-        <h2>Project Three</h2>
-        <p>Placeholder: short description, approach, and result.</p>
-        <p class="stack">PCB design, KiCad</p>
-        <p class="links"><a href="#">Read the writeup</a></p>
+        <h2>Debugging an AXI-Lite Performance Monitor</h2>
+        <p class="subtitle">Root-caused an RTL issue, resolving differing behavior in simulation and hardware and recovering expected bandwidth using Vivado ILAs</p>
+        <p class="org">Organization: Woodward McCoach Inc.</p>
+        <ul class="chips"><li>Vivado</li><li>ILAs</li><li>SystemVerilog</li></ul>
+        <p class="links"><a href="writeups/axi-lite-monitor.html">Read the writeup</a></p>
       </div>
     </section>
 
     <section class="panel project flip" id="project-4">
       <div class="visual reveal"><span>Add a block diagram or results plot</span></div>
       <div class="content reveal">
-        <h2>Project Four</h2>
-        <p>Placeholder: short description, approach, and result.</p>
-        <p class="stack">Python, Linux</p>
-        <p class="links">
-          <a href="#">Read the writeup</a>
-          <a href="#" target="_blank" rel="noopener">View code on GitHub</a>
-        </p>
+        <h2>swiftGreeks: Options Pricing Accelerator</h2>
+        <p class="subtitle">Fixed-point CORDIC engine for real-time options Greeks calculation</p>
+        <p class="org">Personal project <span class="status">In progress</span></p>
+        <ul class="chips"><li>Python</li><li>Systems design</li><li>Ethernet</li><li>SystemVerilog</li></ul>
+        <p class="links"><a href="writeups/swiftgreeks.html">Read the writeup</a></p>
       </div>
     </section>
 
