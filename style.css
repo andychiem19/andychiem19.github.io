@@ -307,7 +307,7 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .diagram-info { min-height: 3em; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
 .diagram-info strong { color: var(--silk); font-weight: 700; }
 /* every block's description, listed for print/PDF where hover isn't possible (built by script.js) */
-.diagram-details { display: none; }
+.diagram-details, .print-only { display: none; }
 
 footer { font-size: 0.85rem; color: var(--muted); }
 
@@ -507,8 +507,11 @@ html.doc { scroll-snap-type: none; }
   /* home page: headlines, diagrams with their hover details, and links; the full writeups live on the site */
   .panel, .project.flip { display: block; min-height: 0; height: auto; padding: 0; scroll-snap-align: none; }
   .hero { padding-top: 0.15in; }
-  #about h2, #about p:not(.links) { display: none; }
-  #about { margin: 0.2in 0 0; }
+  /* PDF header: name, education line in the tagline's place and style, and a labeled link to the site */
+  .tagline, #about { display: none; }
+  .school { color: var(--muted); font-size: 1.3rem; font-weight: 400; letter-spacing: 0; margin-top: 1rem; }
+  .print-only { display: block; }
+  .site-link { margin-top: 0.5rem; color: var(--muted); font-size: 1rem; }
   .content, .project .content { width: auto; max-width: none; }
   .project, .project.flip { display: flex; flex-direction: column; gap: 0.2in; margin-top: 0.3in; padding-top: 0.25in; border-top: 1px solid var(--grid); break-inside: avoid; }
   .project .content { order: -1; }  /* title and text before the diagram */
