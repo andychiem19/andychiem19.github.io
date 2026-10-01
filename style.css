@@ -306,6 +306,36 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 }
 .diagram-info { min-height: 3em; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
 .diagram-info strong { color: var(--silk); font-weight: 700; }
+/* tooltip next to the hovered diagram block (positioned by script.js) */
+.tip {
+  position: absolute;
+  z-index: 5;
+  max-width: 300px;
+  padding: 0.6rem 0.75rem;
+  background: var(--package);
+  border: 1px solid var(--grid);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  pointer-events: none;
+}
+.tip strong { display: block; margin-bottom: 0.2rem; color: var(--silk); }
+.tip::after {
+  content: "";
+  position: absolute;
+  left: var(--arrow-x, 50%);
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  background: var(--package);
+  border-right: 1px solid var(--grid);
+  border-bottom: 1px solid var(--grid);
+  transform: translate(-50%, 50%) rotate(45deg);
+}
+.tip.below::after { bottom: auto; top: 0; border: 0; border-left: 1px solid var(--grid); border-top: 1px solid var(--grid); transform: translate(-50%, -50%) rotate(45deg); }
+.tip[hidden] { display: none; }
+
 /* every block's description, listed for print/PDF where hover isn't possible (built by script.js) */
 .diagram-details, .print-only { display: none; }
 
@@ -501,7 +531,7 @@ html.doc { scroll-snap-type: none; }
   @page { size: letter; margin: 0.6in 0.65in 0.75in; }
   html { scroll-snap-type: none; }
   html, body { background: #fff; font-size: 15px; }
-  .pins, .px, .diagram-info, .pdf-link, .doc-nav { display: none !important; }
+  .pins, .px, .diagram-info, .tip, .pdf-link, .doc-nav { display: none !important; }
   .status::before { animation: none; box-shadow: none; }
 
   /* home page: headlines, diagrams with their hover details, and links; the full writeups live on the site */
