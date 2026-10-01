@@ -166,35 +166,54 @@ if (detent) {
   }));
 }
 
-// Block diagrams: hover, focus or tap a block to read what it does
+// Block diagrams: hover, focus or tap a block to see what it does in a tooltip next to it
+const hideTips = [];
 document.querySelectorAll(".diagram-box").forEach((box) => {
-  const info = box.querySelector(".diagram-info");
-  const idle = info.textContent;
+  box.querySelector(".diagram-info")?.remove();
+  const tip = document.createElement("div");
+  tip.className = "tip";
+  tip.setAttribute("role", "tooltip");
+  tip.hidden = true;
+  box.append(tip);
   const blocks = box.querySelectorAll("[data-info]");
   const show = (el) => {
     blocks.forEach((b) => b.classList.toggle("active", b === el));
-    if (!el) return (info.textContent = idle);
+    if (!el) return (tip.hidden = true);
     const name = document.createElement("strong");
-    name.textContent = (el.dataset.name || el.textContent) + ": ";
-    info.replaceChildren(name, el.dataset.info);
+    name.textContent = el.dataset.name || el.textContent.replace(/\s+/g, " ").trim();
+    tip.replaceChildren(name, el.dataset.info);
+    tip.hidden = false;
+    // Centered on the block, kept inside the box; above it unless there's no room
+    const b = box.getBoundingClientRect(), r = el.getBoundingClientRect(), t = tip.getBoundingClientRect();
+    const cx = r.left + r.width / 2 - b.left;
+    const x = Math.max(8, Math.min(cx - t.width / 2, b.width - t.width - 8));
+    const above = r.top - b.top - t.height - 12;
+    const below = above < 4;
+    tip.style.left = x + "px";
+    tip.style.top = (below ? r.bottom - b.top + 12 : above) + "px";
+    tip.classList.toggle("below", below);
+    tip.style.setProperty("--arrow-x", Math.max(12, Math.min(cx - x, t.width - 12)) + "px");
   };
   blocks.forEach((el) => {
     el.tabIndex = 0;
     el.addEventListener("mouseenter", () => show(el));
     el.addEventListener("focus", () => show(el));
-    el.addEventListener("click", () => show(el));
+    el.addEventListener("click", (e) => { e.stopPropagation(); show(el); });
   });
   box.addEventListener("mouseleave", () => show(null));
+  hideTips.push(() => show(null));
 
   // Print and the PDF can't hover, so list every description under the diagram (shown only in print)
   const details = document.createElement("dl");
   details.className = "diagram-details";
   blocks.forEach((el) => {
     const dt = document.createElement("dt");
-    dt.textContent = el.dataset.name || el.textContent.trim();
+    dt.textContent = el.dataset.name || el.textContent.replace(/\s+/g, " ").trim();
     const dd = document.createElement("dd");
     dd.textContent = el.dataset.info;
     details.append(dt, dd);
   });
   box.append(details);
 });
+document.addEventListener("click", () => hideTips.forEach((hide) => hide()));
+document.addEventListener("keydown", (e) => e.key === "Escape" && hideTips.forEach((hide) => hide()));
