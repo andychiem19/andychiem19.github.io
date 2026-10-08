@@ -272,7 +272,7 @@
               <rect x="392" y="106" width="84" height="40" /><text x="434.0" y="126.0">Parser</text>
             </g>
             <g class="snode" data-name="CORDIC"
-              data-info="Parameterized Q16.16 fixed-point CORDIC core (circular, hyperbolic and linear modes) that computes Black-Scholes Greeks. Delta takes about 63 cycles, 630 ns at 100 MHz.">
+              data-info="Parameterized Q16.16 fixed-point CORDIC core (circular, hyperbolic and linear modes) that computes Black-Scholes Greeks. Delta has 210 ns deterministic latency (63 cycles at 300MHz).">
               <rect x="392" y="172" width="84" height="60" /><text x="434.0" y="202.0">CORDIC</text>
             </g>
             <g class="snode" data-name="Serializer (cordic_top.sv)"
@@ -293,7 +293,7 @@
         <h2>swiftGreeks: Options Pricing Accelerator</h2>
         <p class="subtitle">Project exploring systems design and Ethernet infrastructure, using a fixed-point CORDIC
           engine for
-          real-time Delta calculation. Achieved delta computation in 63-cycle deterministic latency (630ns at 100MHz).
+          real-time Delta calculation. Achieved delta computation in 210 ns deterministic latency (63 cycles at 300MHz).
         </p>
         <p class="org">Personal project <span class="status">In progress</span></p>
         <ul class="chips">
