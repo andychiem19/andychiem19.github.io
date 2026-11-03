@@ -1,3 +1,6 @@
+node_modules/
 tools/node_modules/
+dist/
 _site/
 /portfolio.pdf
+.env*.local

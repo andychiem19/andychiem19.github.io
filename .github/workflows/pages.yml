@@ -24,10 +24,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
 
-      - name: Copy site files
-        run: rsync -a --exclude .git --exclude .github --exclude tools --exclude _site ./ _site/
+      - name: Build site
+        run: |
+          npm ci
+          npm run build
 
       - name: Install PDF tools
         run: |
@@ -35,13 +38,13 @@ jobs:
           tools/node_modules/.bin/playwright install --with-deps chromium
 
       - name: Build portfolio.pdf
-        run: node tools/build-pdf.js _site _site/portfolio.pdf
+        run: node tools/build-pdf.js dist dist/portfolio.pdf
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: dist
 
   deploy:
     needs: build

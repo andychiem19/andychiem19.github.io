@@ -15,7 +15,8 @@ const FOOTER = `<div style="width:100%;padding:0 0.65in;display:flex;justify-con
   const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
   const page = await browser.newPage();
   await page.emulateMedia({ media: "print" });
-  await page.goto(rootUrl + "index.html", { waitUntil: "load" });
+  // The home page is now the React chat UI; the print layout lives on the static classic page
+  await page.goto(rootUrl + "classic.html", { waitUntil: "load" });
   await page.evaluate(() => document.fonts.ready);
 
   // Point links at the live site instead of local files
