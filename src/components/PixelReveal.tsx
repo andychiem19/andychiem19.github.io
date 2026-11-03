@@ -8,10 +8,10 @@ const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").match
 
 /**
  * Pixel build-in: covers its children with background-colored cells, then clears them in a diagonal ripple.
- * Runs once on mount. Cells are bucketed by diagonal (O(n)) instead of sorted, and each frame clears
- * whole buckets, so large answers stay cheap.
+ * Runs once on mount when `active`. Cells are bucketed by diagonal (O(n)) instead of sorted, and each frame
+ * clears whole buckets, so large answers stay cheap.
  */
-export function PixelReveal({ children, className }: { children: ReactNode; className?: string }) {
+export function PixelReveal({ children, className, active = true }: { children: ReactNode; className?: string; active?: boolean }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -19,13 +19,14 @@ export function PixelReveal({ children, className }: { children: ReactNode; clas
     const el = wrap.current;
     const c = canvas.current;
     if (!el || !c) return;
-    if (reducedMotion()) {
-      c.remove();
+    if (!active || reducedMotion()) {
+      c.style.display = "none";
       return;
     }
 
     const w = el.offsetWidth;
     const h = el.offsetHeight;
+    c.style.display = "";
     c.width = w;
     c.height = h;
     const ctx = c.getContext("2d");
