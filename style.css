@@ -30,7 +30,7 @@
 }
 
 :root {
-  /* light schematic (default) */
+  /* light schematic: the default on every device */
   --package: #ffffff;  /* background: paper */
   --die: #f4f5f8;      /* surfaces */
   --grid: #b9bec9;     /* borders, idle traces */
@@ -44,13 +44,7 @@
   --font: "Charter", "Bitstream Charter", "Sitka Text", Cambria, serif;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
 }
-/* dark: follows the system unless the toggle picked a theme (screen only; print stays light) */
-@media screen and (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --package: #15171c; --die: #1c1f26; --grid: #2b2f3a; --silk: #e6e8ee; --muted: #8a90a0;
-    --wafer: #9aa5ff; --amber: #f0b94a; --green: #6fcf97; --body: #c5c9d3; --shadow: rgba(0, 0, 0, 0.45);
-  }
-}
+/* dark: only when picked with the toggle (screen only; print stays light) */
 @media screen {
   :root[data-theme="dark"] {
     --package: #15171c; --die: #1c1f26; --grid: #2b2f3a; --silk: #e6e8ee; --muted: #8a90a0;
@@ -552,9 +546,6 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .zoom { display: block; width: calc(100% - 9.25rem); height: 2.25rem; margin: 0.3rem 0 0.5rem 9.25rem; overflow: visible; }
 .zoom line { stroke: color-mix(in srgb, var(--wafer) 60%, transparent); stroke-dasharray: 4 3; }
 /* logos sit on a light badge on the dark theme so navy marks stay readable */
-@media screen and (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .tl-lbl img { padding: 4px; border-radius: 6px; background: #f4f5f8; }
-}
 @media screen { :root[data-theme="dark"] .tl-lbl img { padding: 4px; border-radius: 6px; background: #f4f5f8; } }
 
 /* Projects: a mux. Inputs (built by script.js from the articles) select which project shows on the output track. */
@@ -819,23 +810,16 @@ html.doc { scroll-snap-type: none; }
   .mux-out { margin-left: 0; }
   .mux-ctrl { position: relative; justify-content: center; padding: 1.2rem 0 1.5rem; }
   .mux-ctrl::before { content: ""; position: absolute; top: 0; left: 50%; width: 1.5px; height: 1.1rem; background: var(--wafer); }
-  /* timeline turns 90 degrees: time runs down, one column per signal */
-  .tl-capture { --lblh: 5rem; display: flex; gap: 0.35rem; height: 30rem; padding: 0 0 0 2.4rem; }
-  .tl-row { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-  .tl-lbl { flex: 0 0 calc(var(--lblh) - 0.5rem); flex-direction: column; justify-content: flex-end; gap: 0.3rem; font-size: 0.65rem; }
-  .tl-lbl img { width: 48px; height: 36px; }
-  .tl-trace { flex: 1 1 auto; width: 2.1rem; height: auto; }
-  .tl-trace::before { inset: 0 0.4rem; border: 0; border-inline: 1px solid var(--grid); }
-  .tl .val { top: calc(var(--a) * 100%); bottom: auto; left: 0; width: auto; right: 0; height: calc((var(--b) - var(--a)) * 100%); padding: calc(var(--x) + 0.3rem) 0; line-height: 2.1rem; writing-mode: vertical-rl; clip-path: polygon(50% 0, 100% var(--x), 100% calc(100% - var(--x)), 50% 100%, 0 calc(100% - var(--x)), 0 var(--x)); }
-  .tl .val.open { clip-path: polygon(50% 0, 100% var(--x), 100% 100%, 0 100%, 0 var(--x)); }
-  .tl-ruler { top: var(--lblh); bottom: 0; left: 0; right: auto; width: 2rem; height: auto; border-bottom: 0; border-right: 1px solid var(--grid); }
-  .tl-ruler i { left: auto; right: 0; top: calc(var(--f) * 100%); bottom: auto; width: 0.4rem; height: 0; border-left: 0; border-top: 1px solid var(--grid); }
-  .tl-ruler i::after { bottom: auto; top: 0; left: auto; right: 0.5rem; transform: translateY(-50%); }
-  .tl-now, .tl-win { top: calc(var(--lblh) + (100% - var(--lblh)) * var(--f, var(--a))); bottom: auto; left: 2.4rem; right: -0.3rem; width: auto; }
-  .tl-now { border-left: 0; border-top: 1.5px dashed var(--wafer); }
-  .tl-now::before { top: -0.7rem; left: auto; right: 0; }
-  .tl-win { height: calc((100% - var(--lblh)) * (var(--b) - var(--a))); border-inline: 0; border-block: 1px dashed color-mix(in srgb, var(--wafer) 60%, transparent); }
-  .zoom { display: none; }
+  /* timeline stays horizontal, compressed: logo-only labels and short values (full details on tap) */
+  .tl-capture { --lbl: 2.6rem; row-gap: 0.4rem; padding-top: 1.5rem; }
+  .tl-lbl { font-size: 0; }
+  .tl-lbl img { width: 32px; height: 26px; }
+  .tl-trace { height: 1.75rem; }
+  .tl .val { --x: 0.45rem; padding: 0 calc(var(--x) + 0.1rem); font-size: 0.6rem; line-height: 1.75rem; letter-spacing: 0.02em; }
+  .tl .val .more { display: none; }
+  .tl-ruler i::after { font-size: 0.5rem; }
+  .tl-now::before { font-size: 0.5rem; }
+  .zoom { width: calc(100% - 2.6rem); height: 1.5rem; margin-left: 2.6rem; }
   .visual.diagram-box { aspect-ratio: auto; }
   .sdiagram { width: 400px; }  /* 2D diagrams keep readable text and scroll sideways in their box */
   .doc-body .sdiagram { width: 640px; }
