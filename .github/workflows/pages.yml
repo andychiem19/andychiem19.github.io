@@ -37,6 +37,10 @@ jobs:
       - name: Build portfolio.pdf
         run: node tools/build-pdf.js _site _site/portfolio.pdf
 
+      # Version the CSS/JS URLs per deploy so browsers never pair a new page with a cached old stylesheet
+      - name: Cache-bust assets
+        run: find _site -name '*.html' -exec sed -i -E "s/(style\.css|script\.js)\"/\1?v=${GITHUB_SHA::7}\"/g" {} +
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
