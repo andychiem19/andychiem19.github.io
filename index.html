@@ -6,7 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Andy Chiem</title>
   <meta name="description" content="Andy's portfolio">
+  <meta name="color-scheme" content="light dark">
   <link rel="stylesheet" href="style.css">
+  <!-- Apply a saved theme choice before first paint -->
+  <script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -22,287 +25,347 @@
 </head>
 
 <body>
-  <!-- Pin nav: one pin per panel, active pin goes high -->
-  <nav class="pins" aria-label="Sections">
-    <a href="#home"><span>Home</span></a>
-    <a href="#about"><span>About</span></a>
-    <a href="#project-1"><span>100G Ethernet Verification</span></a>
-    <a href="#project-2"><span>GTM-to-GTYP SerDes Protocol Debug</span></a>
-    <a href="#project-3"><span>AXI-Lite Performance Monitor</span></a>
-    <a href="#project-4"><span>swiftGreeks</span></a>
+  <!-- Signal nav: each section is a one-hot signal; the cursor tracks your scroll position -->
+  <nav class="signals" aria-label="Sections">
+    <a href="#home" aria-label="Home"><span>home</span><i></i></a>
+    <a href="#timeline" aria-label="Education and experience"><span>timeline</span><i></i></a>
+    <a href="#projects" aria-label="Projects"><span>projects</span><i></i></a>
+    <b class="scrub" aria-hidden="true"></b>
   </nav>
 
   <main>
+    <!-- Hero: a logic analyzer capture; the name and school are bus values, the links are ports -->
     <section class="panel hero" id="home">
-      <div class="reveal">
-        <h1>Andy Chiem</h1>
-        <p class="tagline">Debugging AXI interfaces and craving functional coverage.</p>
-        <p class="school">ECE @ Cornell Duffield Engineering '29</p>
+      <div class="capture">
+        <div class="cap-bar">
+          <span class="trig">Triggered</span>
+          <button class="theme-toggle" type="button">Dark</button>
+        </div>
+        <div class="wave">
+          <span class="lbl" aria-hidden="true"></span><span class="ruler" aria-hidden="true"></span>
+          <span class="lbl" aria-hidden="true">clk</span><span class="sig clk" aria-hidden="true"></span>
+          <span class="lbl" aria-hidden="true">valid</span>
+          <span class="sig valid" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="lbl" aria-hidden="true">name</span>
+          <div class="bus"><i></i><h1 class="val fill">Andy Chiem</h1><i></i></div>
+          <span class="lbl" aria-hidden="true">major</span>
+          <div class="bus"><i></i><p class="val school">ECE @ Cornell Duffield Engineering '29</p><i></i></div>
+          <span class="lbl" aria-hidden="true">links</span>
+          <div class="bus"><i></i>
+            <p class="ports">
+              <a class="val" href="mailto:andy.chiem19@gmail.com">Email</a>
+              <a class="val" href="https://github.com/andychiem19" target="_blank" rel="noopener">GitHub</a>
+              <a class="val" href="https://www.linkedin.com/in/andychiem2006/" target="_blank" rel="noopener">LinkedIn</a>
+              <a class="val pdf-link" href="portfolio.pdf" download>Portfolio PDF</a>
+            </p>
+          </div>
+          <span class="cursor" aria-hidden="true">T0</span>
+        </div>
         <!-- Shown only in print / the portfolio PDF -->
         <p class="print-only site-link">Interactive portfolio: <a href="https://andychiem19.github.io/">andychiem19.github.io</a></p>
       </div>
     </section>
 
-    <section class="panel" id="about">
-      <div class="content reveal">
-        <h2>About me</h2>
-        <p>
-          I'm a sophomore studying Electrical and Computer Engineering at Cornell University
-          with a focus on FPGA/ASIC engineering and applications. My project and research work has
-          centered on the implementation and optimization of complex math in hardware, from CORDIC-based
-          options pricing to Ising-model optimization.
-        </p>
-        <p>
-          I recently completed a co-op at Woodward McCoach Inc., where I validated high-speed serial
-          interfaces, worked on production telecommunications hardware, and developed 100G Ethernet
-          verification software.
-        </p>
-        <p>
-          I'm looking to apply and deepen my digital design fundamentals through
-          internship and project team opportunities in ASIC design (design verification, RTL)
-          and FPGA development.
-        </p>
-        <p class="links">
-          <a href="mailto:andy.chiem19@gmail.com">Email</a>
-          <a href="https://github.com/andychiem19" target="_blank" rel="noopener">GitHub</a>
-          <a href="https://www.linkedin.com/in/andychiem2006/" target="_blank" rel="noopener">LinkedIn</a>
-          <a class="pdf-link" href="portfolio.pdf" download>Download (PDF)</a>
-        </p>
-      </div>
-    </section>
-
-    <!-- PROJECTS: copy/paste a section to add more; swap the .visual placeholder for an <img> -->
-    <section class="panel project" id="project-1">
-      <!-- Interactive block diagram: each [data-info] element is a block; hover or tap shows its description -->
-      <div class="visual diagram-box reveal">
-        <div class="diagram" role="group" aria-label="Transmit path into the Versal DCMAC">
-          <div class="group">
-            <span class="group-label">Python testbench</span>
-            <div class="node process"
-              data-info="Generates Ethernet frames with preamble, interframe gap, and frame check sequence.">Scapy
-              packet generator</div>
-            <div class="node process"
-              data-info="64b/66b encoding, scrambling, virtual lane distribution, and alignment marker insertion for 100GBASE-R transmit.">
-              Virtual PCS/PMA</div>
-            <div class="node io" data-info="Drives the encoded lanes into the DCMAC in simulation.">cocotb interface
-            </div>
+    <!-- Timeline: education on a year axis, experience in a zoomed month window. Rows are placed by
+         data-start / data-end (YYYY-MM, inclusive; leave data-end off for "present"); newest on top. -->
+    <section class="panel timeline" id="timeline">
+      <div class="tl reveal">
+        <h2 class="cap-title">Education <span>2020 → 2029 · 1 tick = 1 yr</span></h2>
+        <div class="tl-capture edu" data-from="2020-01" data-to="2029-12" data-unit="year">
+          <div class="tl-row">
+            <span class="tl-lbl"><img src="assets/logos/cornell.svg" alt="">cornell</span>
+            <span class="tl-trace"><span class="val" data-start="2026-08" data-end="2029-05" data-name="Cornell University"
+              data-info="Bachelor of Science, Electrical and Computer Engineering · 2026 – 2029">Cornell · BS ECE</span></span>
           </div>
-          <div class="node hw" data-info="The Versal Ethernet MAC subsystem under test.">Versal DCMAC</div>
-        </div>
-        <ul class="legend">
-          <li><i class="process"></i>Software model</li>
-          <li><i class="io"></i>Interface</li>
-          <li><i class="hw"></i>Hardware IP</li>
-        </ul>
-        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
-      </div>
-      <div class="content reveal">
-        <h2>100G Ethernet Verification</h2>
-        <p class="subtitle">Verification environment for 100G Ethernet built in Python and cocotb, intended for
-          open-source release. </p>
-        <p class="org">Organization: Woodward McCoach Inc. <span class="status done">Complete</span></p>
-        <ul class="chips">
-          <li>Python</li>
-          <li>cocotb</li>
-          <li>Ethernet</li>
-        </ul>
-        <p class="links"><a href="writeups/ethernet-verification.html">Read the writeup</a></p>
-      </div>
-    </section>
-
-    <section class="panel project flip" id="project-2">
-      <div class="visual diagram-box reveal">
-        <div class="diagram serdes" role="group"
-          aria-label="GTM and GTYP transceivers cross-connected between custom protocol blocks">
-          <div class="group">
-            <span class="group-label">SystemVerilog simulation</span>
-            <div class="node rtl" data-name="Custom protocol (GTM side)"
-              data-info="Proprietary chip-to-chip protocol logic driving the GTM transceiver.">Custom protocol</div>
-            <span class="wire" aria-hidden="true"></span>
-            <div class="node hw xcvr gtm" data-name="GTM transceiver"
-              data-info="Its TX drives the GTYP's RX, and its RX receives from the GTYP's TX.">GTM<span
-                class="port tx">TX</span><span class="port rx">RX</span></div>
-            <svg class="cross" data-name="Serial links"
-              data-info="Cross-connected lanes between the two transceiver families. The bug: a bit-order incompatibility in the protocol across this link."
-              viewBox="0 0 100 100" preserveAspectRatio="none">
-              <line x1="0" y1="0" x2="100" y2="100" vector-effect="non-scaling-stroke" />
-              <line x1="0" y1="100" x2="100" y2="0" vector-effect="non-scaling-stroke" />
-            </svg>
-            <div class="node hw xcvr gtyp" data-name="GTYP transceiver"
-              data-info="Its TX drives the GTM's RX, and its RX receives from the GTM's TX.">GTYP<span
-                class="port tx">TX</span><span class="port rx">RX</span></div>
-            <span class="wire" aria-hidden="true"></span>
-            <div class="node rtl" data-name="Custom protocol (GTYP side)"
-              data-info="The same protocol logic on the GTYP side of the link.">Custom protocol</div>
+          <div class="tl-row">
+            <span class="tl-lbl"><img src="assets/logos/drexel.svg" alt="">drexel</span>
+            <span class="tl-trace"><span class="val" data-start="2024-09" data-end="2026-06" data-name="Drexel University"
+              data-info="Bachelor of Science, Electrical and Computer Engineering · 2024 – 2026">Drexel · BS ECE</span></span>
+          </div>
+          <div class="tl-row">
+            <span class="tl-lbl"><img src="assets/logos/ib.svg" alt="">ib</span>
+            <span class="tl-trace"><span class="val" data-start="2022-09" data-end="2024-06" data-name="International Baccalaureate"
+              data-info="IB Diploma Programme at Central High School · 2022 – 2024">IB Diploma</span></span>
+          </div>
+          <div class="tl-row">
+            <span class="tl-lbl"><img src="assets/logos/chs.svg" alt="">chs</span>
+            <span class="tl-trace"><span class="val" data-start="2020-09" data-end="2024-06" data-name="Central High School"
+              data-info="Bachelor of Arts · 2020 – 2024">Central HS · BA</span></span>
           </div>
         </div>
-        <ul class="legend">
-          <li><i class="rtl"></i>RTL module</li>
-          <li><i class="hw"></i>Transceiver (hard IP)</li>
-        </ul>
-        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
-      </div>
-      <div class="content reveal">
-        <h2>GTM-to-GTYP SerDes Protocol Debug</h2>
-        <p class="subtitle">Diagnosed and resolved a critical error in a proprietary chip-to-chip
-          communication protocol before release, unblocking 4x28G high-speed serial communication between Versal GTM and
-          GTYP transceivers.
-        </p>
-        <p class="org">Organization: Woodward McCoach Inc. <span class="status done">Complete</span></p>
-        <ul class="chips">
-          <li>SystemVerilog</li>
-          <li>High-speed serial communication</li>
-        </ul>
-        <p class="links"><a href="writeups/serdes-debug.html">Read the writeup</a></p>
+        <svg class="zoom" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <line vector-effect="non-scaling-stroke" /><line vector-effect="non-scaling-stroke" />
+        </svg>
+        <h2 class="cap-title">Experience <span>zoom · 1 tick = 1 mo</span></h2>
+        <div class="tl-capture exp" data-from="2025-09" data-to="2027-03" data-unit="month">
+          <div class="tl-row">
+            <span class="tl-lbl"><img src="assets/logos/c2s2.svg" alt="">c2s2</span>
+            <span class="tl-trace"><span class="val" data-start="2026-11" data-name="Cornell Custom Silicon Systems"
+              data-info="Digital Subteam Member · Nov 2026 – present">C2S2 · Digital</span></span>
+          </div>
+          <div class="tl-row">
+            <span class="tl-lbl"><img src="assets/logos/wmi.svg" alt="">wmi</span>
+            <span class="tl-trace"><span class="val" data-start="2026-03" data-end="2026-08" data-name="Woodward McCoach, Inc."
+              data-info="FPGA Development Engineer (internship) · Mar – Aug 2026">FPGA Dev Engineer</span></span>
+          </div>
+          <div class="tl-row">
+            <span class="tl-lbl"><img src="assets/logos/vandal.svg" alt="">vandal</span>
+            <span class="tl-trace"><span class="val" data-start="2025-11" data-end="2026-05" data-name="Drexel VLSI and Algorithms Lab (VANDAL)"
+              data-info="Research Assistant · Nov 2025 – May 2026">Research Asst.</span></span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="panel project" id="project-3">
-      <div class="visual diagram-box reveal">
-        <div class="sdiagram-wrap">
-          <svg class="sdiagram" viewBox="0 0 480 232" role="group"
-            aria-label="Performance monitor on a snapshot interface, an AXI-Lite slave, probed by a Vivado ILA">
-            <defs>
-              <marker id="ax-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8"
-                markerUnits="userSpaceOnUse" orient="auto-start-reverse">
-                <path d="M0 0L8 4L0 8z" />
-              </marker>
-            </defs>
-            <path class="link" d="M132 52H310" marker-start="url(#ax-arrow)" marker-end="url(#ax-arrow)" />
-            <text class="label" x="221" y="40">AXI-Lite bus</text>
-            <path class="link dashed" d="M290 52V158" marker-end="url(#ax-arrow)" /><text class="label" x="284" y="108"
-              style="text-anchor:end">snoop</text>
-            <path class="link dashed" d="M132 188H238" marker-end="url(#ax-arrow)" /><text class="label" x="185"
-              y="178">probe</text>
-            <g class="snode" data-name="AXI-Lite master" data-info="Issues AXI-Lite reads to the snapshot interface.">
-              <rect x="12" y="22" width="120" height="60" /><text x="72.0" y="52.0">AXI-Lite master</text>
-            </g>
-            <g class="snode" data-name="Snapshot interface"
-              data-info="The AXI-Lite slave used to read out the board's performance data.">
-              <path d="M320 22H470L460 82H310Z" /><text x="390.0" y="44.5">Snapshot interface</text><text x="390.0"
-                y="59.5">(AXI-Lite slave)</text>
-            </g>
-            <g class="snode" data-name="Performance monitor"
-              data-info="Sits on the snapshot interface and measures AXI-Lite performance through it. An off-by-one error made it pass in simulation but fail in hardware; fixing it took measured bandwidth from 70% to 100% of expected.">
-              <rect x="240" y="158" width="150" height="60" /><text x="315.0" y="180.5">Performance</text><text
-                x="315.0" y="195.5">monitor</text>
-            </g>
-            <g class="snode" data-name="Vivado ILA"
-              data-info="Probed the monitor on hardware to compare it against simulation and root-cause the error.">
-              <rect class="dotted" x="12" y="158" width="120" height="60" /><text x="72.0" y="188.0">Vivado ILA</text>
-            </g>
-          </svg>
+    <!-- Projects: a mux. Each <article> is an input; script.js builds the input list and sel bus from them,
+         so adding a project is just adding an article. Print lists every project in full. -->
+    <section class="panel projects" id="projects">
+      <div class="mux-wrap reveal">
+        <h2 class="cap-title">Projects</h2>
+        <div class="mux">
+          <ol class="mux-in" aria-label="Projects"></ol>
+          <div class="mux-sym" aria-hidden="true"><b>MUX</b></div>
+          <div class="mux-ctrl">
+            <button type="button" class="mux-prev" aria-label="Previous project">◀&#xFE0E;</button>
+            <code class="mux-sel" aria-live="polite"></code>
+            <button type="button" class="mux-next" aria-label="Next project">▶&#xFE0E;</button>
+          </div>
+          <div class="mux-out">
+            <article class="proj" id="p-ethernet" data-slug="ethernet">
+              <div class="content">
+                <p class="cap-head done"><span>eth_100g</span><i aria-hidden="true"></i><b>Done</b></p>
+                <h3>100G Ethernet Verification</h3>
+                <p class="subtitle">Verification environment for 100G Ethernet built in Python and cocotb, intended for
+                  open-source release. </p>
+                <p class="org">Organization: Woodward McCoach Inc. <span class="status done">Complete</span></p>
+                <ul class="chips">
+                  <li>Python</li>
+                  <li>cocotb</li>
+                  <li>Ethernet</li>
+                </ul>
+                <p class="links"><a href="writeups/ethernet-verification.html">Read the writeup</a></p>
+              </div>
+              <div class="visual diagram-box">
+                <div class="diagram" role="group" aria-label="Transmit path into the Versal DCMAC">
+                  <div class="group">
+                    <span class="group-label">Python testbench</span>
+                    <div class="node process"
+                      data-info="Generates Ethernet frames with preamble, interframe gap, and frame check sequence.">Scapy
+                      packet generator</div>
+                    <div class="node process"
+                      data-info="64b/66b encoding, scrambling, virtual lane distribution, and alignment marker insertion for 100GBASE-R transmit.">
+                      Virtual PCS/PMA</div>
+                    <div class="node io" data-info="Drives the encoded lanes into the DCMAC in simulation.">cocotb interface
+                    </div>
+                  </div>
+                  <div class="node hw" data-info="The Versal Ethernet MAC subsystem under test.">Versal DCMAC</div>
+                </div>
+                <ul class="legend">
+                  <li><i class="process"></i>Software model</li>
+                  <li><i class="io"></i>Interface</li>
+                  <li><i class="hw"></i>Hardware IP</li>
+                </ul>
+                <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+              </div>
+            </article>
+            <article class="proj" id="p-serdes" data-slug="serdes">
+              <div class="content">
+                <p class="cap-head done"><span>serdes_dbg</span><i aria-hidden="true"></i><b>Done</b></p>
+                <h3>GTM-to-GTYP SerDes Protocol Debug</h3>
+                <p class="subtitle">Diagnosed and resolved a critical error in a proprietary chip-to-chip
+                  communication protocol before release, unblocking 4x28G high-speed serial communication between Versal GTM and
+                  GTYP transceivers.
+                </p>
+                <p class="org">Organization: Woodward McCoach Inc. <span class="status done">Complete</span></p>
+                <ul class="chips">
+                  <li>SystemVerilog</li>
+                  <li>High-speed serial communication</li>
+                </ul>
+                <p class="links"><a href="writeups/serdes-debug.html">Read the writeup</a></p>
+              </div>
+              <div class="visual diagram-box">
+                <div class="diagram serdes" role="group"
+                  aria-label="GTM and GTYP transceivers cross-connected between custom protocol blocks">
+                  <div class="group">
+                    <span class="group-label">SystemVerilog simulation</span>
+                    <div class="node rtl" data-name="Custom protocol (GTM side)"
+                      data-info="Proprietary chip-to-chip protocol logic driving the GTM transceiver.">Custom protocol</div>
+                    <span class="wire" aria-hidden="true"></span>
+                    <div class="node hw xcvr gtm" data-name="GTM transceiver"
+                      data-info="Its TX drives the GTYP's RX, and its RX receives from the GTYP's TX.">GTM<span
+                        class="port tx">TX</span><span class="port rx">RX</span></div>
+                    <svg class="cross" data-name="Serial links"
+                      data-info="Cross-connected lanes between the two transceiver families. The bug: a bit-order incompatibility in the protocol across this link."
+                      viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <line x1="0" y1="0" x2="100" y2="100" vector-effect="non-scaling-stroke" />
+                      <line x1="0" y1="100" x2="100" y2="0" vector-effect="non-scaling-stroke" />
+                    </svg>
+                    <div class="node hw xcvr gtyp" data-name="GTYP transceiver"
+                      data-info="Its TX drives the GTM's RX, and its RX receives from the GTM's TX.">GTYP<span
+                        class="port tx">TX</span><span class="port rx">RX</span></div>
+                    <span class="wire" aria-hidden="true"></span>
+                    <div class="node rtl" data-name="Custom protocol (GTYP side)"
+                      data-info="The same protocol logic on the GTYP side of the link.">Custom protocol</div>
+                  </div>
+                </div>
+                <ul class="legend">
+                  <li><i class="rtl"></i>RTL module</li>
+                  <li><i class="hw"></i>Transceiver (hard IP)</li>
+                </ul>
+                <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+              </div>
+            </article>
+            <article class="proj" id="p-axi-lite" data-slug="axi-lite">
+              <div class="content">
+                <p class="cap-head done"><span>axi_pmon</span><i aria-hidden="true"></i><b>Done</b></p>
+                <h3>Debugging an AXI-Lite Performance Monitor</h3>
+                <p class="subtitle">Resolved differing behavior in simulation and hardware using
+                  Vivado ILAs;
+                  increased bandwidth measurements from 70% to 100% of expected.</p>
+                <p class="org">Organization: Woodward McCoach Inc. <span class="status done">Complete</span></p>
+                <ul class="chips">
+                  <li>Vivado</li>
+                  <li>ILAs</li>
+                  <li>SystemVerilog</li>
+                </ul>
+                <p class="links"><a href="writeups/axi-lite-monitor.html">Read the writeup</a></p>
+              </div>
+              <div class="visual diagram-box">
+                <div class="sdiagram-wrap">
+                  <svg class="sdiagram" viewBox="0 0 480 232" role="group"
+                    aria-label="Performance monitor on a snapshot interface, an AXI-Lite slave, probed by a Vivado ILA">
+                    <defs>
+                      <marker id="ax-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8"
+                        markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+                        <path d="M0 0L8 4L0 8z" />
+                      </marker>
+                    </defs>
+                    <path class="link" d="M132 52H310" marker-start="url(#ax-arrow)" marker-end="url(#ax-arrow)" />
+                    <text class="label" x="221" y="40">AXI-Lite bus</text>
+                    <path class="link dashed" d="M290 52V158" marker-end="url(#ax-arrow)" /><text class="label" x="284" y="108"
+                      style="text-anchor:end">snoop</text>
+                    <path class="link dashed" d="M132 188H238" marker-end="url(#ax-arrow)" /><text class="label" x="185"
+                      y="178">probe</text>
+                    <g class="snode" data-name="AXI-Lite master" data-info="Issues AXI-Lite reads to the snapshot interface.">
+                      <rect x="12" y="22" width="120" height="60" /><text x="72.0" y="52.0">AXI-Lite master</text>
+                    </g>
+                    <g class="snode" data-name="Snapshot interface"
+                      data-info="The AXI-Lite slave used to read out the board's performance data.">
+                      <path d="M320 22H470L460 82H310Z" /><text x="390.0" y="44.5">Snapshot interface</text><text x="390.0"
+                        y="59.5">(AXI-Lite slave)</text>
+                    </g>
+                    <g class="snode" data-name="Performance monitor"
+                      data-info="Sits on the snapshot interface and measures AXI-Lite performance through it. An off-by-one error made it pass in simulation but fail in hardware; fixing it took measured bandwidth from 70% to 100% of expected.">
+                      <rect x="240" y="158" width="150" height="60" /><text x="315.0" y="180.5">Performance</text><text
+                        x="315.0" y="195.5">monitor</text>
+                    </g>
+                    <g class="snode" data-name="Vivado ILA"
+                      data-info="Probed the monitor on hardware to compare it against simulation and root-cause the error.">
+                      <rect class="dotted" x="12" y="158" width="120" height="60" /><text x="72.0" y="188.0">Vivado ILA</text>
+                    </g>
+                  </svg>
+                </div>
+                <ul class="legend">
+                  <li><i class="rtl"></i>RTL module</li>
+                  <li><i class="io"></i>Interface</li>
+                  <li><i class="debug"></i>Debug core</li>
+                </ul>
+                <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+              </div>
+            </article>
+            <article class="proj" id="p-swiftgreeks" data-slug="swiftgreeks">
+              <div class="content">
+                <p class="cap-head wip"><span>swift_greeks</span><i aria-hidden="true"></i><b>In progress</b></p>
+                <h3>swiftGreeks: Options Pricing Accelerator</h3>
+                <p class="subtitle">Project exploring systems design and Ethernet infrastructure, using a fixed-point CORDIC
+                  engine for
+                  real-time Delta calculation. Achieved delta computation in 210 ns deterministic latency (63 cycles at 300MHz).
+                </p>
+                <p class="org">Personal project <span class="status">In progress</span></p>
+                <ul class="chips">
+                  <li>Python</li>
+                  <li>Systems design</li>
+                  <li>Ethernet</li>
+                  <li>SystemVerilog</li>
+                </ul>
+                <p class="links"><a href="https://github.com/andychiem19/swift-greeks">GitHub</a></p>
+              </div>
+              <div class="visual diagram-box">
+                <div class="sdiagram-wrap">
+                  <svg class="sdiagram" viewBox="0 0 490 350" role="group"
+                    aria-label="swiftGreeks data path from market data API to the FPGA CORDIC core and back">
+                    <defs>
+                      <marker id="sg-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8"
+                        markerUnits="userSpaceOnUse" orient="auto-start-reverse">
+                        <path d="M0 0L8 4L0 8z" />
+                      </marker>
+                    </defs>
+                    <rect class="grp" x="4" y="74" width="142" height="160" />
+                    <rect class="grp-bg" x="12" y="66" width="64" height="16" /><text class="grp-label" x="16"
+                      y="74">main.py</text>
+                    <rect class="grp" x="384" y="74" width="102" height="262" />
+                    <rect class="grp-bg" x="392" y="66" width="92" height="16" /><text class="grp-label" x="396"
+                      y="74">cordic_top.sv</text>
+                    <path class="link" d="M75 50V94" marker-end="url(#sg-arrow)" />
+                    <path class="link" d="M132 190H196V304H223" marker-start="url(#sg-arrow)" marker-end="url(#sg-arrow)" />
+                    <text class="label" x="190" y="250" style="text-anchor:end">Ethernet</text><text class="label" x="190"
+                      y="264" style="text-anchor:end">cable</text>
+                    <path class="link" d="M258 278V172" marker-end="url(#sg-arrow)" />
+                    <path class="link" d="M290 172V278" marker-end="url(#sg-arrow)" />
+                    <text class="label" x="298" y="226" style="text-anchor:start">RGMII</text>
+                    <path class="link" d="M327 126H392" marker-end="url(#sg-arrow)" />
+                    <text class="label" x="330" y="114" style="text-anchor:start; font-size:10px">AXI-Stream</text>
+                    <path class="link" d="M392 290H352V156H327" marker-end="url(#sg-arrow)" />
+                    <path class="link" d="M434 146V172" marker-end="url(#sg-arrow)" />
+                    <path class="link" d="M434 232V268" marker-end="url(#sg-arrow)" />
+                    <g class="snode" data-name="API" data-info="Live market data source.">
+                      <rect x="20" y="10" width="110" height="40" rx="12" /><text x="75.0" y="30.0">API</text>
+                    </g>
+                    <g class="snode" data-name="Websocket"
+                      data-info="main.py subscribes to the market data feed over a WebSocket.">
+                      <rect x="18" y="94" width="114" height="44" />
+                      <line x1="24" y1="94" x2="24" y2="138" />
+                      <line x1="126" y1="94" x2="126" y2="138" /><text x="75.0" y="116.0">Websocket</text>
+                    </g>
+                    <g class="snode" data-name="Serializer (main.py)"
+                      data-info="Packs quotes into packets and sends them to the board over Ethernet.">
+                      <rect x="18" y="168" width="114" height="44" />
+                      <line x1="24" y1="168" x2="24" y2="212" />
+                      <line x1="126" y1="168" x2="126" y2="212" /><text x="75.0" y="190.0">Serializer</text>
+                    </g>
+                    <g class="snode" data-name="Zybo Z7 PHY" data-info="The board's Ethernet PHY.">
+                      <rect x="223" y="282" width="104" height="44" />
+                      <rect x="226" y="285" width="98" height="38" /><text x="275.0" y="304.0">Zybo Z7 PHY</text>
+                    </g>
+                    <g class="snode" data-name="Gigabit Ethernet MAC"
+                      data-info="Bridges RGMII from the PHY and AXI-Stream inside the FPGA.">
+                      <rect x="223" y="108" width="104" height="64" /><text x="275.0" y="132.5">Gigabit</text><text x="275.0"
+                        y="147.5">Ethernet MAC</text>
+                    </g>
+                    <g class="snode" data-name="Parser" data-info="Extracts option parameters from incoming packets.">
+                      <rect x="392" y="106" width="84" height="40" /><text x="434.0" y="126.0">Parser</text>
+                    </g>
+                    <g class="snode" data-name="CORDIC"
+                      data-info="Parameterized Q16.16 fixed-point CORDIC core (circular, hyperbolic and linear modes) that computes Black-Scholes Greeks. Delta has 210 ns deterministic latency (63 cycles at 300MHz).">
+                      <rect x="392" y="172" width="84" height="60" /><text x="434.0" y="202.0">CORDIC</text>
+                    </g>
+                    <g class="snode" data-name="Serializer (cordic_top.sv)"
+                      data-info="Packs computed Greeks into packets and sends them back through the MAC.">
+                      <rect x="392" y="268" width="84" height="44" /><text x="434.0" y="290.0">Serializer</text>
+                    </g>
+                  </svg>
+                </div>
+                <ul class="legend">
+                  <li><i class="ext"></i>External service</li>
+                  <li><i class="process"></i>Software</li>
+                  <li><i class="rtl"></i>RTL module</li>
+                  <li><i class="hw"></i>Board hardware</li>
+                </ul>
+                <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
+              </div>
+            </article>
+          </div>
         </div>
-        <ul class="legend">
-          <li><i class="rtl"></i>RTL module</li>
-          <li><i class="io"></i>Interface</li>
-          <li><i class="debug"></i>Debug core</li>
-        </ul>
-        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
-      </div>
-      <div class="content reveal">
-        <h2>Debugging an AXI-Lite Performance Monitor</h2>
-        <p class="subtitle">Resolved differing behavior in simulation and hardware using
-          Vivado ILAs;
-          increased bandwidth measurements from 70% to 100% of expected.</p>
-        <p class="org">Organization: Woodward McCoach Inc. <span class="status done">Complete</span></p>
-        <ul class="chips">
-          <li>Vivado</li>
-          <li>ILAs</li>
-          <li>SystemVerilog</li>
-        </ul>
-        <p class="links"><a href="writeups/axi-lite-monitor.html">Read the writeup</a></p>
-      </div>
-    </section>
-
-    <section class="panel project flip" id="project-4">
-      <div class="visual diagram-box reveal">
-        <div class="sdiagram-wrap">
-          <svg class="sdiagram" viewBox="0 0 490 350" role="group"
-            aria-label="swiftGreeks data path from market data API to the FPGA CORDIC core and back">
-            <defs>
-              <marker id="sg-arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8"
-                markerUnits="userSpaceOnUse" orient="auto-start-reverse">
-                <path d="M0 0L8 4L0 8z" />
-              </marker>
-            </defs>
-            <rect class="grp" x="4" y="74" width="142" height="160" />
-            <rect class="grp-bg" x="12" y="66" width="64" height="16" /><text class="grp-label" x="16"
-              y="74">main.py</text>
-            <rect class="grp" x="384" y="74" width="102" height="262" />
-            <rect class="grp-bg" x="392" y="66" width="92" height="16" /><text class="grp-label" x="396"
-              y="74">cordic_top.sv</text>
-            <path class="link" d="M75 50V94" marker-end="url(#sg-arrow)" />
-            <path class="link" d="M132 190H196V304H223" marker-start="url(#sg-arrow)" marker-end="url(#sg-arrow)" />
-            <text class="label" x="190" y="250" style="text-anchor:end">Ethernet</text><text class="label" x="190"
-              y="264" style="text-anchor:end">cable</text>
-            <path class="link" d="M258 278V172" marker-end="url(#sg-arrow)" />
-            <path class="link" d="M290 172V278" marker-end="url(#sg-arrow)" />
-            <text class="label" x="298" y="226" style="text-anchor:start">RGMII</text>
-            <path class="link" d="M327 126H392" marker-end="url(#sg-arrow)" />
-            <text class="label" x="330" y="114" style="text-anchor:start; font-size:10px">AXI-Stream</text>
-            <path class="link" d="M392 290H352V156H327" marker-end="url(#sg-arrow)" />
-            <path class="link" d="M434 146V172" marker-end="url(#sg-arrow)" />
-            <path class="link" d="M434 232V268" marker-end="url(#sg-arrow)" />
-            <g class="snode" data-name="API" data-info="Live market data source.">
-              <rect x="20" y="10" width="110" height="40" rx="12" /><text x="75.0" y="30.0">API</text>
-            </g>
-            <g class="snode" data-name="Websocket"
-              data-info="main.py subscribes to the market data feed over a WebSocket.">
-              <rect x="18" y="94" width="114" height="44" />
-              <line x1="24" y1="94" x2="24" y2="138" />
-              <line x1="126" y1="94" x2="126" y2="138" /><text x="75.0" y="116.0">Websocket</text>
-            </g>
-            <g class="snode" data-name="Serializer (main.py)"
-              data-info="Packs quotes into packets and sends them to the board over Ethernet.">
-              <rect x="18" y="168" width="114" height="44" />
-              <line x1="24" y1="168" x2="24" y2="212" />
-              <line x1="126" y1="168" x2="126" y2="212" /><text x="75.0" y="190.0">Serializer</text>
-            </g>
-            <g class="snode" data-name="Zybo Z7 PHY" data-info="The board's Ethernet PHY.">
-              <rect x="223" y="282" width="104" height="44" />
-              <rect x="226" y="285" width="98" height="38" /><text x="275.0" y="304.0">Zybo Z7 PHY</text>
-            </g>
-            <g class="snode" data-name="Gigabit Ethernet MAC"
-              data-info="Bridges RGMII from the PHY and AXI-Stream inside the FPGA.">
-              <rect x="223" y="108" width="104" height="64" /><text x="275.0" y="132.5">Gigabit</text><text x="275.0"
-                y="147.5">Ethernet MAC</text>
-            </g>
-            <g class="snode" data-name="Parser" data-info="Extracts option parameters from incoming packets.">
-              <rect x="392" y="106" width="84" height="40" /><text x="434.0" y="126.0">Parser</text>
-            </g>
-            <g class="snode" data-name="CORDIC"
-              data-info="Parameterized Q16.16 fixed-point CORDIC core (circular, hyperbolic and linear modes) that computes Black-Scholes Greeks. Delta has 210 ns deterministic latency (63 cycles at 300MHz).">
-              <rect x="392" y="172" width="84" height="60" /><text x="434.0" y="202.0">CORDIC</text>
-            </g>
-            <g class="snode" data-name="Serializer (cordic_top.sv)"
-              data-info="Packs computed Greeks into packets and sends them back through the MAC.">
-              <rect x="392" y="268" width="84" height="44" /><text x="434.0" y="290.0">Serializer</text>
-            </g>
-          </svg>
-        </div>
-        <ul class="legend">
-          <li><i class="ext"></i>External service</li>
-          <li><i class="process"></i>Software</li>
-          <li><i class="rtl"></i>RTL module</li>
-          <li><i class="hw"></i>Board hardware</li>
-        </ul>
-        <p class="diagram-info" aria-live="polite">Select a block to see what it does.</p>
-      </div>
-      <div class="content reveal">
-        <h2>swiftGreeks: Options Pricing Accelerator</h2>
-        <p class="subtitle">Project exploring systems design and Ethernet infrastructure, using a fixed-point CORDIC
-          engine for
-          real-time Delta calculation. Achieved delta computation in 210 ns deterministic latency (63 cycles at 300MHz).
-        </p>
-        <p class="org">Personal project <span class="status">In progress</span></p>
-        <ul class="chips">
-          <li>Python</li>
-          <li>Systems design</li>
-          <li>Ethernet</li>
-          <li>SystemVerilog</li>
-        </ul>
-        <p class="links"><a href="https://github.com/andychiem19/swift-greeks">GitHub</a></p>
       </div>
     </section>
   </main>
