@@ -16,19 +16,46 @@
   font-weight: 500;
   font-display: swap;
 }
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("fonts/ibm-plex-mono-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("fonts/ibm-plex-mono-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
 
 :root {
-  --package: #15171c;  /* background: chip package epoxy */
-  --die: #1c1f26;      /* surfaces */
-  --grid: #2b2f3a;     /* borders, idle pins */
-  --silk: #e6e8ee;     /* text */
-  --muted: #8a90a0;    /* secondary text */
-  --wafer: #9aa5ff;    /* accent: silicon wafer sheen */
-  --amber: #f0b94a;    /* status LED: in progress */
-  --green: #6fcf97;    /* status LED: complete */
-  --body: #c5c9d3;     /* long-form reading text */
+  /* light schematic (default) */
+  --package: #ffffff;  /* background: paper */
+  --die: #f4f5f8;      /* surfaces */
+  --grid: #b9bec9;     /* borders, idle traces */
+  --silk: #16181d;     /* text: ink */
+  --muted: #555b69;    /* secondary text */
+  --wafer: #3b47c4;    /* accent */
+  --amber: #a86a00;    /* status: in progress */
+  --green: #1f8a4c;    /* status: complete */
+  --body: #2a2e37;     /* long-form reading text */
+  --shadow: rgba(22, 24, 29, 0.14);
   --font: "Charter", "Bitstream Charter", "Sitka Text", Cambria, serif;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+/* dark: follows the system unless the toggle picked a theme (screen only; print stays light) */
+@media screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --package: #15171c; --die: #1c1f26; --grid: #2b2f3a; --silk: #e6e8ee; --muted: #8a90a0;
+    --wafer: #9aa5ff; --amber: #f0b94a; --green: #6fcf97; --body: #c5c9d3; --shadow: rgba(0, 0, 0, 0.45);
+  }
+}
+@media screen {
+  :root[data-theme="dark"] {
+    --package: #15171c; --die: #1c1f26; --grid: #2b2f3a; --silk: #e6e8ee; --muted: #8a90a0;
+    --wafer: #9aa5ff; --amber: #f0b94a; --green: #6fcf97; --body: #c5c9d3; --shadow: rgba(0, 0, 0, 0.45);
+  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -64,12 +91,13 @@ a:focus-visible { outline: 2px solid var(--wafer); outline-offset: 3px; }
   align-items: center;
   justify-content: center;
   gap: 4rem;
-  padding: 4rem 8vw 4rem calc(8vw + 2rem);
+  padding: 4rem 8vw 4rem max(calc(8vw + 2rem), 13.5rem);
 }
 
 h1, h2 {
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); line-height: 1.05; }
 h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 1rem; }
@@ -104,28 +132,150 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 }
 .chips li::before { top: -4px; }
 .chips li::after { bottom: -4px; }
-/* Titles stay on one line: the text column is sized to fit the longest title (~20.2em) */
-.project { --title: clamp(1.25rem, 2.05vw, 2rem); }
-.project .content { flex: 0 0 auto; width: calc(var(--title) * 20.6); max-width: none; }
-.project h2 { white-space: nowrap; font-size: var(--title); margin-bottom: 0.75rem; }
+.proj h3 { font-family: var(--mono); font-size: clamp(1.1rem, 1.5vw, 1.4rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 0.75rem; }
 .content .subtitle { color: var(--silk); font-size: 1.15rem; line-height: 1.45; margin: 0 0 0.75rem; }
 .content .org { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.6rem; font-size: 0.95rem; margin: 0 0 1rem; }
 .content .org .status { margin-left: 0; }
 .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
 
-/* Hero */
+/* Hero: a logic analyzer capture (see index.html) */
 .hero { justify-content: flex-start; }
-.tagline { color: var(--muted); font-size: 1.3rem; margin-top: 1rem; max-width: 36rem; }
-.school {
-  color: var(--wafer);
-  font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
-  margin-top: 1.75rem;
+.capture { --tick: 24px; width: min(100%, 62rem); font-family: var(--mono); }
+.cap-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--grid);
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
+.trig { display: inline-flex; align-items: center; gap: 0.5rem; }
+.trig::before { content: ""; width: 7px; height: 7px; background: var(--green); animation: glow 2.4s ease-in-out infinite; }
+.theme-toggle {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--grid);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.theme-toggle:hover, .theme-toggle:focus-visible { border-color: var(--wafer); color: var(--wafer); outline: none; }
 
-/* Projects: the visual leads */
-.project.flip { flex-direction: row-reverse; }
+/* columns: signal name | idle before T0 | bus values | idle after */
+.wave {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.5rem calc(var(--tick) * 2) max-content minmax(var(--tick), 1fr);
+  grid-template-rows: repeat(6, auto);
+  align-items: center;
+  row-gap: 0.9rem;
+}
+.lbl { grid-column: 1; color: var(--muted); font-size: 0.8rem; }
+/* each signal is a label + trace pair on its own row (explicit, so the cursor can span them all) */
+.wave > :nth-child(-n+2) { grid-row: 1; }
+.wave > :nth-child(3), .wave > :nth-child(4) { grid-row: 2; }
+.wave > :nth-child(5), .wave > :nth-child(6) { grid-row: 3; }
+.wave > :nth-child(7), .wave > :nth-child(8) { grid-row: 4; }
+.wave > :nth-child(9), .wave > :nth-child(10) { grid-row: 5; }
+.wave > :nth-child(11), .wave > :nth-child(12) { grid-row: 6; }
+.ruler, .sig, .bus { grid-column: 2 / -1; }
+.ruler { height: 0.6rem; border-bottom: 1px solid var(--grid); background: repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px var(--tick)); }
+.sig { height: 1.25rem; }
+/* square wave drawn as a mask so it takes the theme color */
+.clk {
+  background: var(--muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M0 19H12V1H24' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / var(--tick) 100% repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M0 19H12V1H24' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / var(--tick) 100% repeat-x;
+}
+/* valid: low, high across the bus values, low */
+.valid, .bus { display: grid; grid-template-columns: subgrid; }
+.valid i { border-bottom: 1.5px solid var(--muted); }
+.valid i:nth-child(2) { border: 1.5px solid var(--wafer); border-bottom: 0; }
+/* bus: idle (two thin rails) around a hexagonal value, like a bus in a waveform viewer */
+.bus { align-items: stretch; }
+.bus > i { border-block: 1px solid var(--grid); margin-block: 0.35rem; }
+.val {
+  --x: 0.75rem;
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  padding: 0.45rem calc(var(--x) + 0.9rem);
+  background: var(--muted);
+  clip-path: polygon(0 50%, var(--x) 0, calc(100% - var(--x)) 0, 100% 50%, calc(100% - var(--x)) 100%, var(--x) 100%);
+  color: var(--silk);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+/* outlined value: the fill shows through as a 1.5px border */
+.val::before {
+  content: "";
+  position: absolute;
+  inset: 1.5px 2px;
+  z-index: -1;
+  background: var(--package);
+  clip-path: inherit;
+}
+.val.fill { background: var(--wafer); color: var(--package); }
+.val.fill::before { content: none; }
+.hero h1 {
+  padding: 0.3em calc(var(--x) + 0.55em);
+  font-size: clamp(2rem, 6vw, 4.25rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+/* links: one port per value on the same rails */
+.ports { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; background: linear-gradient(var(--grid), var(--grid)) 0 0.35rem / 100% 1px no-repeat, linear-gradient(var(--grid), var(--grid)) 0 calc(100% - 0.35rem) / 100% 1px no-repeat; }
+.ports .val { font-size: 0.8rem; text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; transition: background-color 0.15s, color 0.15s; }
+.ports .val:hover, .ports .val:focus-visible { background: var(--wafer); color: var(--package); outline: none; }
+.ports .val:hover::before, .ports .val:focus-visible::before { content: none; }
+.bus:has(.ports) > i:last-child { display: none; }
+/* trigger cursor at T0 */
+.cursor {
+  grid-column: 3;
+  grid-row: 1 / -1;
+  justify-self: start;
+  align-self: stretch;
+  position: relative;
+  z-index: 2;
+  width: 0;
+  border-left: 1.5px dashed var(--wafer);
+  margin-left: -0.75px;
+  pointer-events: none;
+}
+.cursor::before {
+  content: "T0";
+  position: absolute;
+  top: -1.35rem;
+  left: -1px;
+  padding: 0.1rem 0.35rem;
+  background: var(--wafer);
+  color: var(--package);
+  font-size: 0.65rem;
+  line-height: 1.2;
+}
+.cursor { font-size: 0; }
+/* capture sweep: the traces draw in left to right on load */
+.wave::after {
+  content: "";
+  position: absolute;
+  inset: -1.5rem 0 -0.5rem 4.5rem;
+  z-index: 3;
+  background: var(--package);
+  animation: sweep 1.1s cubic-bezier(0.5, 0, 0.3, 1) 0.15s both;
+  pointer-events: none;
+}
+@keyframes sweep { to { clip-path: inset(0 0 0 100%); } }
+
 
 .visual {
   flex: 1.3 1 0;
@@ -153,7 +303,7 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 }
 .visual img { width: 100%; height: 100%; object-fit: contain; }
 
-/* Interactive block diagram inside a project visual: draw.io-style shapes, stacks vertically on screens below 1400px */
+/* Interactive block diagram inside a project visual: draw.io-style shapes, stacked vertically on screen (horizontal in print) */
 .visual.diagram-box {
   display: flex;
   flex-direction: column;
@@ -278,7 +428,7 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .legend .config { background: linear-gradient(225deg, var(--muted) 0 5px, transparent 5px); }
 .legend .check { width: 0.75rem; height: 0.75rem; margin: 0 0.3rem; transform: rotate(45deg); }
 
-@media screen and (max-width: 1399px) {
+@media screen {
   .diagram, .diagram .group { flex-direction: column; align-items: stretch; }
   .diagram { margin-top: 0.75rem; }
   .diagram .group { flex: none; padding: 1.6rem 1rem 1rem; }
@@ -314,7 +464,7 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
   padding: 0.6rem 0.75rem;
   background: var(--package);
   border: 1px solid var(--grid);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 8px 22px var(--shadow);
   color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.45;
@@ -341,46 +491,178 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 
 footer { font-size: 0.85rem; color: var(--muted); }
 
-/* Pin nav */
-.pins {
-  position: fixed;
-  left: 1.5rem;
-  top: 50%;
-  transform: translateY(-50%);
+/* Section heading styled as a capture's title bar */
+.cap-title {
   display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-  z-index: 10;
-  counter-reset: pin;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--grid);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-transform: uppercase;
 }
-.pins a {
-  counter-increment: pin;
-  display: block;
-  width: 10px;
-  height: 10px;
-  border: 1px solid var(--muted);
-  position: relative;
-  transition: transform 0.15s, border-color 0.15s, background-color 0.15s;
-}
-.pins a:hover, .pins a:focus-visible { transform: scale(1.5); border-color: var(--wafer); background: rgba(154, 165, 255, 0.35); outline: none; }
-.pins a.active { background: var(--wafer); border-color: var(--wafer); }
-/* section number, shown next to the hovered pin */
-.pins a::after {
-  content: counter(pin);
+.cap-title span { font-size: 0.7rem; letter-spacing: 0.04em; text-transform: none; }
+
+/* Timeline: values placed by date; script.js sets --a/--b (start/end as a fraction of the axis) and builds the ruler */
+.timeline { justify-content: flex-start; }
+.tl { width: min(100%, 62rem); font-family: var(--mono); }
+.tl-capture { --lbl: 9.25rem; position: relative; display: grid; row-gap: 0.55rem; padding-top: 1.7rem; }
+.tl-capture + .cap-title { margin-top: 0; }
+.tl-row { display: grid; grid-template-columns: var(--lbl) 1fr; align-items: center; }
+.tl-lbl { display: flex; align-items: center; gap: 0.6rem; color: var(--muted); font-size: 0.8rem; }
+.tl-lbl img { flex: none; box-sizing: border-box; width: 64px; height: 48px; object-fit: contain; }
+.tl-trace { position: relative; height: 2.1rem; }
+.tl-trace::before { content: ""; position: absolute; inset: 0.4rem 0; border-block: 1px solid var(--grid); }
+.tl .val {
   position: absolute;
-  left: 14px;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--a) * 100%);
+  width: calc((var(--b) - var(--a)) * 100%);
+  display: block;
+  padding: 0 calc(var(--x) + 0.35rem);
+  overflow: hidden;
+  font-size: 0.75rem;
+  line-height: 2.1rem;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.tl .val.open { clip-path: polygon(0 50%, var(--x) 0, 100% 0, 100% 100%, var(--x) 100%); }
+.tl .val:hover, .tl .val.active { background: var(--wafer); color: var(--package); }
+.tl .val:hover::before, .tl .val.active::before { content: none; }
+.tl .val:focus-visible { outline: none; background: var(--wafer); color: var(--package); }
+.tl-ruler { position: absolute; top: 0; left: var(--lbl); right: 0; height: 1.2rem; border-bottom: 1px solid var(--grid); }
+.tl-ruler i { position: absolute; left: calc(var(--f) * 100%); bottom: 0; height: 0.4rem; border-left: 1px solid var(--grid); }
+.tl-ruler i::after { content: attr(data-t); position: absolute; bottom: 0.45rem; left: 0; transform: translateX(-50%); color: var(--muted); font-size: 0.62rem; font-style: normal; line-height: 1; }
+.tl-now, .tl-win { position: absolute; top: 1.2rem; bottom: -0.3rem; pointer-events: none; }
+.tl-now { left: calc(var(--lbl) + (100% - var(--lbl)) * var(--f)); z-index: 2; border-left: 1.5px dashed var(--wafer); }
+.tl-now::before { content: "NOW"; position: absolute; top: -1.25rem; left: -1px; padding: 0.1rem 0.3rem; background: var(--wafer); color: var(--package); font-size: 0.6rem; line-height: 1.2; }
+/* the window the experience capture zooms into */
+.tl-win { left: calc(var(--lbl) + (100% - var(--lbl)) * var(--a)); width: calc((100% - var(--lbl)) * (var(--b) - var(--a))); background: color-mix(in srgb, var(--wafer) 7%, transparent); border-inline: 1px dashed color-mix(in srgb, var(--wafer) 60%, transparent); }
+.zoom { display: block; width: calc(100% - 9.25rem); height: 2.25rem; margin: 0.3rem 0 0.5rem 9.25rem; overflow: visible; }
+.zoom line { stroke: color-mix(in srgb, var(--wafer) 60%, transparent); stroke-dasharray: 4 3; }
+/* logos sit on a light badge on the dark theme so navy marks stay readable */
+@media screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tl-lbl img { padding: 4px; border-radius: 6px; background: #f4f5f8; }
+}
+@media screen { :root[data-theme="dark"] .tl-lbl img { padding: 4px; border-radius: 6px; background: #f4f5f8; } }
+
+/* Projects: a mux. Inputs (built by script.js from the articles) select which project shows on the output track. */
+.projects { justify-content: flex-start; }
+.mux-wrap { width: min(100%, 74rem); }
+.mux-ctrl button {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--grid);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-variant-emoji: text;
+  cursor: pointer;
+}
+.mux-ctrl button:hover, .mux-ctrl button:focus-visible { border-color: var(--wafer); color: var(--wafer); outline: none; }
+.mux { position: relative; display: grid; font-family: var(--mono); }
+.mux-in { position: relative; list-style: none; }
+.mux-pin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--grid);
+  background: var(--package);
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.mux-pin .idx { flex: none; padding: 0.15rem 0.3rem; border: 1px solid var(--grid); font-size: 0.65rem; }
+.mux-pin .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mux-pin.wip .idx { border-color: var(--amber); color: var(--amber); }
+.mux-pin:hover, .mux-pin:focus-visible { border-color: var(--wafer); color: var(--silk); outline: none; }
+.mux-pin[aria-current="true"] { border-color: var(--wafer); color: var(--silk); }
+.mux-pin[aria-current="true"] .idx { border-color: var(--wafer); background: var(--wafer); color: var(--package); }
+/* wires from each input into the mux; the selected one carries the signal */
+.mux-in li { position: relative; min-width: 0; }
+.mux-in li::after { content: ""; position: absolute; background: var(--grid); }
+.mux-in li:has([aria-current="true"])::after { background: var(--wafer); }
+.mux-sym { position: relative; z-index: 0; display: grid; place-items: center; background: var(--muted); color: var(--silk); font-size: 0.7rem; letter-spacing: 0.1em; }
+.mux-sym::before { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: var(--package); clip-path: inherit; }
+.mux-sym b { font-weight: 500; }
+.mux-ctrl { display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--muted); }
+.mux-sel { font-family: inherit; color: var(--wafer); white-space: pre; }
+/* output: a horizontal track, one project per stop (native swipe on touch) */
+.mux-out { font-family: var(--font); grid-area: out; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.mux-out::-webkit-scrollbar { display: none; }
+.proj { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2.25rem; align-items: center; align-content: start; padding: 0.25rem; }
+.proj .content { max-width: none; }
+.proj .visual { max-width: none; width: 100%; }
+
+/* inputs stacked on the left, the mux, the output on the right */
+.mux { grid-template-columns: 16rem 2.5rem minmax(0, 1fr); grid-template-areas: "in sym out" "ctrl ctrl ."; align-items: center; row-gap: 1rem; }
+.mux-in { grid-area: in; display: grid; gap: 0.55rem; max-height: 24rem; overflow: hidden auto; padding-right: 2rem; }  /* wires run in the padding, inside the scroll box */
+.mux-in li::after { left: 100%; top: 50%; width: 2rem; height: 1.5px; margin-top: -0.75px; }
+.mux-sym { grid-area: sym; justify-self: end; align-self: stretch; width: 2.5rem; clip-path: polygon(0 0, 100% 16%, 100% 84%, 0 100%); }
+.mux-sym b { writing-mode: vertical-rl; transform: rotate(180deg); }
+.mux::after { content: ""; position: absolute; top: var(--wire-y, 50%); left: calc(16rem + 2.5rem); width: 1.25rem; height: 1.5px; background: var(--wafer); }
+.mux-out { margin-left: 1.25rem; }
+.mux-ctrl { grid-area: ctrl; }
+
+/* Signal nav: each section is a one-hot signal over the page's "time"; --x (set by script.js) moves the cursor */
+.signals {
+  --w: 4.5rem;
+  position: fixed;
+  left: 1.25rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--wafer);
-  font-size: 0.55rem;  /* shown at ~0.8rem once the pin scales 1.5x */
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 5.4rem var(--w);
+  column-gap: 0.6rem;
+  row-gap: 0.55rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
   line-height: 1;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s;
 }
-.pins a:hover::after, .pins a:focus-visible::after { opacity: 1; }
-/* section names stay for screen readers only */
-.pins span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.signals a { display: contents; color: var(--muted); }
+.signals a:hover, .signals a:focus-visible { text-decoration: none; color: var(--silk); outline: none; }
+.signals a.active { color: var(--wafer); }
+.signals span { text-align: right; padding: 0.15rem 0; transition: color 0.15s; }
+.signals i { position: relative; border-bottom: 1px solid var(--grid); }
+/* this section's pulse sits in its own slot of the strip */
+.signals i::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--i) * var(--w) / var(--n));
+  width: calc(var(--w) / var(--n));
+  top: 0;
+  bottom: -1px;
+  border: 1px solid currentColor;
+  border-bottom: 0;
+  background: var(--package);
+}
+.signals a.active i { border-color: var(--muted); }
+.scrub {
+  position: absolute;
+  top: -0.4rem;
+  bottom: -0.4rem;
+  left: calc(5.4rem + 0.6rem + var(--x, 0.1) * var(--w));
+  border-left: 1px dashed var(--wafer);
+  pointer-events: none;
+}
 
 /* Pixel build-in: a canvas of background-colored cells over each block (see script.js) */
 .reveal { position: relative; }
@@ -393,7 +675,7 @@ footer { font-size: 0.85rem; color: var(--muted); }
   gap: 0.45rem;
   margin-left: 0.6rem;
   padding: 0.3rem 0.55rem 0.25rem;
-  border: 1px solid rgba(240, 185, 74, 0.4);
+  border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent);
   color: var(--amber);
   font-family: var(--mono);
   font-size: 0.75rem;
@@ -410,7 +692,26 @@ footer { font-size: 0.85rem; color: var(--muted); }
 }
 @keyframes blink { 50% { opacity: 0.2; } }
 /* complete: a steady LED whose glow breathes */
-.status.done { border-color: rgba(111, 207, 151, 0.4); color: var(--green); }
+.status.done { border-color: color-mix(in srgb, var(--green) 40%, transparent); color: var(--green); }
+
+/* Project capture strip: the project's signal and its state (screen; print keeps the .status badge) */
+.cap-head { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+.cap-head i { position: relative; width: 6rem; height: 0.85rem; }
+.cap-head b { font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+.cap-head.done b { color: var(--green); }
+.cap-head.wip b { color: var(--amber); }
+/* done: one rising edge, then steady high */
+.cap-head.done i { background: linear-gradient(var(--green), var(--green)) 0 100% / 30% 1.5px no-repeat; }
+.cap-head.done i::after { content: ""; position: absolute; inset: 0 0 0 30%; border-top: 1.5px solid var(--green); border-left: 1.5px solid var(--green); }
+/* in progress: still toggling */
+.cap-head.wip i {
+  background: var(--amber);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 14'%3E%3Cpath d='M0 13H8V1H16' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / 16px 100% repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 14'%3E%3Cpath d='M0 13H8V1H16' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / 16px 100% repeat-x;
+  animation: toggle 1s linear infinite;
+}
+@keyframes toggle { to { -webkit-mask-position: -16px 0; mask-position: -16px 0; } }
+@media screen { .proj .org .status { display: none; } }
 .status.done::before { background: var(--green); animation: glow 2.4s ease-in-out infinite; }
 @keyframes glow { 50% { box-shadow: 0 0 9px 3px var(--green); } }
 
@@ -494,7 +795,8 @@ html.doc { scroll-snap-type: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .status::before, .status.done::before { animation: none; box-shadow: none; }
+  .status::before, .status.done::before, .trig::before, .cap-head.wip i { animation: none; box-shadow: none; }
+  .wave::after { display: none; }
 }
 
 /* Touch devices: plain native scrolling, no snapping or smooth scroll */
@@ -505,17 +807,48 @@ html.doc { scroll-snap-type: none; }
 
 /* Mobile: stack visual over text */
 @media (max-width: 800px) {
-  .project h2 { white-space: normal; }
-  .project .content { width: auto; }
+  .proj { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+  /* the mux turns sideways: inputs in a scrolling row above it, output below */
+  .mux { grid-template-columns: minmax(0, 1fr); grid-template-areas: "in" "sym" "ctrl" "out"; row-gap: 0; }
+  .mux-in { display: flex; gap: 0.75rem; max-height: none; overflow-x: auto; padding: 0.1rem 0.1rem 1.4rem; }
+  .mux-in li { flex: 0 0 12rem; }
+  .mux-in li::after { left: 50%; top: 100%; width: 1.5px; height: 1.4rem; margin: 0; }
+  .mux-sym { justify-self: stretch; width: auto; height: 2.6rem; clip-path: polygon(0 0, 100% 0, 94% 100%, 6% 100%); }
+  .mux-sym b { writing-mode: horizontal-tb; transform: none; }
+  .mux::after { display: none; }
+  .mux-out { margin-left: 0; }
+  .mux-ctrl { position: relative; justify-content: center; padding: 1.2rem 0 1.5rem; }
+  .mux-ctrl::before { content: ""; position: absolute; top: 0; left: 50%; width: 1.5px; height: 1.1rem; background: var(--wafer); }
+  /* timeline turns 90 degrees: time runs down, one column per signal */
+  .tl-capture { --lblh: 5rem; display: flex; gap: 0.35rem; height: 30rem; padding: 0 0 0 2.4rem; }
+  .tl-row { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+  .tl-lbl { flex: 0 0 calc(var(--lblh) - 0.5rem); flex-direction: column; justify-content: flex-end; gap: 0.3rem; font-size: 0.65rem; }
+  .tl-lbl img { width: 48px; height: 36px; }
+  .tl-trace { flex: 1 1 auto; width: 2.1rem; height: auto; }
+  .tl-trace::before { inset: 0 0.4rem; border: 0; border-inline: 1px solid var(--grid); }
+  .tl .val { top: calc(var(--a) * 100%); bottom: auto; left: 0; width: auto; right: 0; height: calc((var(--b) - var(--a)) * 100%); padding: calc(var(--x) + 0.3rem) 0; line-height: 2.1rem; writing-mode: vertical-rl; clip-path: polygon(50% 0, 100% var(--x), 100% calc(100% - var(--x)), 50% 100%, 0 calc(100% - var(--x)), 0 var(--x)); }
+  .tl .val.open { clip-path: polygon(50% 0, 100% var(--x), 100% 100%, 0 100%, 0 var(--x)); }
+  .tl-ruler { top: var(--lblh); bottom: 0; left: 0; right: auto; width: 2rem; height: auto; border-bottom: 0; border-right: 1px solid var(--grid); }
+  .tl-ruler i { left: auto; right: 0; top: calc(var(--f) * 100%); bottom: auto; width: 0.4rem; height: 0; border-left: 0; border-top: 1px solid var(--grid); }
+  .tl-ruler i::after { bottom: auto; top: 0; left: auto; right: 0.5rem; transform: translateY(-50%); }
+  .tl-now, .tl-win { top: calc(var(--lblh) + (100% - var(--lblh)) * var(--f, var(--a))); bottom: auto; left: 2.4rem; right: -0.3rem; width: auto; }
+  .tl-now { border-left: 0; border-top: 1.5px dashed var(--wafer); }
+  .tl-now::before { top: -0.7rem; left: auto; right: 0; }
+  .tl-win { height: calc((100% - var(--lblh)) * (var(--b) - var(--a))); border-inline: 0; border-block: 1px dashed color-mix(in srgb, var(--wafer) 60%, transparent); }
+  .zoom { display: none; }
   .visual.diagram-box { aspect-ratio: auto; }
   .sdiagram { width: 400px; }  /* 2D diagrams keep readable text and scroll sideways in their box */
   .doc-body .sdiagram { width: 640px; }
-  .panel, .project.flip { flex-direction: column; align-items: flex-start; gap: 2rem; padding: 4rem 1.25rem 4rem 2.75rem; }
+  .panel { flex-direction: column; align-items: flex-start; gap: 2rem; padding: 4rem 1.25rem; }
   .hero { justify-content: center; }
   .visual { width: 100%; flex: none; }
-  .pins { left: 0.9rem; gap: 0.7rem; }
-  .pins a { width: 8px; height: 8px; }
-  .pins a::after { display: none; }
+  .signals { display: none; }
+  .wave { grid-template-columns: 3.25rem var(--tick) minmax(0, 1fr) 0.75rem; row-gap: 0.75rem; }
+  .wave::after { left: 3.25rem; }
+  .lbl { font-size: 0.7rem; }
+  .hero h1 { font-size: clamp(1.6rem, 8.5vw, 2.5rem); }
+  .val { font-size: 0.8rem; }
+  .ports .val { font-size: 0.7rem; }
   .doc-body .path { flex-direction: column; align-items: flex-start; gap: 1rem; }
   .doc-body .path li { flex: none; padding: 0.6rem 0.8rem 0.55rem; }
   .doc-body .path li + li::before { top: calc(-1rem - 1px); left: 1.25rem; width: 1px; height: 1rem; }
@@ -531,22 +864,29 @@ html.doc { scroll-snap-type: none; }
   @page { size: letter; margin: 0.6in 0.65in 0.75in; }
   html { scroll-snap-type: none; }
   html, body { background: #fff; font-size: 15px; }
-  .pins, .px, .diagram-info, .tip, .pdf-link, .doc-nav { display: none !important; }
+  .signals, .px, .diagram-info, .tip, .pdf-link, .doc-nav, .cap-bar, .cap-head { display: none !important; }
   .status::before { animation: none; box-shadow: none; }
 
   /* home page: headlines, diagrams with their hover details, and links; the full writeups live on the site */
-  .panel, .project.flip { display: block; min-height: 0; height: auto; padding: 0; scroll-snap-align: none; }
+  .panel { display: block; min-height: 0; height: auto; padding: 0; scroll-snap-align: none; }
   .hero { padding-top: 0.15in; }
-  /* PDF header: name, education line in the tagline's place and style, and a labeled link to the site */
-  .tagline, #about { display: none; }
-  .school { color: var(--muted); font-size: 1.3rem; font-weight: 400; letter-spacing: 0; margin-top: 1rem; }
+  /* PDF header: name, education line and a labeled link to the site; the capture styling drops away */
+  .capture { font-family: var(--font); }
+  .wave { display: block; }
+  .wave::after, .lbl, .ruler, .sig, .cursor, .bus > i, .bus:has(.ports) { display: none; }
+  .val, .val.fill { display: block; padding: 0; background: none; clip-path: none; color: var(--silk); }
+  .val::before { content: none; }
+  h1, h2 { font-family: var(--font); font-weight: 700; letter-spacing: -0.01em; }
+  .hero h1 { padding: 0; font-size: clamp(2.5rem, 8vw, 4.5rem); line-height: 1.05; text-transform: none; }
+  .school { color: var(--muted); font-family: var(--font); font-size: 1.3rem; font-weight: 400; margin-top: 1rem; }
   .print-only { display: block; }
   .site-link { margin-top: 0.5rem; color: var(--muted); font-size: 1rem; }
-  .content, .project .content { width: auto; max-width: none; }
-  .project, .project.flip { display: flex; flex-direction: column; gap: 0.2in; margin-top: 0.3in; padding-top: 0.25in; border-top: 1px solid var(--grid); break-inside: avoid; }
-  .project .content { order: -1; }  /* title and text before the diagram */
-  .project h2 { white-space: normal; font-size: 1.5rem; margin-bottom: 0.4rem; }
-  .project .chips { margin: 0.75rem 0 0.6rem; }
+  .content { width: auto; max-width: none; }
+  .timeline, .projects .cap-title, .mux-in, .mux-sym, .mux-ctrl, .mux::after { display: none !important; }
+  .mux, .mux-out { display: block; overflow: visible; }
+  .proj { display: flex; flex-direction: column; gap: 0.2in; margin-top: 0.3in; padding: 0.25in 0 0; border-top: 1px solid var(--grid); break-inside: avoid; }
+  .proj h3 { font-family: var(--font); font-weight: 700; letter-spacing: -0.01em; font-size: 1.5rem; margin-bottom: 0.4rem; }
+  .proj .chips { margin: 0.75rem 0 0.6rem; }
   .visual { width: 100%; max-width: none; }
   .visual.diagram-box { aspect-ratio: auto; break-inside: avoid; padding: 1.5rem 1.5rem 1.1rem; gap: 1.25rem; }
   .sdiagram, .doc-body .sdiagram { width: 100% !important; }

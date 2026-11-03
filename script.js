@@ -1,21 +1,17 @@
-// Home page opens on the title card: ignore restored scroll positions and leftover #section
-// links, except when arriving via a writeup's "Back to projects" link
+// Home page opens on the title card: ignore restored scroll positions and leftover #section links,
+// except a project deep link (#projects/<slug>, e.g. a writeup's "Back to projects"), which opens that project
+const deepLink = location.hash.startsWith("#projects/") ? location.hash.slice(10) : null;
 if (document.querySelector(".panel")) {
   history.scrollRestoration = "manual";
-  const clearHash = () => location.hash && history.replaceState(null, "", location.pathname + location.search);
-  if (document.referrer.includes("/writeups/")) {
-    addEventListener("load", () => setTimeout(clearHash, 0));
-  } else {
-    clearHash();
-    scrollTo(0, 0);
-    addEventListener("load", () => scrollTo(0, 0));
-  }
+  const target = () => (deepLink ? document.getElementById("projects").offsetTop : 0);
+  if (!deepLink && location.hash) history.replaceState(null, "", location.pathname + location.search);
+  scrollTo(0, target());
+  addEventListener("load", () => scrollTo(0, target()));
 }
 
 // Pixel build-in: cover each block with cells, clear them in a diagonal ripple on enter
 const CELL = 10;
 const DURATION = 500;
-const bg = getComputedStyle(document.documentElement).getPropertyValue("--package");
 
 function cover(el) {
   cancelAnimationFrame(el._raf);
@@ -23,7 +19,7 @@ function cover(el) {
   c.width = el.offsetWidth;
   c.height = el.offsetHeight;
   const ctx = c.getContext("2d");
-  ctx.fillStyle = bg;
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--package");  // read live: the theme can change
   ctx.fillRect(0, 0, c.width, c.height);
 }
 
@@ -64,8 +60,24 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
   });
 }
 
-// Drive the pin for the panel currently on screen high
-const pins = document.querySelectorAll(".pins a");
+// Theme toggle: flips light/dark and remembers the choice (index.html applies it before first paint)
+const toggle = document.querySelector(".theme-toggle");
+if (toggle) {
+  const isDark = () => (document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
+  const label = () => (toggle.textContent = isDark() ? "Light" : "Dark");
+  label();
+  toggle.addEventListener("click", () => {
+    const theme = isDark() ? "light" : "dark";
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem("theme", theme); } catch (e) {}
+    label();
+  });
+}
+
+// Signal nav: one slot per section; drive the signal for the panel currently on screen high
+const pins = document.querySelectorAll(".signals a");
+pins.forEach((a, i) => a.style.setProperty("--i", i));
+document.querySelector(".signals")?.style.setProperty("--n", pins.length);
 const panelObserver = new IntersectionObserver((entries) => {
   entries.forEach((e) => {
     if (!e.isIntersecting) return;
@@ -73,6 +85,24 @@ const panelObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.6 });
 document.querySelectorAll(".panel").forEach((p) => panelObserver.observe(p));
+
+// ...and move the cursor across the strip: panel i owns slot i, and the cursor sits mid-slot when the panel fills the screen
+const signals = document.querySelector(".signals");
+if (signals) {
+  const panels = [...document.querySelectorAll(".panel")];
+  let queued = false;
+  const track = () => {
+    queued = false;
+    const y = scrollY + innerHeight / 2;
+    let i = panels.findIndex((p) => y < p.offsetTop + p.offsetHeight);
+    if (i < 0) i = panels.length - 1;
+    const p = panels[i], f = Math.max(0, Math.min(1, (y - p.offsetTop) / p.offsetHeight));
+    signals.style.setProperty("--x", (i + f) / panels.length);
+  };
+  addEventListener("scroll", () => queued || (queued = requestAnimationFrame(track)), { passive: true });
+  addEventListener("resize", track);
+  track();
+}
 
 // Detented scrolling (desktop): wheel input presses against a detent, then clicks to the next panel
 const detent =
@@ -122,6 +152,7 @@ if (detent) {
   }
 
   addEventListener("wheel", (e) => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
     const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
     const now = performance.now(), gap = now - lastWheel;
     lastWheel = now;
@@ -166,9 +197,9 @@ if (detent) {
   }));
 }
 
-// Block diagrams: hover, focus or tap a block to see what it does in a tooltip next to it
+// Block diagrams and the timeline: hover, focus or tap a block to see what it does in a tooltip next to it
 const hideTips = [];
-document.querySelectorAll(".diagram-box").forEach((box) => {
+document.querySelectorAll(".diagram-box, .tl-capture").forEach((box) => {
   box.querySelector(".diagram-info")?.remove();
   const tip = document.createElement("div");
   tip.className = "tip";
@@ -217,3 +248,112 @@ document.querySelectorAll(".diagram-box").forEach((box) => {
 });
 document.addEventListener("click", () => hideTips.forEach((hide) => hide()));
 document.addEventListener("keydown", (e) => e.key === "Escape" && hideTips.forEach((hide) => hide()));
+
+// Timeline: place each value by its dates, then add the ruler, the "now" cursor and the zoom window
+const month = (s) => { const [y, m] = s.split("-").map(Number); return y * 12 + m - 1; };
+const today = new Date();
+const nowMonth = today.getFullYear() * 12 + today.getMonth() + (today.getDate() - 1) / 31;
+document.querySelectorAll(".tl-capture").forEach((cap) => {
+  const from = month(cap.dataset.from), span = month(cap.dataset.to) + 1 - from;
+  const f = (cap._f = (m) => Math.max(0, Math.min(1, (m - from) / span)));
+  cap.querySelectorAll(".val").forEach((v) => {
+    v.style.setProperty("--a", f(month(v.dataset.start)));
+    v.style.setProperty("--b", v.dataset.end ? f(month(v.dataset.end) + 1) : 1);
+    v.classList.toggle("open", !v.dataset.end);
+  });
+  const ruler = document.createElement("span");
+  ruler.className = "tl-ruler";
+  ruler.setAttribute("aria-hidden", "true");
+  const yearly = cap.dataset.unit === "year";
+  for (let m = from; m < from + span; m++) {
+    if (yearly && m % 12) continue;
+    const tick = document.createElement("i");
+    tick.style.setProperty("--f", f(m));
+    tick.dataset.t = m % 12 ? "JFMAMJJASOND"[m % 12] : "'" + String(Math.floor(m / 12)).slice(2);
+    ruler.append(tick);
+  }
+  const now = document.createElement("span");
+  now.className = "tl-now";
+  now.style.setProperty("--f", f(nowMonth));
+  cap.prepend(ruler);
+  cap.append(now);
+});
+const edu = document.querySelector(".tl-capture.edu"), exp = document.querySelector(".tl-capture.exp");
+if (edu && exp) {
+  const a = edu._f(month(exp.dataset.from)), b = edu._f(month(exp.dataset.to) + 1);
+  const win = document.createElement("span");
+  win.className = "tl-win";
+  win.style.setProperty("--a", a);
+  win.style.setProperty("--b", b);
+  edu.append(win);
+  const [l, r] = document.querySelectorAll(".zoom line");
+  l?.setAttribute("x1", a * 100); l?.setAttribute("y1", 0); l?.setAttribute("x2", 0); l?.setAttribute("y2", 100);
+  r?.setAttribute("x1", b * 100); r?.setAttribute("y1", 0); r?.setAttribute("x2", 100); r?.setAttribute("y2", 100);
+}
+
+// Projects mux: every <article class="proj"> is an input; sel picks which one the output track shows
+const mux = document.querySelector(".mux");
+if (mux) {
+  const panel = mux.closest(".projects");
+  const out = mux.querySelector(".mux-out");
+  const arts = [...out.querySelectorAll(".proj")];
+  const list = mux.querySelector(".mux-in");
+  const sel = mux.querySelector(".mux-sel");
+  const bits = Math.max(1, Math.ceil(Math.log2(arts.length)));
+  const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let cur = 0;
+
+  const inputs = arts.map((art, i) => {
+    const li = document.createElement("li"), b = document.createElement("button");
+    b.type = "button";
+    b.className = "mux-pin" + (art.querySelector(".cap-head.wip") ? " wip" : "");
+    b.innerHTML = `<span class="idx">in${i}</span><span class="nm"></span>`;
+    b.querySelector(".nm").textContent = art.querySelector("h3").textContent;
+    b.addEventListener("click", () => select(i, true));
+    li.append(b);
+    list.append(li);
+    return b;
+  });
+
+  function select(i, user, instant) {
+    cur = (i + arts.length) % arts.length;
+    arts.forEach((a, j) => (a.inert = j !== cur));
+    inputs.forEach((b, j) => b.setAttribute("aria-current", j === cur));
+    const li = inputs[cur].parentElement;  // keep the selected input in view without scrolling the page
+    list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
+    sel.textContent = `sel = ${bits}'b${cur.toString(2).padStart(bits, "0")}`;
+    out.scrollTo({ left: cur * out.clientWidth, behavior: instant || !smooth ? "instant" : "smooth" });
+    if (user) history.replaceState(null, "", "#projects/" + arts[cur].dataset.slug);
+    hideTips.forEach((hide) => hide());
+  }
+  const layout = () => {
+    const sym = mux.querySelector(".mux-sym");  // side style: the output wire leaves the mux at its middle
+    mux.style.setProperty("--wire-y", sym.offsetTop + sym.offsetHeight / 2 + "px");
+    select(cur, false, true);
+  };
+
+  // a swipe or trackpad scroll on the track selects where it lands
+  let settle;
+  out.addEventListener("scroll", () => {
+    clearTimeout(settle);
+    settle = setTimeout(() => {
+      const i = Math.round(out.scrollLeft / out.clientWidth);
+      if (i !== cur) select(i, true);
+    }, 120);
+  }, { passive: true });
+
+  mux.querySelector(".mux-prev").addEventListener("click", () => select(cur - 1, true));
+  mux.querySelector(".mux-next").addEventListener("click", () => select(cur + 1, true));
+  addEventListener("keydown", (e) => {
+    if ((e.key !== "ArrowLeft" && e.key !== "ArrowRight") || e.altKey || e.ctrlKey || e.metaKey) return;
+    const r = panel.getBoundingClientRect();
+    if (r.top > innerHeight / 2 || r.bottom < innerHeight / 2) return;
+    e.preventDefault();
+    select(cur + (e.key === "ArrowRight" ? 1 : -1), true);
+  });
+  addEventListener("resize", layout);
+
+
+  cur = Math.max(0, arts.findIndex((a) => a.dataset.slug === deepLink));
+  layout();
+}
