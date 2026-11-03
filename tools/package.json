@@ -1,6 +1,9 @@
 {
   "private": true,
-  "description": "Builds portfolio.pdf from the site (see build-pdf.js)",
+  "description": "Builds portfolio.pdf from the site (see build-pdf.js). The dev script forwards to the site at the repo root.",
+  "scripts": {
+    "dev": "cd .. && npm install --no-audit --no-fund && npm run dev"
+  },
   "dependencies": {
     "playwright": "^1.47.0"
   }
