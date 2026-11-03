@@ -1,7 +1,7 @@
 import { ArrowUp } from "lucide-react";
 import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 
-export function Composer({ onSend, autoFocus }: { onSend: (text: string) => void; autoFocus?: boolean }) {
+export function Composer({ onSend, autoFocus, placeholder }: { onSend: (text: string) => void; autoFocus?: boolean; placeholder: string }) {
   const [value, setValue] = useState("");
   const area = useRef<HTMLTextAreaElement>(null);
 
@@ -32,17 +32,16 @@ export function Composer({ onSend, autoFocus }: { onSend: (text: string) => void
         rows={1}
         value={value}
         autoFocus={autoFocus}
-        placeholder="Ask about my projects, experience, or education..."
+        placeholder={placeholder}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={onKeyDown}
       />
       <div className="composer-bar">
         <span className="composer-model">
-          <span className="led" aria-hidden="true" />
-          andy-chiem · pre-written answers
+          Andy <span>pre-written</span>
         </span>
         <button type="submit" className="send" disabled={!value.trim()} aria-label="Send">
-          <ArrowUp size={18} aria-hidden="true" />
+          <ArrowUp size={16} strokeWidth={2.25} aria-hidden="true" />
         </button>
       </div>
     </form>
