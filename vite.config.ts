@@ -7,5 +7,5 @@ export default defineConfig({
   plugins: [react()],
   base: "/",
   build: { outDir: "dist" },
-  server: { allowedHosts: true },
+  server: { port: Number(process.env.PORT) || 3000, allowedHosts: true },
 });
