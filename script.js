@@ -395,8 +395,8 @@ if (tlBox) {
   tlBox.append(card);
   const $ = (s) => card.querySelector(s);
   const sheet = matchMedia("(max-width: 800px)");
-  let cur = null;
-  const close = () => { card.hidden = true; cur?.classList.remove("active"); cur = null; };
+  let cur = null, pinned = false;
+  const close = () => { card.hidden = true; cur?.classList.remove("active"); cur = null; pinned = false; };
   const place = () => {
     card.style.left = card.style.top = "";
     if (!cur || sheet.matches) return;
@@ -406,8 +406,10 @@ if (tlBox) {
     card.style.left = left + "px";
     card.style.top = (below + h <= box.height || above < 0 ? below : above) + "px";  // below the bar unless it would spill out
   };
-  const open = (v) => {
-    if (cur === v) return close();
+  // clicks pin the card (clicking the same bar again closes it); a hover dwell opens it unpinned
+  const open = (v, hover) => {
+    if (cur === v) { if (hover) return; if (pinned) return close(); return (pinned = true); }
+    pinned = !hover;
     cur?.classList.remove("active");
     (cur = v).classList.add("active");
     const row = v.closest(".tl-row"), lbl = row.querySelector(".tl-lbl"), sub = row.querySelector(".tl-sub");
@@ -418,7 +420,7 @@ if (tlBox) {
     sub?.querySelectorAll("dt").forEach((dt) => {
       const dd = dt.nextElementSibling, k = dt.textContent;
       if (k === "gpa") info += " · GPA " + dd.textContent;
-      else if (k === "note" && !dd.classList.contains("todo")) note.textContent = dd.textContent;  // unwritten notes stay hidden
+      else if (k === "note") { if (!dd.classList.contains("todo")) note.textContent = dd.textContent; }  // unwritten notes stay hidden
       else fields.append(dt.cloneNode(true), dd.cloneNode(true));
     });
     $("img").src = lbl.querySelector("img").src;
@@ -436,6 +438,25 @@ if (tlBox) {
     v.addEventListener("click", (e) => { e.stopPropagation(); open(v); });
     v.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(v)));
   });
+  // desktop: resting on a bar fills it like a progress bar, then opens it; leaving the bar and the card closes an
+  // unpinned card shortly after
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    const DWELL = 700;
+    let dwell, linger;
+    const stay = () => clearTimeout(linger);
+    const leave = () => { clearTimeout(linger); linger = setTimeout(() => cur && !pinned && close(), 300); };
+    tlBox.querySelectorAll(".tl-row .val").forEach((v) => {
+      v.addEventListener("mouseenter", () => {
+        stay();
+        if (cur === v) return;
+        v.classList.add("dwell");
+        dwell = setTimeout(() => { v.classList.remove("dwell"); open(v, true); }, DWELL);
+      });
+      v.addEventListener("mouseleave", () => { clearTimeout(dwell); v.classList.remove("dwell"); leave(); });
+    });
+    card.addEventListener("mouseenter", stay);
+    card.addEventListener("mouseleave", leave);
+  }
   card.addEventListener("click", (e) => e.stopPropagation());
   $(".ins-close").addEventListener("click", close);
   document.addEventListener("click", () => cur && close());
