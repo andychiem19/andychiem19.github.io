@@ -165,8 +165,8 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 /* square wave drawn as a mask so it takes the theme color */
 .clk {
   background: var(--muted);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M0 19H12V1H24' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / var(--tick) 100% repeat-x;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M0 19H12V1H24' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / var(--tick) 100% repeat-x;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M.75 19V1H12.75V19H24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='square'/%3E%3C/svg%3E") 0 0 / var(--tick) 100% repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 20'%3E%3Cpath d='M.75 19V1H12.75V19H24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='square'/%3E%3C/svg%3E") 0 0 / var(--tick) 100% repeat-x;
 }
 /* valid: low, high across the bus values, low */
 .valid, .bus { display: grid; grid-template-columns: subgrid; }
@@ -581,7 +581,7 @@ button { touch-action: manipulation; }  /* fast repeated taps shouldn't zoom on 
 /* output: a horizontal track, one project per stop (native swipe on touch) */
 .mux-out { font-family: var(--font); grid-area: out; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
 .mux-out::-webkit-scrollbar { display: none; }
-.proj { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2.25rem; align-items: center; align-content: start; padding: 0.25rem; }
+.proj { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2.25rem; align-items: center; align-content: center; padding: 0.25rem; }  /* every slide centred in the track */
 .proj .content { max-width: none; }
 .proj .visual { max-width: none; width: 100%; }
 
@@ -681,8 +681,8 @@ button { touch-action: manipulation; }  /* fast repeated taps shouldn't zoom on 
 /* in progress: still toggling */
 .cap-head.wip i {
   background: var(--amber);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 14'%3E%3Cpath d='M0 13H8V1H16' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / 16px 100% repeat-x;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 14'%3E%3Cpath d='M0 13H8V1H16' fill='none' stroke='%23000' stroke-width='1.5'/%3E%3C/svg%3E") 0 0 / 16px 100% repeat-x;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 14'%3E%3Cpath d='M.75 13V1H8.75V13H16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='square'/%3E%3C/svg%3E") 0 0 / 16px 100% repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 14'%3E%3Cpath d='M.75 13V1H8.75V13H16' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='square'/%3E%3C/svg%3E") 0 0 / 16px 100% repeat-x;
   animation: toggle 1s linear infinite;
 }
 @keyframes toggle { to { -webkit-mask-position: -16px 0; mask-position: -16px 0; } }
@@ -808,7 +808,7 @@ html.doc { scroll-snap-type: none; }
 
 /* Mobile: stack visual over text */
 @media (max-width: 800px) {
-  .proj { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+  .proj { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; align-content: start; }
   .mux::after { display: none; }
   .mux-out { margin-left: 0; }
   /* the desktop mux turned sideways and shrunk, short signal names as inputs */
