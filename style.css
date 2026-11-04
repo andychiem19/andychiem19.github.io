@@ -555,10 +555,9 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .tl-sub { display: none; }
 .tl .val { cursor: pointer; }
 /* hover dwell: an indigo fill sweeps across the bar, and the inspector opens when it's full */
-.tl .val.dwell:not(.active) { background: var(--muted); color: var(--silk); }
-.tl .val.dwell:not(.active)::before { content: ""; }
-.tl .val.dwell::after { content: ""; position: absolute; inset: 1.5px 2px; z-index: -1; background: color-mix(in srgb, var(--wafer) 28%, var(--package)); clip-path: inherit; transform-origin: left; animation: dwell 0.7s linear both; }
-@keyframes dwell { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* (the fill is a background on the bar's own inner hexagon, so it stays inside the outline) */
+.tl .val.dwell:not(.active)::before { background: linear-gradient(color-mix(in srgb, var(--wafer) 28%, var(--package)) 0 0) 0 0 / 0% 100% no-repeat, var(--package); animation: dwell 0.7s linear both; }
+@keyframes dwell { to { background-size: 100% 100%, auto; } }
 .tl-hint { margin-top: 1rem; color: var(--muted); font-size: 0.7rem; letter-spacing: 0.04em; }
 .tl-hint::before { content: "▸ "; color: var(--wafer); }
 .tl-hint .on-touch { display: none; }
@@ -832,7 +831,7 @@ html.doc { scroll-snap-type: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .status::before, .status.done::before, .trig::before, .cap-head.wip i, .trig.running::before { animation: none; box-shadow: none; }
-  .tl .val.dwell::after { animation: none; transform: none; }
+  .tl .val.dwell:not(.active)::before { animation: none; }
   .wave::after { display: none; }
 }
 
