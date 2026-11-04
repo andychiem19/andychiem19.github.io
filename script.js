@@ -318,22 +318,10 @@ if (mux) {
   const arts = [...out.querySelectorAll(".proj")];
   const list = mux.querySelector(".mux-in");
   const sel = mux.querySelector(".mux-sel");
-  const name = document.createElement("span");  // project name beside sel (shown on phones)
-  name.className = "mux-name";
-  sel.after(name);
   const bits = Math.max(1, Math.ceil(Math.log2(arts.length)));
   const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   let cur = 0;
   const sigName = (art) => (art.querySelector(".cap-head span") || art.querySelector("h3")).textContent;
-
-  // phones: a small mux drawn in the select bar, one input wire per project
-  const glyph = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  glyph.setAttribute("class", "mux-glyph");
-  glyph.setAttribute("viewBox", "0 0 44 36");
-  glyph.setAttribute("aria-hidden", "true");
-  glyph.innerHTML = arts.map((_, i) => { const y = arts.length > 1 ? 7 + (i * 22) / (arts.length - 1) : 18; return `<path class="in" d="M0 ${y}H16"/>`; }).join("") + '<path class="sym" d="M16 2L30 9V27L16 34Z"/><path class="on" d="M30 18H44"/>';
-  sel.before(glyph);
-  const wires = glyph.querySelectorAll(".in");
 
   const inputs = arts.map((art, i) => {
     const li = document.createElement("li"), b = document.createElement("button");
@@ -348,14 +336,12 @@ if (mux) {
     return b;
   });
 
-  // the readout (sel, name, lit input) follows i; select() also moves the track and commits the choice
+  // the readout (sel and the lit input) follows i; select() also moves the track and commits the choice
   function readout(i) {
     inputs.forEach((b, j) => b.setAttribute("aria-current", j === i));
-    wires.forEach((w, j) => w.classList.toggle("on", j === i));
     const li = inputs[i].parentElement;  // keep the selected input in view without scrolling the page
     list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
     sel.textContent = `sel = ${bits}'b${i.toString(2).padStart(bits, "0")}`;
-    name.textContent = sigName(arts[i]);
   }
   function select(i, user, instant) {
     cur = (i + arts.length) % arts.length;

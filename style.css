@@ -576,7 +576,7 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .mux-sym b { font-weight: 500; }
 .mux-ctrl { display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--muted); }
 .mux-sel { font-family: inherit; color: var(--wafer); white-space: pre; }
-.mux-name, .diagram-toggle, .mux-glyph, .mux-pin .sig { display: none; }  /* phone-only (see the mobile block) */
+.diagram-toggle, .mux-pin .sig { display: none; }  /* phone-only (see the mobile block) */
 button { touch-action: manipulation; }  /* fast repeated taps shouldn't zoom on phones */
 /* output: a horizontal track, one project per stop (native swipe on touch) */
 .mux-out { font-family: var(--font); grid-area: out; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
@@ -811,28 +811,18 @@ html.doc { scroll-snap-type: none; }
   .proj { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
   .mux::after { display: none; }
   .mux-out { margin-left: 0; }
-  /* mini: the mux shrinks into the select bar, ◀ [mux glyph] sel · project ▶ (swipe still works) */
-  .mux[data-mobile="mini"] { grid-template-columns: minmax(0, 1fr); grid-template-areas: "ctrl" "out"; row-gap: 1.25rem; }
-  .mux[data-mobile="mini"] :is(.mux-in, .mux-sym) { display: none; }
-  .mux[data-mobile="mini"] .mux-ctrl { padding: 0.45rem; border: 1px solid var(--grid); }
-  .mux[data-mobile="mini"] .mux-sel { flex: none; }
-  .mux[data-mobile="mini"] .mux-name { display: block; flex: 1; min-width: 0; overflow: hidden; color: var(--silk); text-overflow: ellipsis; white-space: nowrap; }
-  .mux[data-mobile="mini"] .mux-glyph { display: block; flex: none; width: 44px; height: 36px; overflow: visible; }
-  .mux-glyph path { fill: none; stroke: var(--grid); stroke-width: 1.5; }
-  .mux-glyph .sym { fill: var(--package); stroke: var(--muted); }
-  .mux-glyph .on { stroke: var(--wafer); }
-  /* slim: the desktop mux turned sideways and shrunk, short signal names as inputs */
-  .mux[data-mobile="slim"] { grid-template-columns: minmax(0, 1fr); grid-template-areas: "in" "sym" "ctrl" "out"; row-gap: 0; }
-  .mux[data-mobile="slim"] .mux-in { display: flex; gap: 0.5rem; max-height: none; overflow-x: auto; padding: 0.1rem 0.1rem 1rem; scrollbar-width: none; }
-  .mux[data-mobile="slim"] .mux-in li { flex: none; }
-  .mux[data-mobile="slim"] .mux-in li::after { left: 50%; top: 100%; width: 1.5px; height: 1rem; margin: 0; }
-  .mux[data-mobile="slim"] .mux-pin { gap: 0.45rem; padding: 0.4rem 0.5rem; font-size: 0.7rem; }
-  .mux[data-mobile="slim"] .mux-pin .nm { display: none; }
-  .mux[data-mobile="slim"] .mux-pin .sig { display: inline; }
-  .mux[data-mobile="slim"] .mux-sym { justify-self: stretch; width: auto; height: 1.7rem; clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%); font-size: 0.6rem; }
-  .mux[data-mobile="slim"] .mux-sym b { writing-mode: horizontal-tb; transform: none; }
-  .mux[data-mobile="slim"] .mux-ctrl { position: relative; justify-content: center; padding: 0.9rem 0 1.1rem; }
-  .mux[data-mobile="slim"] .mux-ctrl::before { content: ""; position: absolute; top: 0; left: 50%; width: 1.5px; height: 0.8rem; background: var(--wafer); }
+  /* the desktop mux turned sideways and shrunk, short signal names as inputs */
+  .mux { grid-template-columns: minmax(0, 1fr); grid-template-areas: "in" "sym" "ctrl" "out"; row-gap: 0; }
+  .mux-in { display: flex; gap: 0.5rem; max-height: none; overflow-x: auto; padding: 0.1rem 0.1rem 1rem; scrollbar-width: none; }
+  .mux-in li { flex: none; }
+  .mux-in li::after { left: 50%; top: 100%; width: 1.5px; height: 1rem; margin: 0; }
+  .mux-pin { gap: 0.45rem; padding: 0.4rem 0.5rem; font-size: 0.7rem; }
+  .mux-pin .nm { display: none; }
+  .mux-pin .sig { display: inline; }
+  .mux-sym { justify-self: stretch; width: auto; height: 1.7rem; clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%); font-size: 0.6rem; }
+  .mux-sym b { writing-mode: horizontal-tb; transform: none; }
+  .mux-ctrl { position: relative; justify-content: center; padding: 0.9rem 0 1.1rem; }
+  .mux-ctrl::before { content: ""; position: absolute; top: 0; left: 50%; width: 1.5px; height: 0.8rem; background: var(--wafer); }
   /* diagrams start folded away behind a toggle (built by script.js) */
   .diagram-toggle {
     display: flex;
