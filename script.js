@@ -421,6 +421,48 @@ if (edu && exp) {
   r?.setAttribute("x1", b * 100); r?.setAttribute("y1", 0); r?.setAttribute("x2", 100); r?.setAttribute("y2", 100);
 }
 
+// Timeline list view: a plain, compact list (logo, org, role, dates, where/GPA) for skimmers, behind a toggle in the
+// first header. Built from the same rows as the waveform; the choice is remembered.
+const tlRoot = document.querySelector(".tl");
+if (tlRoot) {
+  tlRoot.querySelectorAll(".tl-capture").forEach((cap) => {
+    const ul = document.createElement("ul");
+    ul.className = "tl-list";
+    cap.querySelectorAll(".tl-row").forEach((row) => {
+      const v = row.querySelector(".val"), info = v.dataset.info, cut = info.lastIndexOf(" · ");
+      const field = (k) => [...row.querySelectorAll(".tl-sub dt")].find((dt) => dt.textContent === k)?.nextElementSibling.textContent;
+      const li = document.createElement("li");
+      li.innerHTML = '<img alt=""><span class="tl-org"></span><span class="tl-role"></span><span class="tl-meta"></span><span class="tl-when"></span>';
+      li.querySelector("img").src = row.querySelector(".tl-lbl img").getAttribute("src");
+      li.querySelector(".tl-org").textContent = v.dataset.name;
+      li.querySelector(".tl-role").textContent = info.slice(0, cut);
+      li.querySelector(".tl-when").textContent = info.slice(cut + 3);
+      li.querySelector(".tl-meta").textContent = [field("where"), field("gpa") && "GPA " + field("gpa")].filter(Boolean).join(" · ");
+      li._val = v; v._li = li;  // the inspector opens from either
+      ul.append(li);
+    });
+    cap.after(ul);
+  });
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "theme-toggle tl-view";
+  const show = (list) => {
+    tlRoot.classList.toggle("list", list);
+    btn.textContent = list ? "Waves" : "List";
+    btn.setAttribute("aria-label", list ? "Show the timeline as waveforms" : "Show the timeline as a plain list");
+    hideTips.forEach((hide) => hide());
+  };
+  let saved = null;
+  try { saved = localStorage.getItem("tlview"); } catch (e) {}
+  show(saved === "list");
+  btn.addEventListener("click", () => {
+    const list = !tlRoot.classList.contains("list");
+    try { localStorage.setItem("tlview", list ? "list" : "waves"); } catch (e) {}
+    show(list);
+  });
+  tlRoot.querySelector(".cap-title").append(btn);
+}
+
 // Timeline inspector: click (or Enter on) a bar for a details card, from the row's <dl class="tl-sub">. On desktop the
 // card floats beside the bar inside the timeline; on phones it's a sheet pinned to the bottom of the screen. Either
 // way it never adds page height, so reading it doesn't push the page toward the projects.
@@ -436,11 +478,12 @@ if (tlBox) {
   const $ = (s) => card.querySelector(s);
   const sheet = matchMedia("(max-width: 800px)");
   let cur = null, pinned = false;
-  const close = () => { card.hidden = true; cur?.classList.remove("active"); cur = null; pinned = false; };
+  const mark = (v, on) => { v?.classList.toggle("active", on); v?._li?.classList.toggle("active", on); };
+  const close = () => { card.hidden = true; mark(cur, false); cur = null; pinned = false; };
   const place = () => {
     card.style.left = card.style.top = "";
     if (!cur || sheet.matches) return;
-    const box = tlBox.getBoundingClientRect(), r = cur.getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight;
+    const box = tlBox.getBoundingClientRect(), r = (tlBox.classList.contains("list") ? cur._li : cur).getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight;
     const left = Math.max(0, Math.min(r.left - box.left, box.width - w));
     const below = r.bottom - box.top + 8, above = r.top - box.top - h - 8;
     card.style.left = left + "px";
@@ -450,8 +493,8 @@ if (tlBox) {
   const open = (v, hover) => {
     if (cur === v) { if (hover) return; if (pinned) return close(); return (pinned = true); }
     pinned = !hover;
-    cur?.classList.remove("active");
-    (cur = v).classList.add("active");
+    mark(cur, false);
+    mark((cur = v), true);
     const row = v.closest(".tl-row"), lbl = row.querySelector(".tl-lbl"), sub = row.querySelector(".tl-sub");
     const fields = $(".ins-fields"), note = $(".ins-note");
     let info = v.dataset.info;
@@ -477,6 +520,13 @@ if (tlBox) {
     v.setAttribute("role", "button");
     v.addEventListener("click", (e) => { e.stopPropagation(); open(v); });
     v.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(v)));
+  });
+  // list view entries open the same cards
+  tlBox.querySelectorAll(".tl-list li").forEach((li) => {
+    li.tabIndex = 0;
+    li.setAttribute("role", "button");
+    li.addEventListener("click", (e) => { e.stopPropagation(); open(li._val); });
+    li.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(li._val)));
   });
   // desktop: resting on a bar fills it like a progress bar, then opens it; leaving the bar and the card closes an
   // unpinned card shortly after
