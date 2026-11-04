@@ -577,7 +577,8 @@ footer { font-size: 0.85rem; color: var(--muted); }
 @keyframes dwell { to { background-size: 100% 100%, auto; } }
 /* list view (toggle in the first header): one compact row per entry */
 .tl .cap-title .tl-view { padding: 0.15rem 0.5rem; font-size: 0.7rem; }
-.tl .cap-title:has(.tl-view) span { margin-left: auto; }
+.tl .cap-title:has(.tl-view) > span { margin-left: auto; }
+.tl .cap-title .sm { display: none; }  /* phones get the short scale (below) */
 .tl-list { display: none; list-style: none; margin: 0 0 1.5rem; }
 .tl.list .tl-list { display: grid; grid-template-columns: auto auto 1fr auto auto; column-gap: 1rem; }
 .tl.list .tl-capture, .tl.list .zoom, .tl.list .cap-title span { display: none; }
@@ -898,6 +899,8 @@ html.doc { scroll-snap-type: none; }
   .mux-ctrl::before { content: ""; position: absolute; top: 0; left: 50%; width: 1.5px; height: 0.8rem; background: var(--wafer); }
   /* timeline stays horizontal, compressed: logo-only labels and short values (full details on tap) */
   .tl-capture { --lbl: 2.6rem; row-gap: 0.4rem; padding-top: 1.5rem; }
+  .tl .cap-title .lg { display: none; }
+  .tl .cap-title .sm { display: inline; white-space: nowrap; }
   /* phones: two lines per entry (org / role + dates); location and GPA stay in the waveform's inspector */
   .tl.list .tl-list { grid-template-columns: auto 1fr auto; column-gap: 0.6rem; }
   .tl-list li { grid-template-areas: "img org org" "img role when"; padding: 0.3rem 0.4rem; font-size: 0.65rem; line-height: 1.35; }
