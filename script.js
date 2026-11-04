@@ -96,6 +96,10 @@ document.querySelectorAll(".chips").forEach((ul) => {
   ul.querySelectorAll("li").forEach((li) => (li.textContent = li.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")));
   const tok = (html) => Object.assign(document.createElement("li"), { className: "sv", innerHTML: html, ariaHidden: "true" });
   const named = !ul.closest(".spec");
+  if (!named) {  // spec table: inline text, so drop the source whitespace and let long names break after an underscore
+    [...ul.childNodes].forEach((n) => n.nodeType === 3 && n.remove());
+    ul.querySelectorAll("li").forEach((li) => (li.innerHTML = li.textContent.replace(/_/g, "_<wbr>")));
+  }
   ul.prepend(tok(named ? '<b class="kw">assign</b> <span class="id">skills</span> = {' : "{"));
   ul.append(tok(named ? "};" : "}"));
 });

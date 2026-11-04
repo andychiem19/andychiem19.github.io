@@ -796,11 +796,13 @@ html.doc { scroll-snap-type: none; }
 .doc-head .cap-head { margin-bottom: 1rem; }
 
 /* spec: a register-map table, field names in gray cells on the left */
-.spec { display: grid; grid-template-columns: max-content 1fr; margin-top: 2rem; border: 1px solid var(--grid); font-family: var(--mono); font-size: 0.8rem; }
+.spec { display: grid; grid-template-columns: max-content minmax(0, 1fr); margin-top: 2rem; border: 1px solid var(--grid); font-family: var(--mono); font-size: 0.8rem; }
 .spec dt, .spec dd { display: flex; align-items: center; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--grid); }
 .spec dt { background: var(--die); color: var(--muted); text-transform: lowercase; }
 .spec dt:last-of-type, .spec dd:last-of-type { border-bottom: 0; }
 .spec .chips { margin: 0; }
+.spec .chips { display: block; }  /* inline, so the closing brace rides with the last name */
+.spec .chips li { display: inline; overflow-wrap: anywhere; white-space: normal; }  /* long names break after an underscore if they must */
 .spec .status { margin: 0; padding: 0; border: 0; font-size: inherit; vertical-align: baseline; }  /* flush with the other values */
 
 /* Writeup body comes from Markdown: ## headings are numbered like datasheet sections */
