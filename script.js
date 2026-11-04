@@ -324,27 +324,43 @@ if (mux) {
   const bits = Math.max(1, Math.ceil(Math.log2(arts.length)));
   const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   let cur = 0;
+  const sigName = (art) => (art.querySelector(".cap-head span") || art.querySelector("h3")).textContent;
+
+  // phones: a small mux drawn in the select bar, one input wire per project
+  const glyph = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  glyph.setAttribute("class", "mux-glyph");
+  glyph.setAttribute("viewBox", "0 0 44 36");
+  glyph.setAttribute("aria-hidden", "true");
+  glyph.innerHTML = arts.map((_, i) => { const y = arts.length > 1 ? 7 + (i * 22) / (arts.length - 1) : 18; return `<path class="in" d="M0 ${y}H16"/>`; }).join("") + '<path class="sym" d="M16 2L30 9V27L16 34Z"/><path class="on" d="M30 18H44"/>';
+  sel.before(glyph);
+  const wires = glyph.querySelectorAll(".in");
 
   const inputs = arts.map((art, i) => {
     const li = document.createElement("li"), b = document.createElement("button");
     b.type = "button";
     b.className = "mux-pin" + (art.querySelector(".cap-head.wip") ? " wip" : "");
-    b.innerHTML = `<span class="idx">in${i}</span><span class="nm"></span>`;
+    b.innerHTML = `<span class="idx">in${i}</span><span class="nm"></span><span class="sig"></span>`;
     b.querySelector(".nm").textContent = art.querySelector("h3").textContent;
+    b.querySelector(".sig").textContent = sigName(art);  // short name, used on phones
     b.addEventListener("click", () => select(i, true));
     li.append(b);
     list.append(li);
     return b;
   });
 
+  // the readout (sel, name, lit input) follows i; select() also moves the track and commits the choice
+  function readout(i) {
+    inputs.forEach((b, j) => b.setAttribute("aria-current", j === i));
+    wires.forEach((w, j) => w.classList.toggle("on", j === i));
+    const li = inputs[i].parentElement;  // keep the selected input in view without scrolling the page
+    list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
+    sel.textContent = `sel = ${bits}'b${i.toString(2).padStart(bits, "0")}`;
+    name.textContent = sigName(arts[i]);
+  }
   function select(i, user, instant) {
     cur = (i + arts.length) % arts.length;
     arts.forEach((a, j) => (a.inert = j !== cur));
-    inputs.forEach((b, j) => b.setAttribute("aria-current", j === cur));
-    const li = inputs[cur].parentElement;  // keep the selected input in view without scrolling the page
-    list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
-    sel.textContent = `sel = ${bits}'b${cur.toString(2).padStart(bits, "0")}`;
-    name.textContent = (arts[cur].querySelector(".cap-head span") || arts[cur].querySelector("h3")).textContent;  // short signal name
+    readout(cur);
     out.scrollTo({ left: cur * out.clientWidth, behavior: instant || !smooth ? "instant" : "smooth" });
     if (user) history.replaceState(null, "", "#projects/" + arts[cur].dataset.slug);
     hideTips.forEach((hide) => hide());
@@ -358,6 +374,7 @@ if (mux) {
   // a swipe or trackpad scroll on the track selects where it lands
   let settle;
   out.addEventListener("scroll", () => {
+    readout(Math.min(arts.length - 1, Math.max(0, Math.round(out.scrollLeft / out.clientWidth))));  // update live while swiping
     clearTimeout(settle);
     settle = setTimeout(() => {
       const i = Math.round(out.scrollLeft / out.clientWidth);
