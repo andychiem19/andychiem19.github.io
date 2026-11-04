@@ -74,13 +74,13 @@ if (toggle) {
   });
 }
 
-// Skills read as a SystemVerilog assign: assign stack = {python, cocotb, ethernet};
+// Skills read as a SystemVerilog assign: assign skills = {python, cocotb, ethernet};
 // (names become identifiers; inside a writeup's spec table the row already names it, so just the concatenation)
 document.querySelectorAll(".chips").forEach((ul) => {
   ul.querySelectorAll("li").forEach((li) => (li.textContent = li.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")));
   const tok = (html) => Object.assign(document.createElement("li"), { className: "sv", innerHTML: html, ariaHidden: "true" });
   const named = !ul.closest(".spec");
-  ul.prepend(tok(named ? '<b class="kw">assign</b> <span class="id">stack</span> = {' : "{"));
+  ul.prepend(tok(named ? '<b class="kw">assign</b> <span class="id">skills</span> = {' : "{"));
   ul.append(tok(named ? "};" : "}"));
 });
 

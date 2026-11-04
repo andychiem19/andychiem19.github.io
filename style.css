@@ -816,34 +816,9 @@ html.doc { scroll-snap-type: none; }
 .doc-body .legend li { margin: 0; color: var(--muted); }
 .doc-body figcaption { margin-top: 0.6rem; color: var(--muted); font-size: 0.9rem; }
 
-/* Signal path: a Markdown list tagged {: .path}, drawn as blocks wired left to right */
-.doc-body .path { display: flex; gap: 0.9rem; margin: 1.5rem 0; padding: 0; list-style: none; }
-.doc-body .path li {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0.7rem 0.3rem 0.6rem;
-  background: radial-gradient(circle at 5px 5px, var(--muted) 1.5px, transparent 2px), var(--die);
-  border: 1px solid var(--grid);
-  color: var(--silk);
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  font-weight: 500;
-  line-height: 1.25;
-}
-.doc-body .path li + li::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: calc(-0.9rem - 1px);
-  width: 0.9rem;
-  height: 1px;
-  background: var(--wafer);
-}
+/* Signal path: <ol class="path">, the steps as plain mono text joined by arrows (wraps on narrow screens) */
+.doc-body .path { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.35rem 0; margin: 1.25rem 0; padding: 0; list-style: none; color: var(--silk); font: 500 0.85rem/1.6 var(--mono); }
+.doc-body .path li:not(:last-child)::after { content: "→"; margin: 0 0.6rem; color: var(--wafer); }  /* trailing, so wrapped lines start flush */
 
 .doc-foot { margin-top: 5rem; }
 
@@ -919,9 +894,6 @@ html.doc { scroll-snap-type: none; }
   .val { font-size: 0.8rem; }
   .ports .val { font-size: 0.7rem; }
   .simlog { padding: 0.8rem 0.9rem; font-size: 0.72rem; }
-  .doc-body .path { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .doc-body .path li { flex: none; padding: 0.6rem 0.8rem 0.55rem; }
-  .doc-body .path li + li::before { top: calc(-1rem - 1px); left: 1.25rem; width: 1px; height: 1rem; }
 }
 
 /* Print / PDF: a light, paper-friendly version of the same design (tools/build-pdf.js prints with this) */
