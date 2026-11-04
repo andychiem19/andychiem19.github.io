@@ -111,8 +111,15 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .chips .id { color: var(--silk); }
 .proj h3 { font-family: var(--mono); font-size: clamp(1.1rem, 1.5vw, 1.4rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 0.75rem; }
 .content .subtitle { color: var(--silk); font-size: 1.15rem; line-height: 1.45; margin: 0 0 0.75rem; }
-.content .org { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.6rem; font-size: 0.95rem; margin: 0 0 1rem; }
-.content .org .status { margin-left: 0; }
+/* Organization: assign org = [logo] wmi; sits right above the skills assign (script.js builds it) */
+.content .org { margin: 1.25rem 0 0; color: var(--muted); font: 500 0.75rem/1.5 var(--mono); white-space: pre-wrap; }
+.content .org + .chips { margin-top: 0.2rem; }
+.org .kw { color: var(--kw); font-weight: 600; }
+.org .id { color: var(--silk); }
+.org .nm { color: var(--wafer); }
+.org .cmt { color: var(--green); }
+.org img { box-sizing: border-box; width: auto; height: 1.4em; margin: -0.2em 0.4em -0.2em 0; vertical-align: middle; }
+@media screen { :root[data-theme="dark"] .org img { padding: 2px 3px; border-radius: 3px; background: #f4f5f8; } }
 .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
 
 /* Hero: a logic analyzer capture (see index.html) */
@@ -635,7 +642,6 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .mux-sym b { font-weight: 500; }
 .mux-ctrl { display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--muted); }
 .mux-sel { font-family: inherit; color: var(--wafer); white-space: pre; }
-.diagram-toggle { display: none; }  /* phone-only (see the mobile block) */
 button { touch-action: manipulation; }  /* fast repeated taps shouldn't zoom on phones */
 /* output: a horizontal track, one project per stop (native swipe on touch) */
 .mux-out { font-family: var(--font); grid-area: out; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
@@ -858,23 +864,6 @@ html.doc { scroll-snap-type: none; }
   .mux-sym b { writing-mode: horizontal-tb; transform: none; }
   .mux-ctrl { position: relative; justify-content: center; padding: 0.9rem 0 1.1rem; }
   .mux-ctrl::before { content: ""; position: absolute; top: 0; left: 50%; width: 1.5px; height: 0.8rem; background: var(--wafer); }
-  /* diagrams start folded away behind a toggle (built by script.js) */
-  .diagram-toggle {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0.6rem 0.75rem;
-    border: 1px solid var(--grid);
-    background: var(--die);
-    color: var(--muted);
-    font: 500 0.7rem var(--mono);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-  .diagram-toggle::after { content: "▾"; }
-  .diagram-toggle[aria-expanded="true"]::after { content: "▴"; }
-  .diagram-toggle[aria-expanded="false"] + .visual { display: none; }
   /* timeline stays horizontal, compressed: logo-only labels and short values (full details on tap) */
   .tl-capture { --lbl: 2.6rem; row-gap: 0.4rem; padding-top: 1.5rem; }
   .tl-lbl { font-size: 0; }
@@ -933,8 +922,7 @@ html.doc { scroll-snap-type: none; }
   .print-only { display: block; }
   .site-link { margin-top: 0.5rem; color: var(--muted); font-size: 1rem; }
   .content { width: auto; max-width: none; }
-  .timeline, .projects .cap-title, .mux-in, .mux-sym, .mux-ctrl, .mux::after, .diagram-toggle { display: none !important; }
-  .diagram-toggle + .visual { display: flex !important; }  /* the page is under 800px wide: undo the phone fold */
+  .timeline, .projects .cap-title, .mux-in, .mux-sym, .mux-ctrl, .mux::after { display: none !important; }
   .mux, .mux-out { display: block; overflow: visible; }
   .proj { display: flex; flex-direction: column; gap: 0.2in; margin-top: 0.3in; padding: 0.25in 0 0; border-top: 1px solid var(--grid); break-inside: avoid; }
   .proj h3 { font-family: var(--font); font-weight: 700; letter-spacing: -0.01em; font-size: 1.5rem; margin-bottom: 0.4rem; }
