@@ -438,6 +438,7 @@ if (tlRoot) {
       li.querySelector(".tl-role").textContent = info.slice(0, cut);
       li.querySelector(".tl-when").textContent = info.slice(cut + 3);
       li.querySelector(".tl-meta").textContent = [field("where"), field("gpa") && "GPA " + field("gpa")].filter(Boolean).join(" · ");
+      li._val = v; v._li = li;  // the inspector opens from either
       ul.append(li);
     });
     cap.after(ul);
@@ -477,11 +478,12 @@ if (tlBox) {
   const $ = (s) => card.querySelector(s);
   const sheet = matchMedia("(max-width: 800px)");
   let cur = null, pinned = false;
-  const close = () => { card.hidden = true; cur?.classList.remove("active"); cur = null; pinned = false; };
+  const mark = (v, on) => { v?.classList.toggle("active", on); v?._li?.classList.toggle("active", on); };
+  const close = () => { card.hidden = true; mark(cur, false); cur = null; pinned = false; };
   const place = () => {
     card.style.left = card.style.top = "";
     if (!cur || sheet.matches) return;
-    const box = tlBox.getBoundingClientRect(), r = cur.getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight;
+    const box = tlBox.getBoundingClientRect(), r = (tlBox.classList.contains("list") ? cur._li : cur).getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight;
     const left = Math.max(0, Math.min(r.left - box.left, box.width - w));
     const below = r.bottom - box.top + 8, above = r.top - box.top - h - 8;
     card.style.left = left + "px";
@@ -491,8 +493,8 @@ if (tlBox) {
   const open = (v, hover) => {
     if (cur === v) { if (hover) return; if (pinned) return close(); return (pinned = true); }
     pinned = !hover;
-    cur?.classList.remove("active");
-    (cur = v).classList.add("active");
+    mark(cur, false);
+    mark((cur = v), true);
     const row = v.closest(".tl-row"), lbl = row.querySelector(".tl-lbl"), sub = row.querySelector(".tl-sub");
     const fields = $(".ins-fields"), note = $(".ins-note");
     let info = v.dataset.info;
@@ -518,6 +520,13 @@ if (tlBox) {
     v.setAttribute("role", "button");
     v.addEventListener("click", (e) => { e.stopPropagation(); open(v); });
     v.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(v)));
+  });
+  // list view entries open the same cards
+  tlBox.querySelectorAll(".tl-list li").forEach((li) => {
+    li.tabIndex = 0;
+    li.setAttribute("role", "button");
+    li.addEventListener("click", (e) => { e.stopPropagation(); open(li._val); });
+    li.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(li._val)));
   });
   // desktop: resting on a bar fills it like a progress bar, then opens it; leaving the bar and the card closes an
   // unpinned card shortly after

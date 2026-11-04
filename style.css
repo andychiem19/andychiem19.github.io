@@ -584,6 +584,9 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .tl.list .tl-capture + .tl-list + .cap-title { margin-top: 0.5rem; }
 .tl-list li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid color-mix(in srgb, var(--grid) 50%, transparent); font-size: 0.75rem; }
 .tl-list li:last-child { border-bottom: 0; }
+.tl-list li { padding-inline: 0.5rem; cursor: pointer; transition: background-color 0.15s; }
+.tl-list li:hover, .tl-list li:focus-visible, .tl-list li.active { background: color-mix(in srgb, var(--wafer) 8%, transparent); outline: none; }
+.tl-list li.active { box-shadow: inset 3px 0 var(--wafer); }
 .tl-list img { box-sizing: border-box; width: 36px; height: 26px; object-fit: contain; }
 @media screen { :root[data-theme="dark"] .tl-list img { padding: 2px; border-radius: 4px; background: #f4f5f8; } }
 .tl-org { color: var(--silk); font-weight: 600; }
@@ -895,7 +898,7 @@ html.doc { scroll-snap-type: none; }
   .tl-capture { --lbl: 2.6rem; row-gap: 0.4rem; padding-top: 1.5rem; }
   /* phones: two lines per entry (org / role + dates); location and GPA stay in the waveform's inspector */
   .tl.list .tl-list { grid-template-columns: auto 1fr auto; column-gap: 0.6rem; }
-  .tl-list li { grid-template-areas: "img org org" "img role when"; padding: 0.3rem 0; font-size: 0.65rem; line-height: 1.35; }
+  .tl-list li { grid-template-areas: "img org org" "img role when"; padding: 0.3rem 0.4rem; font-size: 0.65rem; line-height: 1.35; }
   .tl-list img { grid-area: img; width: 30px; height: 22px; }
   .tl-org { grid-area: org; } .tl-when { grid-area: when; align-self: end; } .tl-role { grid-area: role; color: var(--muted); }
   .tl-meta { display: none; }
