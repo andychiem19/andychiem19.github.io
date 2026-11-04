@@ -719,26 +719,13 @@ html.doc { scroll-snap-type: none; }
 .doc-head .status { margin-left: 0; }
 .doc-head .cap-head { margin-bottom: 1rem; }
 
-/* spec: one signal row per field, the name in mono and the value as a bus segment */
-.spec { display: grid; grid-template-columns: max-content 1fr; align-items: center; gap: 0.5rem 1.5rem; margin-top: 2rem; }
-.spec dt { color: var(--muted); font-family: var(--mono); font-size: 0.75rem; text-transform: lowercase; }
-.spec dd {
-  --x: 0.6rem;
-  position: relative;
-  z-index: 0;
-  justify-self: start;
-  padding: 0.35rem calc(var(--x) + 0.6rem);
-  background: var(--muted);
-  clip-path: polygon(0 50%, var(--x) 0, calc(100% - var(--x)) 0, 100% 50%, calc(100% - var(--x)) 100%, var(--x) 100%);
-  font-family: var(--mono);
-  font-size: 0.8rem;
-  line-height: 1.3;
-}
-.spec dd::before { content: ""; position: absolute; inset: 1px 1.5px; z-index: -1; background: var(--package); clip-path: inherit; }
-/* status badges and skill tags carry their own shapes */
-.spec dd:has(.status, .chips) { padding: 0; background: none; clip-path: none; }
-.spec dd:has(.status, .chips)::before { content: none; }
+/* spec: a register-map table, field names in gray cells on the left */
+.spec { display: grid; grid-template-columns: max-content 1fr; margin-top: 2rem; border: 1px solid var(--grid); font-family: var(--mono); font-size: 0.8rem; }
+.spec dt, .spec dd { display: flex; align-items: center; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--grid); }
+.spec dt { background: var(--die); color: var(--muted); text-transform: lowercase; }
+.spec dt:last-of-type, .spec dd:last-of-type { border-bottom: 0; }
 .spec .chips { margin: 0; }
+.spec .status { margin: 0; padding: 0; border: 0; font-size: inherit; vertical-align: baseline; }  /* flush with the other values */
 
 /* Writeup body comes from Markdown: ## headings are numbered like datasheet sections */
 .doc-body { counter-reset: section; }
