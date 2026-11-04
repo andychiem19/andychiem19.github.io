@@ -38,6 +38,7 @@
     <section class="panel hero" id="home">
       <div class="capture">
         <div class="cap-bar">
+          <button class="run" type="button" aria-expanded="false" aria-controls="simlog">▶ Run</button>
           <span class="trig">Triggered</span>
           <button class="theme-toggle" type="button">Dark</button>
         </div>
@@ -61,6 +62,14 @@
           </div>
           <span class="cursor" aria-hidden="true">T0</span>
         </div>
+        <!-- About me: RUN types these lines out as a simulator log. Edit the text here; lines starting with "$" are
+             commands, "#" messages, "**" the result. -->
+        <pre class="simlog" id="simlog" hidden>$ run -all
+# Hi! I'm an aspiring design verification engineer.
+# I take on challenges, and motivate others to do so too.
+# I've worked with FPGAs, SerDes, 100GbE, and production telecommunications hardware.
+# I recently joined C2S2, a first-of-its-kind undergraduate silicon team that's taped out ten chips.
+** PASS</pre>
         <!-- Shown only in print / the portfolio PDF -->
         <p class="print-only site-link">Interactive portfolio: <a href="https://andychiem19.github.io/">andychiem19.github.io</a></p>
       </div>

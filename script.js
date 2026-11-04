@@ -74,6 +74,43 @@ if (toggle) {
   });
 }
 
+// RUN: type the about-me out as a simulator log under the hero (the lines come from the <pre> in index.html)
+const run = document.querySelector(".run"), simlog = document.getElementById("simlog");
+if (run && simlog) {
+  const lines = simlog.textContent.trim().split("\n").map((l) => l.trim());
+  const kind = (l) => (l.startsWith("$") ? "cmd" : l.startsWith("**") ? "pass" : "msg");
+  const instant = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let timer;
+  const set = (on) => {
+    run.textContent = on ? "■ Stop" : "▶ Run";
+    run.setAttribute("aria-expanded", on);
+    simlog.hidden = !on;
+  };
+  const start = () => {
+    clearTimeout(timer);
+    simlog.replaceChildren();
+    set(true);
+    const spans = lines.map((l) => Object.assign(document.createElement("span"), { className: kind(l) }));
+    if (instant) {
+      spans.forEach((s, i) => { s.textContent = lines[i]; simlog.append(s); });
+      return spans.at(-1).classList.add("caret");
+    }
+    simlog.setAttribute("aria-busy", "true");
+    let li = 0, ci = 0;
+    const step = () => {
+      const s = spans[li];
+      if (ci === 0) { spans[li - 1]?.classList.remove("caret"); s.classList.add("caret"); simlog.append(s); }
+      s.textContent = lines[li].slice(0, ++ci);
+      if (ci < lines[li].length) return (timer = setTimeout(step, 18));
+      li++, ci = 0;
+      if (li < lines.length) timer = setTimeout(step, 260);
+      else simlog.setAttribute("aria-busy", "false");
+    };
+    step();
+  };
+  run.addEventListener("click", () => (simlog.hidden ? start() : (clearTimeout(timer), set(false))));
+}
+
 // Writeups: build the signal nav from the section headings (one signal per <h2>)
 const heads = [...document.querySelectorAll(".doc-body h2")];
 if (heads.length && !document.querySelector(".signals")) {

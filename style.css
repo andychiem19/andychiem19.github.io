@@ -129,6 +129,35 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
   letter-spacing: 0.08em;
 }
 .trig { display: inline-flex; align-items: center; gap: 0.5rem; }
+/* RUN: opens the about-me sim log under the capture (script.js types it out) */
+.cap-bar { justify-content: flex-start; gap: 0.75rem; }
+.cap-bar .theme-toggle { margin-left: auto; }
+.run {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--wafer);
+  background: var(--wafer);
+  color: var(--package);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.run:focus-visible { background: none; color: var(--wafer); outline: none; }
+@media (hover: hover) { .run:hover { background: none; color: var(--wafer); } }  /* no sticky hover after a tap */
+.simlog {
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.2rem;
+  background: var(--die);
+  border: 1px solid var(--grid);
+  border-left: 3px solid var(--wafer);
+  color: var(--silk);
+  font: 0.85rem/1.7 var(--mono);
+  white-space: pre-wrap;
+}
+.simlog span { display: block; padding-left: 2ch; text-indent: -2ch; }  /* wrapped lines hang under the text, past "# " */
+.simlog .cmd { color: var(--muted); }
+.simlog .pass { color: var(--green); }
+.simlog .caret::after { content: "▋"; margin-left: 0.15ch; color: var(--wafer); animation: blink 1s steps(1) infinite; }
 .trig::before { content: ""; width: 7px; height: 7px; background: var(--green); animation: glow 2.4s ease-in-out infinite; }
 .theme-toggle {
   padding: 0.3rem 0.6rem;
@@ -796,7 +825,7 @@ html.doc { scroll-snap-type: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .status::before, .status.done::before, .trig::before, .cap-head.wip i { animation: none; box-shadow: none; }
+  .status::before, .status.done::before, .trig::before, .cap-head.wip i, .simlog .caret::after { animation: none; box-shadow: none; }
   .wave::after { display: none; }
 }
 
@@ -861,6 +890,7 @@ html.doc { scroll-snap-type: none; }
   .hero h1 { font-size: clamp(1.6rem, 8.5vw, 2.5rem); }
   .val { font-size: 0.8rem; }
   .ports .val { font-size: 0.7rem; }
+  .simlog { padding: 0.8rem 0.9rem; font-size: 0.72rem; }
   .doc-body .path { flex-direction: column; align-items: flex-start; gap: 1rem; }
   .doc-body .path li { flex: none; padding: 0.6rem 0.8rem 0.55rem; }
   .doc-body .path li + li::before { top: calc(-1rem - 1px); left: 1.25rem; width: 1px; height: 1rem; }
@@ -876,7 +906,7 @@ html.doc { scroll-snap-type: none; }
   @page { size: letter; margin: 0.6in 0.65in 0.75in; }
   html { scroll-snap-type: none; }
   html, body { background: #fff; font-size: 15px; }
-  .signals, .px, .diagram-info, .tip, .pdf-link, .doc-nav, .cap-bar, .cap-head { display: none !important; }
+  .signals, .px, .diagram-info, .tip, .pdf-link, .doc-nav, .cap-bar, .cap-head, .simlog { display: none !important; }
   .status::before { animation: none; box-shadow: none; }
 
   /* home page: headlines, diagrams with their hover details, and links; the full writeups live on the site */
