@@ -443,6 +443,7 @@ if (tlBox) {
   if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
     const DWELL = 700;
     let dwell, linger;
+    const cancel = (v) => { clearTimeout(dwell); v.classList.remove("dwell"); };
     const stay = () => clearTimeout(linger);
     const leave = () => { clearTimeout(linger); linger = setTimeout(() => cur && !pinned && close(), 300); };
     tlBox.querySelectorAll(".tl-row .val").forEach((v) => {
@@ -452,7 +453,8 @@ if (tlBox) {
         v.classList.add("dwell");
         dwell = setTimeout(() => { v.classList.remove("dwell"); open(v, true); }, DWELL);
       });
-      v.addEventListener("mouseleave", () => { clearTimeout(dwell); v.classList.remove("dwell"); leave(); });
+      v.addEventListener("mouseleave", () => { cancel(v); leave(); });
+      v.addEventListener("click", () => cancel(v));  // a click wins over the hover countdown
     });
     card.addEventListener("mouseenter", stay);
     card.addEventListener("mouseleave", leave);
