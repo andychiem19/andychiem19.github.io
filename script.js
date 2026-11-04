@@ -495,22 +495,31 @@ if (mux) {
   // the readout (sel and the lit input) follows i; select() also moves the track and commits the choice
   let shown = -1, steering = false;
   const phone = matchMedia("(max-width: 800px)");
-  function readout(i, force, instant) {
+  // on phones the input row tracks the slides frame by frame, so the centered input moves with the swipe
+  const mid = (j) => { const li = inputs[j].parentElement; return li.offsetLeft + li.offsetWidth / 2; };
+  function follow() {
+    if (!phone.matches) return;
+    const pos = Math.min(arts.length - 1, Math.max(0, out.scrollLeft / out.clientWidth));
+    const a = Math.floor(pos), b = Math.min(a + 1, arts.length - 1);
+    list.scrollLeft = mid(a) + (mid(b) - mid(a)) * (pos - a) - list.clientWidth / 2;
+  }
+  function readout(i, force) {
     if (i === shown && !force) return;
     shown = i;
     inputs.forEach((b, j) => b.setAttribute("aria-current", j === i));
     const li = inputs[i].parentElement;  // keep the selected input in view without scrolling the page
-    list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2, behavior: phone.matches && smooth && !instant ? "smooth" : "instant" });
+    if (!phone.matches) list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
     sel.textContent = `sel = ${bits}'b${i.toString(2).padStart(bits, "0")}`;
   }
   function select(i, user, instant) {
     cur = (i + arts.length) % arts.length;
     arts.forEach((a, j) => (a.inert = j !== cur));
-    readout(cur, true, instant);
+    readout(cur, true);
     // a glide to the target shouldn't drive the readout through the projects in between
     const left = cur * out.clientWidth;
     steering = !instant && smooth && Math.abs(out.scrollLeft - left) > 1;
     out.scrollTo({ left, behavior: steering ? "smooth" : "instant" });
+    follow();
     if (user) history.replaceState(null, "", "#projects/" + arts[cur].dataset.slug);
     hideTips.forEach((hide) => hide());
   }
@@ -528,6 +537,7 @@ if (mux) {
   let settle;
   out.addEventListener("scroll", () => {
     // update live while swiping, once the track is well into another project (so a snap-back doesn't flip it)
+    follow();
     const pos = out.scrollLeft / out.clientWidth;
     if (!steering && Math.abs(pos - shown) > 0.6) readout(Math.min(arts.length - 1, Math.max(0, Math.round(pos))));
     clearTimeout(settle);
