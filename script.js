@@ -421,6 +421,47 @@ if (edu && exp) {
   r?.setAttribute("x1", b * 100); r?.setAttribute("y1", 0); r?.setAttribute("x2", 100); r?.setAttribute("y2", 100);
 }
 
+// Timeline list view: a plain, compact list (logo, org, role, dates, where/GPA) for skimmers, behind a toggle in the
+// first header. Built from the same rows as the waveform; the choice is remembered.
+const tlRoot = document.querySelector(".tl");
+if (tlRoot) {
+  tlRoot.querySelectorAll(".tl-capture").forEach((cap) => {
+    const ul = document.createElement("ul");
+    ul.className = "tl-list";
+    cap.querySelectorAll(".tl-row").forEach((row) => {
+      const v = row.querySelector(".val"), info = v.dataset.info, cut = info.lastIndexOf(" · ");
+      const field = (k) => [...row.querySelectorAll(".tl-sub dt")].find((dt) => dt.textContent === k)?.nextElementSibling.textContent;
+      const li = document.createElement("li");
+      li.innerHTML = '<img alt=""><span class="tl-org"></span><span class="tl-role"></span><span class="tl-meta"></span><span class="tl-when"></span>';
+      li.querySelector("img").src = row.querySelector(".tl-lbl img").getAttribute("src");
+      li.querySelector(".tl-org").textContent = v.dataset.name;
+      li.querySelector(".tl-role").textContent = info.slice(0, cut);
+      li.querySelector(".tl-when").textContent = info.slice(cut + 3);
+      li.querySelector(".tl-meta").textContent = [field("where"), field("gpa") && "GPA " + field("gpa")].filter(Boolean).join(" · ");
+      ul.append(li);
+    });
+    cap.after(ul);
+  });
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "theme-toggle tl-view";
+  const show = (list) => {
+    tlRoot.classList.toggle("list", list);
+    btn.textContent = list ? "Waves" : "List";
+    btn.setAttribute("aria-label", list ? "Show the timeline as waveforms" : "Show the timeline as a plain list");
+    hideTips.forEach((hide) => hide());
+  };
+  let saved = null;
+  try { saved = localStorage.getItem("tlview"); } catch (e) {}
+  show(saved === "list");
+  btn.addEventListener("click", () => {
+    const list = !tlRoot.classList.contains("list");
+    try { localStorage.setItem("tlview", list ? "list" : "waves"); } catch (e) {}
+    show(list);
+  });
+  tlRoot.querySelector(".cap-title").append(btn);
+}
+
 // Timeline inspector: click (or Enter on) a bar for a details card, from the row's <dl class="tl-sub">. On desktop the
 // card floats beside the bar inside the timeline; on phones it's a sheet pinned to the bottom of the screen. Either
 // way it never adds page height, so reading it doesn't push the page toward the projects.
