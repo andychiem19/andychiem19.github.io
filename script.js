@@ -87,7 +87,10 @@ if (run && simlog) {
   const front = Object.assign(document.createElement("span"), { className: "simfront" });
   front.setAttribute("aria-hidden", "true");
   trig.after(clock);
-  const TICK = 24, NS = 10, STEP = 85;  // px per clock (the ruler tick), ns per clock, ms per clock
+  const TICK = 24, NS = 10;  // px per clock (the ruler tick), ns per clock
+  // a real sim runs in uneven bursts: 1-3 clocks per step, irregular gaps, the odd longer stall
+  const gap = () => (Math.random() < 0.12 ? 350 + Math.random() * 300 : 70 + Math.random() * 150);
+  const hold = (l) => 250 + l.length * 10;  // the sim halts while a log line prints, long enough to read it
   const instant = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let timer;
   const status = (s) => { trig.textContent = s; trig.classList.toggle("running", s === "Running"); };
@@ -115,13 +118,19 @@ if (run && simlog) {
     wave.append(front);
     print(1);  // the command line
     const step = () => {
-      t++;
+      // messages are spread over the run (the result lands at the end); print one at a time, holding the sim each time
+      const n = simlog.children.length;
+      if (n < 1 + Math.floor((t / ticks) * (lines.length - 1))) {
+        print(n + 1);
+        return (timer = setTimeout(step, hold(lines[n])));
+      }
+      if (t >= ticks) return finish();
+      t = Math.min(ticks, t + 1 + Math.floor(Math.random() * 3));
       front.style.left = x0 + t * TICK + "px";
       clock.textContent = `Now: ${t * NS} ns`;
-      print(1 + Math.floor((t / ticks) * (lines.length - 1)));  // messages spread over the run, the result at the end
-      timer = t < ticks ? setTimeout(step, STEP) : (finish(), 0);
+      timer = setTimeout(step, gap());
     };
-    timer = setTimeout(step, STEP);
+    timer = setTimeout(step, gap());
   };
   run.addEventListener("click", () => (simlog.hidden ? start() : stop()));
 }
