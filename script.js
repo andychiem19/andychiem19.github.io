@@ -100,17 +100,24 @@ document.querySelectorAll(".chips").forEach((ul) => {
   ul.append(tok(named ? "};" : "}"));
 });
 
-// Organization reads as an assign too, paired above skills: assign org = [logo] wmi; with the timeline's signal name
+// Organization reads as an assign too, paired above skills: assign org = wmi; [logo] with the timeline's signal name
 // and logo (a personal project has none, so it's left floating)
 document.querySelectorAll(".proj .org").forEach((p) => {
   const status = p.querySelector(".status"), name = p.textContent.replace("Organization:", "").replace(status?.textContent || "", "").trim();
   const lbl = p.dataset.sig && [...document.querySelectorAll(".tl-lbl")].find((l) => l.textContent.trim() === p.dataset.sig);
   p.innerHTML = '<b class="kw">assign</b> <span class="id">org</span>    = ' + (lbl
-    ? `<img src="${lbl.querySelector("img").getAttribute("src")}" alt=""><span class="nm"></span>;`
+    ? `<span class="nm"></span>; <img src="${lbl.querySelector("img").getAttribute("src")}" alt="">`
     : "'z; <span class=\"cmt\">// personal project</span>");
   if (lbl) { p.querySelector(".nm").textContent = p.dataset.sig; p.title = name; }
   if (status) p.append(" ", status);  // print only
   p.setAttribute("aria-label", "Organization: " + name);
+});
+
+// Project links are output port flags named after the signal: eth_100g.writeup, swift_greeks.github
+document.querySelectorAll(".proj .links a").forEach((a) => {
+  const sig = a.closest(".proj").querySelector(".cap-head span").textContent;
+  a.setAttribute("aria-label", a.textContent);
+  a.textContent = `${sig}.${/github/i.test(a.textContent) ? "github" : "writeup"}`;
 });
 
 // RUN: run the capture like a simulator. Sim time advances a clock tick at a time, the traces redraw behind the

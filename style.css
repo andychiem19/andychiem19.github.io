@@ -118,9 +118,19 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .org .id { color: var(--silk); }
 .org .nm { color: var(--wafer); }
 .org .cmt { color: var(--green); }
-.org img { box-sizing: border-box; width: auto; height: 1.4em; margin: -0.2em 0.4em -0.2em 0; vertical-align: middle; }
+.org img { box-sizing: border-box; width: auto; height: 1.4em; margin: -0.2em 0 -0.2em 0.2em; vertical-align: middle; }
 @media screen { :root[data-theme="dark"] .org img { padding: 2px 3px; border-radius: 3px; background: #f4f5f8; } }
 .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+/* project links: an output port flag (accent bar at the wire end, pointed at the far end) */
+.proj .links a {
+  padding: 0.45rem 1.6rem 0.45rem 0.85rem;
+  background: linear-gradient(var(--wafer), var(--wafer)) left / 3px 100% no-repeat, color-mix(in srgb, var(--wafer) 8%, var(--package));
+  clip-path: polygon(0 0, calc(100% - 0.9rem) 0, 100% 50%, calc(100% - 0.9rem) 100%, 0 100%);
+  color: var(--wafer);
+  font: 500 0.75rem var(--mono);
+  transition: background-color 0.15s, color 0.15s;
+}
+.proj .links a:hover, .proj .links a:focus-visible { background: var(--wafer); color: var(--package); text-decoration: none; outline: none; }
 
 /* Hero: a logic analyzer capture (see index.html) */
 .hero { justify-content: flex-start; }
