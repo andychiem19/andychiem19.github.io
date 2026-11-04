@@ -576,7 +576,7 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .mux-sym b { font-weight: 500; }
 .mux-ctrl { display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--muted); }
 .mux-sel { font-family: inherit; color: var(--wafer); white-space: pre; }
-.diagram-toggle, .mux-pin .sig { display: none; }  /* phone-only (see the mobile block) */
+.diagram-toggle { display: none; }  /* phone-only (see the mobile block) */
 button { touch-action: manipulation; }  /* fast repeated taps shouldn't zoom on phones */
 /* output: a horizontal track, one project per stop (native swipe on touch) */
 .mux-out { font-family: var(--font); grid-area: out; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
@@ -817,8 +817,6 @@ html.doc { scroll-snap-type: none; }
   .mux-in li { flex: none; }
   .mux-in li::after { left: 50%; top: 100%; width: 1.5px; height: 1rem; margin: 0; }
   .mux-pin { gap: 0.45rem; padding: 0.4rem 0.5rem; font-size: 0.7rem; }
-  .mux-pin .nm { display: none; }
-  .mux-pin .sig { display: inline; }
   .mux-sym { justify-self: stretch; width: auto; height: 1.7rem; clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%); font-size: 0.6rem; }
   .mux-sym b { writing-mode: horizontal-tb; transform: none; }
   .mux-ctrl { position: relative; justify-content: center; padding: 0.9rem 0 1.1rem; }
