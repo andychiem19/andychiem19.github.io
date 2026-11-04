@@ -287,9 +287,9 @@ if (detent) {
   }));
 }
 
-// Block diagrams and the timeline: hover, focus or tap a block to see what it does in a tooltip next to it
+// Block diagrams: hover, focus or tap a block to see what it does in a tooltip next to it
 const hideTips = [];
-document.querySelectorAll(".diagram-box, .tl-capture").forEach((box) => {
+document.querySelectorAll(".diagram-box").forEach((box) => {
   box.querySelector(".diagram-info")?.remove();
   const tip = document.createElement("div");
   tip.className = "tip";
@@ -381,49 +381,51 @@ if (edu && exp) {
   r?.setAttribute("x1", b * 100); r?.setAttribute("y1", 0); r?.setAttribute("x2", 100); r?.setAttribute("y2", 100);
 }
 
-// Timeline rows expand like a bus in a waveform viewer: ▸ opens child signals (from the row's <dl class="tl-sub">)
-// underneath. Each child value starts at its parent's dates and widens to fit its text.
-document.querySelectorAll(".tl-row").forEach((row) => {
-  const sub = row.querySelector(".tl-sub");
-  if (!sub) return;
-  const parent = row.querySelector(".val"), lbl = row.querySelector(".tl-lbl");
-  const kids = [...sub.querySelectorAll("dt")].map((dt) => {
-    const dd = dt.nextElementSibling, kid = document.createElement("div");
-    kid.className = "tl-row child";
-    kid.hidden = true;
-    kid.innerHTML = '<span class="tl-lbl"></span><span class="tl-trace"><span class="val"></span></span>';
-    kid.querySelector(".tl-lbl").textContent = "." + dt.textContent;
-    const v = kid.querySelector(".val");
-    v.textContent = dd.textContent;
-    v.classList.toggle("todo", dd.classList.contains("todo"));
-    return kid;
+// Timeline inspector: click (or Enter on) a bus value to open its details in one pane under the captures, like a
+// waveform viewer's object inspector. The details come from the row's <dl class="tl-sub">; "note" is shown as a quote.
+const tlBox = document.querySelector(".tl");
+if (tlBox) {
+  const pane = document.createElement("section");
+  pane.className = "inspect";
+  pane.hidden = true;
+  pane.setAttribute("aria-live", "polite");
+  pane.innerHTML = '<header><img alt=""><span class="ins-sig"></span><button type="button" class="ins-close" aria-label="Close details">×</button></header>' +
+    '<div class="ins-body"><h3></h3><p class="ins-info"></p><dl class="spec"></dl><p class="ins-note"></p></div>';
+  tlBox.append(pane);
+  const $ = (s) => pane.querySelector(s);
+  let cur = null;
+  const close = () => { pane.hidden = true; cur?.classList.remove("active"); cur = null; };
+  const open = (v) => {
+    if (cur === v) return close();
+    cur?.classList.remove("active");
+    (cur = v).classList.add("active");
+    const row = v.closest(".tl-row"), lbl = row.querySelector(".tl-lbl"), sub = row.querySelector(".tl-sub");
+    $("img").src = lbl.querySelector("img").src;
+    $(".ins-sig").textContent = "Inspect · " + lbl.textContent.trim();
+    $("h3").textContent = v.dataset.name;
+    $(".ins-info").textContent = v.dataset.info;
+    const fields = $(".spec"), note = $(".ins-note");
+    fields.replaceChildren();
+    note.textContent = "";
+    sub?.querySelectorAll("dt").forEach((dt) => {
+      const dd = dt.nextElementSibling;
+      if (dt.textContent === "note") { note.textContent = dd.textContent; note.classList.toggle("todo", dd.classList.contains("todo")); }
+      else fields.append(dt.cloneNode(true), dd.cloneNode(true));
+    });
+    fields.hidden = !fields.children.length;
+    note.hidden = !note.textContent;
+    pane.hidden = false;
+    pane.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+  };
+  tlBox.querySelectorAll(".tl-row .val").forEach((v) => {
+    v.tabIndex = 0;
+    v.setAttribute("role", "button");
+    v.addEventListener("click", () => open(v));
+    v.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(v)));
   });
-  row.after(...kids);
-  const fit = () => kids.forEach((kid) => {
-    const v = kid.querySelector(".val"), w = kid.querySelector(".tl-trace").clientWidth;
-    v.style.width = "max-content";
-    const need = Math.min(1, (v.offsetWidth + 2) / w), pa = +getComputedStyle(parent).getPropertyValue("--a"), pb = +getComputedStyle(parent).getPropertyValue("--b");
-    v.style.width = "";
-    const a = Math.max(0, Math.min(pa, 1 - need));
-    v.style.setProperty("--a", a);
-    v.style.setProperty("--b", Math.max(pb, a + need));
-  });
-  const b = document.createElement("button");
-  b.type = "button";
-  b.className = "tl-exp";
-  b.setAttribute("aria-expanded", "false");
-  b.setAttribute("aria-label", "Show details");
-  b.textContent = "▸";
-  b.addEventListener("click", () => {
-    const open = b.getAttribute("aria-expanded") !== "true";
-    b.setAttribute("aria-expanded", open);
-    b.textContent = open ? "▾" : "▸";
-    kids.forEach((k) => (k.hidden = !open));
-    if (open) fit();
-  });
-  lbl.prepend(b);
-  addEventListener("resize", () => b.getAttribute("aria-expanded") === "true" && fit());
-});
+  $(".ins-close").addEventListener("click", close);
+  addEventListener("keydown", (e) => e.key === "Escape" && cur && close());
+}
 
 // Projects mux: every <article class="proj"> is an input; sel picks which one the output track shows
 const mux = document.querySelector(".mux");
