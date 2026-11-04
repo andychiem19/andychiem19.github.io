@@ -100,6 +100,26 @@ document.querySelectorAll(".chips").forEach((ul) => {
   ul.append(tok(named ? "};" : "}"));
 });
 
+// Organization reads as an assign too, paired above skills: assign org = wmi; [logo] with the timeline's signal name
+// and logo (a personal project has none, so it's left floating)
+document.querySelectorAll(".proj .org").forEach((p) => {
+  const status = p.querySelector(".status"), name = p.textContent.replace("Organization:", "").replace(status?.textContent || "", "").trim();
+  const lbl = p.dataset.sig && [...document.querySelectorAll(".tl-lbl")].find((l) => l.textContent.trim() === p.dataset.sig);
+  p.innerHTML = '<b class="kw">assign</b> <span class="id">org</span>    = ' + (lbl
+    ? `<span class="nm"></span>; <img src="${lbl.querySelector("img").getAttribute("src")}" alt="">`
+    : "'z; <span class=\"cmt\">// personal project</span>");
+  if (lbl) { p.querySelector(".nm").textContent = p.dataset.sig; p.title = name; }
+  if (status) p.append(" ", status);  // print only
+  p.setAttribute("aria-label", "Organization: " + name);
+});
+
+// Project links are output port flags named after the signal: eth_100g.writeup, swift_greeks.github
+document.querySelectorAll(".proj .links a").forEach((a) => {
+  const sig = a.closest(".proj").querySelector(".cap-head span").textContent;
+  a.setAttribute("aria-label", a.textContent);
+  a.textContent = `${sig}.${/github/i.test(a.textContent) ? "github" : "writeup"}`;
+});
+
 // RUN: run the capture like a simulator. Sim time advances a clock tick at a time, the traces redraw behind the
 // "now" line, and the log prints each line whole at its moment in sim time (the lines come from the <pre> in index.html)
 const run = document.querySelector(".run"), simlog = document.getElementById("simlog");
@@ -577,22 +597,6 @@ if (mux) {
     select(cur + (e.key === "ArrowRight" ? 1 : -1), true);
   });
   addEventListener("resize", layout);
-
-  // phones: each diagram starts folded behind a toggle (CSS only hides it on small screens)
-  arts.forEach((art) => {
-    const visual = art.querySelector(".visual"), b = document.createElement("button");
-    if (!visual) return;
-    b.type = "button";
-    b.className = "diagram-toggle";
-    b.textContent = "Show diagram";
-    b.setAttribute("aria-expanded", "false");
-    b.addEventListener("click", () => {
-      const open = b.getAttribute("aria-expanded") !== "true";
-      b.setAttribute("aria-expanded", open);
-      b.textContent = open ? "Hide diagram" : "Show diagram";
-    });
-    visual.before(b);
-  });
 
   cur = Math.max(0, arts.findIndex((a) => a.dataset.slug === deepLink));
   layout();
