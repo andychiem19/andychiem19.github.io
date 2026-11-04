@@ -381,50 +381,66 @@ if (edu && exp) {
   r?.setAttribute("x1", b * 100); r?.setAttribute("y1", 0); r?.setAttribute("x2", 100); r?.setAttribute("y2", 100);
 }
 
-// Timeline inspector: click (or Enter on) a bus value to open its details in one pane under the captures, like a
-// waveform viewer's object inspector. The details come from the row's <dl class="tl-sub">; "note" is shown as a quote.
+// Timeline inspector: click (or Enter on) a bar for a details card, from the row's <dl class="tl-sub">. On desktop the
+// card floats beside the bar inside the timeline; on phones it's a sheet pinned to the bottom of the screen. Either
+// way it never adds page height, so reading it doesn't push the page toward the projects.
 const tlBox = document.querySelector(".tl");
 if (tlBox) {
-  const pane = document.createElement("section");
-  pane.className = "inspect";
-  pane.hidden = true;
-  pane.setAttribute("aria-live", "polite");
-  pane.innerHTML = '<header><img alt=""><span class="ins-sig"></span><button type="button" class="ins-close" aria-label="Close details">×</button></header>' +
-    '<div class="ins-body"><h3></h3><p class="ins-info"></p><dl class="spec"></dl><p class="ins-note"></p></div>';
-  tlBox.append(pane);
-  const $ = (s) => pane.querySelector(s);
+  const card = document.createElement("section");
+  card.className = "inspect";
+  card.hidden = true;
+  card.setAttribute("aria-live", "polite");
+  card.innerHTML = '<header><img alt=""><span class="ins-sig"></span><button type="button" class="ins-close" aria-label="Close details">×</button></header>' +
+    '<div class="ins-body"><h3></h3><p class="ins-info"></p><dl class="ins-fields"></dl><p class="ins-note"></p></div>';
+  tlBox.append(card);
+  const $ = (s) => card.querySelector(s);
+  const sheet = matchMedia("(max-width: 800px)");
   let cur = null;
-  const close = () => { pane.hidden = true; cur?.classList.remove("active"); cur = null; };
+  const close = () => { card.hidden = true; cur?.classList.remove("active"); cur = null; };
+  const place = () => {
+    card.style.left = card.style.top = "";
+    if (!cur || sheet.matches) return;
+    const box = tlBox.getBoundingClientRect(), r = cur.getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight;
+    const left = Math.max(0, Math.min(r.left - box.left, box.width - w));
+    const below = r.bottom - box.top + 8, above = r.top - box.top - h - 8;
+    card.style.left = left + "px";
+    card.style.top = (below + h <= box.height || above < 0 ? below : above) + "px";  // below the bar unless it would spill out
+  };
   const open = (v) => {
     if (cur === v) return close();
     cur?.classList.remove("active");
     (cur = v).classList.add("active");
     const row = v.closest(".tl-row"), lbl = row.querySelector(".tl-lbl"), sub = row.querySelector(".tl-sub");
-    $("img").src = lbl.querySelector("img").src;
-    $(".ins-sig").textContent = "Inspect · " + lbl.textContent.trim();
-    $("h3").textContent = v.dataset.name;
-    $(".ins-info").textContent = v.dataset.info;
-    const fields = $(".spec"), note = $(".ins-note");
+    const fields = $(".ins-fields"), note = $(".ins-note");
+    let info = v.dataset.info;
     fields.replaceChildren();
     note.textContent = "";
     sub?.querySelectorAll("dt").forEach((dt) => {
-      const dd = dt.nextElementSibling;
-      if (dt.textContent === "note") { note.textContent = dd.textContent; note.classList.toggle("todo", dd.classList.contains("todo")); }
+      const dd = dt.nextElementSibling, k = dt.textContent;
+      if (k === "gpa") info += " · GPA " + dd.textContent;
+      else if (k === "note") { note.textContent = dd.textContent; note.classList.toggle("todo", dd.classList.contains("todo")); }
       else fields.append(dt.cloneNode(true), dd.cloneNode(true));
     });
+    $("img").src = lbl.querySelector("img").src;
+    $(".ins-sig").textContent = "Inspect · " + lbl.textContent.trim();
+    $("h3").textContent = v.dataset.name;
+    $(".ins-info").textContent = info;
     fields.hidden = !fields.children.length;
     note.hidden = !note.textContent;
-    pane.hidden = false;
-    pane.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+    card.hidden = false;
+    place();
   };
   tlBox.querySelectorAll(".tl-row .val").forEach((v) => {
     v.tabIndex = 0;
     v.setAttribute("role", "button");
-    v.addEventListener("click", () => open(v));
+    v.addEventListener("click", (e) => { e.stopPropagation(); open(v); });
     v.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(v)));
   });
+  card.addEventListener("click", (e) => e.stopPropagation());
   $(".ins-close").addEventListener("click", close);
+  document.addEventListener("click", () => cur && close());
   addEventListener("keydown", (e) => e.key === "Escape" && cur && close());
+  addEventListener("resize", place);
 }
 
 // Projects mux: every <article class="proj"> is an input; sel picks which one the output track shows

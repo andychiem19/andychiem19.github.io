@@ -550,18 +550,24 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .tl .val:hover, .tl .val.active { background: var(--wafer); color: var(--package); }
 .tl .val:hover::before, .tl .val.active::before { content: none; }
 .tl .val:focus-visible { outline: none; background: var(--wafer); color: var(--package); }
-/* inspector: one details pane under the captures (built by script.js from each row's .tl-sub) */
+/* inspector: a details card for the selected bar (built by script.js from each row's .tl-sub) */
+.tl { position: relative; }
 .tl-sub { display: none; }
-.inspect { margin-top: 1.5rem; border: 1px solid var(--grid); border-left: 3px solid var(--wafer); background: var(--package); }
-.inspect header { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.6rem; background: var(--die); border-bottom: 1px solid var(--grid); color: var(--muted); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
-.inspect header img { width: 32px; height: 24px; object-fit: contain; }
-.ins-close { margin-left: auto; padding: 0 0.4rem; border: 0; background: none; color: var(--muted); font: 1.1rem/1 var(--mono); cursor: pointer; }
+.tl .val { cursor: pointer; }
+.tl-hint { margin-top: 1rem; color: var(--muted); font-size: 0.7rem; letter-spacing: 0.04em; }
+.tl-hint::before { content: "▸ "; color: var(--wafer); }
+.inspect { position: absolute; z-index: 6; width: min(26rem, 100%); border: 1px solid var(--grid); border-left: 3px solid var(--wafer); background: var(--package); box-shadow: 0 8px 22px var(--shadow); }
+.inspect header { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.55rem; background: var(--die); border-bottom: 1px solid var(--grid); color: var(--muted); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.inspect header img { width: 28px; height: 20px; object-fit: contain; }
+.ins-close { margin-left: auto; padding: 0 0.35rem; border: 0; background: none; color: var(--muted); font: 1.05rem/1 var(--mono); cursor: pointer; }
 .ins-close:hover, .ins-close:focus-visible { color: var(--wafer); outline: none; }
-.ins-body { padding: 0.9rem 1rem 1rem; }
-.inspect h3 { color: var(--silk); font-size: 1rem; font-weight: 600; }
-.ins-info { margin-top: 0.15rem; color: var(--muted); font-size: 0.75rem; }
-.inspect .spec { margin-top: 0.8rem; font-size: 0.75rem; }
-.ins-note { margin-top: 0.8rem; color: var(--silk); font-family: var(--font); font-size: 0.95rem; }
+.ins-body { padding: 0.7rem 0.85rem 0.8rem; }
+.inspect h3 { color: var(--silk); font-size: 0.9rem; font-weight: 600; }
+.ins-info { margin-top: 0.15rem; color: var(--muted); font-size: 0.7rem; line-height: 1.45; }
+.ins-fields { display: grid; grid-template-columns: max-content 1fr; gap: 0.15rem 0.75rem; margin-top: 0.6rem; font-size: 0.7rem; line-height: 1.45; }
+.ins-fields dt { color: var(--muted); }
+.ins-fields dd { color: var(--silk); }
+.ins-note { margin-top: 0.6rem; color: var(--silk); font-family: var(--font); font-size: 0.9rem; line-height: 1.45; }
 .ins-note::before { content: "“"; } .ins-note::after { content: "”"; }
 .ins-note.todo { color: var(--muted); font-style: italic; }
 .tl .val:focus:not(:focus-visible) { outline: none; }
@@ -898,6 +904,8 @@ html.doc { scroll-snap-type: none; }
   .tl-ruler i::after { font-size: 0.5rem; }
   .tl-now::before { font-size: 0.5rem; }
   .zoom { width: calc(100% - 2.6rem); height: 1.5rem; margin-left: 2.6rem; }
+  /* the details card becomes a sheet pinned to the bottom of the screen, scrolling inside itself if long */
+  .inspect { position: fixed; left: 0; right: 0; bottom: 0; width: auto; max-height: 55vh; overflow-y: auto; border: 0; border-top: 3px solid var(--wafer); box-shadow: 0 -8px 22px var(--shadow); }
   .visual.diagram-box { aspect-ratio: auto; }
   .sdiagram { width: 400px; }  /* 2D diagrams keep readable text and scroll sideways in their box */
   .doc-body .sdiagram { width: 640px; }
