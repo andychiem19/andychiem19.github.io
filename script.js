@@ -542,11 +542,14 @@ if (mux) {
     if (!steering && Math.abs(pos - shown) > 0.6) readout(Math.min(arts.length - 1, Math.max(0, Math.round(pos))));
     clearTimeout(settle);
     settle = setTimeout(() => {
-      steering = false;
+      // a glide we started that stalled or got cut short finishes on its target instead of snapping back
+      if (steering) return select(cur, false, Math.abs(out.scrollLeft - cur * out.clientWidth) <= 1);
       const i = Math.round(out.scrollLeft / out.clientWidth);
       if (i !== cur) select(i, true);
     }, 120);
   }, { passive: true });
+  // a hand on the track takes over from a glide
+  ["touchstart", "wheel"].forEach((t) => out.addEventListener(t, () => (steering = false), { passive: true }));
 
   mux.querySelector(".mux-prev").addEventListener("click", () => select(cur - 1, true));
   mux.querySelector(".mux-next").addEventListener("click", () => select(cur + 1, true));
