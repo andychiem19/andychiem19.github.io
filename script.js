@@ -337,7 +337,10 @@ if (mux) {
   });
 
   // the readout (sel and the lit input) follows i; select() also moves the track and commits the choice
-  function readout(i) {
+  let shown = -1, steering = false;
+  function readout(i, force) {
+    if (i === shown && !force) return;
+    shown = i;
     inputs.forEach((b, j) => b.setAttribute("aria-current", j === i));
     const li = inputs[i].parentElement;  // keep the selected input in view without scrolling the page
     list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
@@ -346,8 +349,11 @@ if (mux) {
   function select(i, user, instant) {
     cur = (i + arts.length) % arts.length;
     arts.forEach((a, j) => (a.inert = j !== cur));
-    readout(cur);
-    out.scrollTo({ left: cur * out.clientWidth, behavior: instant || !smooth ? "instant" : "smooth" });
+    readout(cur, true);
+    // a glide to the target shouldn't drive the readout through the projects in between
+    const left = cur * out.clientWidth;
+    steering = !instant && smooth && Math.abs(out.scrollLeft - left) > 1;
+    out.scrollTo({ left, behavior: steering ? "smooth" : "instant" });
     if (user) history.replaceState(null, "", "#projects/" + arts[cur].dataset.slug);
     hideTips.forEach((hide) => hide());
   }
@@ -360,9 +366,12 @@ if (mux) {
   // a swipe or trackpad scroll on the track selects where it lands
   let settle;
   out.addEventListener("scroll", () => {
-    readout(Math.min(arts.length - 1, Math.max(0, Math.round(out.scrollLeft / out.clientWidth))));  // update live while swiping
+    // update live while swiping, once the track is well into another project (so a snap-back doesn't flip it)
+    const pos = out.scrollLeft / out.clientWidth;
+    if (!steering && Math.abs(pos - shown) > 0.6) readout(Math.min(arts.length - 1, Math.max(0, Math.round(pos))));
     clearTimeout(settle);
     settle = setTimeout(() => {
+      steering = false;
       const i = Math.round(out.scrollLeft / out.clientWidth);
       if (i !== cur) select(i, true);
     }, 120);
