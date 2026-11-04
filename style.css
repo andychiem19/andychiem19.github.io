@@ -41,6 +41,7 @@
   --green: #1f8a4c;    /* status: complete */
   --body: #2a2e37;     /* long-form reading text */
   --shadow: rgba(22, 24, 29, 0.14);
+  --kw: #8a3ab9;       /* syntax highlight: keywords */
   --font: "IBM Plex Sans", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
 }
@@ -48,7 +49,7 @@
 @media screen {
   :root[data-theme="dark"] {
     --package: #15171c; --die: #1c1f26; --grid: #2b2f3a; --silk: #e6e8ee; --muted: #8a90a0;
-    --wafer: #9aa5ff; --amber: #f0b94a; --green: #6fcf97; --body: #c5c9d3; --shadow: rgba(0, 0, 0, 0.45);
+    --wafer: #9aa5ff; --amber: #f0b94a; --green: #6fcf97; --body: #c5c9d3; --shadow: rgba(0, 0, 0, 0.45); --kw: #c792ea;
   }
 }
 
@@ -101,12 +102,13 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .content p + p { margin-top: 1rem; }
 
 /* Skills: one line written like an assignment, stack = {python, cocotb, ethernet} */
+/* Skills: a SystemVerilog continuous assign, syntax-highlighted (script.js adds the keyword and punctuation) */
 .chips { display: flex; flex-wrap: wrap; align-items: baseline; list-style: none; margin: 1.25rem 0; padding: 0; color: var(--muted); font: 500 0.75rem/1.5 var(--mono); }
-.chips::before { content: "stack = {"; white-space: pre; }
-.chips::after { content: "}"; }
-.chips li { color: var(--wafer); text-transform: lowercase; }
-.chips li:not(:last-child)::after { content: ", "; color: var(--muted); white-space: pre; }
-.spec .chips::before { content: "{"; }  /* the spec row already names it */
+.chips li { color: var(--wafer); white-space: pre; }
+.chips li:not(.sv):has(+ li:not(.sv))::after { content: ", "; color: var(--muted); }  /* commas trail the name, so wraps break after them */
+.chips .sv { color: var(--muted); }
+.chips .kw { color: var(--kw); font-weight: 600; }
+.chips .id { color: var(--silk); }
 .proj h3 { font-family: var(--mono); font-size: clamp(1.1rem, 1.5vw, 1.4rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 0.75rem; }
 .content .subtitle { color: var(--silk); font-size: 1.15rem; line-height: 1.45; margin: 0 0 0.75rem; }
 .content .org { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.6rem; font-size: 0.95rem; margin: 0 0 1rem; }

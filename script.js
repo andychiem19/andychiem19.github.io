@@ -74,6 +74,16 @@ if (toggle) {
   });
 }
 
+// Skills read as a SystemVerilog assign: assign stack = {python, cocotb, ethernet};
+// (names become identifiers; inside a writeup's spec table the row already names it, so just the concatenation)
+document.querySelectorAll(".chips").forEach((ul) => {
+  ul.querySelectorAll("li").forEach((li) => (li.textContent = li.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")));
+  const tok = (html) => Object.assign(document.createElement("li"), { className: "sv", innerHTML: html, ariaHidden: "true" });
+  const named = !ul.closest(".spec");
+  ul.prepend(tok(named ? '<b class="kw">assign</b> <span class="id">stack</span> = {' : "{"));
+  ul.append(tok(named ? "};" : "}"));
+});
+
 // RUN: run the capture like a simulator. Sim time advances a clock tick at a time, the traces redraw behind the
 // "now" line, and the log prints each line whole at its moment in sim time (the lines come from the <pre> in index.html)
 const run = document.querySelector(".run"), simlog = document.getElementById("simlog");
