@@ -74,33 +74,52 @@ if (toggle) {
   });
 }
 
-// Signal nav: one slot per section; drive the signal for the panel currently on screen high
-const pins = document.querySelectorAll(".signals a");
-pins.forEach((a, i) => a.style.setProperty("--i", i));
-document.querySelector(".signals")?.style.setProperty("--n", pins.length);
-const panelObserver = new IntersectionObserver((entries) => {
-  entries.forEach((e) => {
-    if (!e.isIntersecting) return;
-    pins.forEach((p) => p.classList.toggle("active", p.getAttribute("href") === "#" + e.target.id));
+// Writeups: build the signal nav from the section headings (one signal per <h2>)
+const heads = [...document.querySelectorAll(".doc-body h2")];
+if (heads.length && !document.querySelector(".signals")) {
+  const nav = document.createElement("nav");
+  nav.className = "signals";
+  nav.setAttribute("aria-label", "Sections");
+  heads.forEach((h) => {
+    const name = h.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+    h.id ||= name;
+    const a = document.createElement("a");
+    a.href = "#" + h.id;
+    a.setAttribute("aria-label", h.textContent.trim());
+    a.innerHTML = "<span></span><i></i>";
+    a.firstChild.textContent = name;
+    nav.append(a);
   });
-}, { threshold: 0.6 });
-document.querySelectorAll(".panel").forEach((p) => panelObserver.observe(p));
+  nav.insertAdjacentHTML("beforeend", '<b class="scrub" aria-hidden="true"></b>');
+  document.body.prepend(nav);
+}
 
-// ...and move the cursor across the strip: panel i owns slot i, and the cursor sits mid-slot when the panel fills the screen
+// Signal nav: one slot per section (home: the panels; writeups: the h2 sections). The cursor moves across the
+// strip with scroll (section i owns slot i), and the section under the middle of the screen drives its signal high.
+const pins = document.querySelectorAll(".signals a");
 const signals = document.querySelector(".signals");
 if (signals) {
-  const panels = [...document.querySelectorAll(".panel")];
+  pins.forEach((a, i) => a.style.setProperty("--i", i));
+  signals.style.setProperty("--n", pins.length);
+  const top = (el) => el.getBoundingClientRect().top + scrollY;
+  const spans = () => {
+    const panels = [...document.querySelectorAll(".panel")];
+    if (panels.length) return panels.map((p) => [top(p), top(p) + p.offsetHeight]);
+    return heads.map((h, i) => [top(h), i + 1 < heads.length ? top(heads[i + 1]) : document.documentElement.scrollHeight]);
+  };
   let queued = false;
   const track = () => {
     queued = false;
-    const y = scrollY + innerHeight / 2;
-    let i = panels.findIndex((p) => y < p.offsetTop + p.offsetHeight);
-    if (i < 0) i = panels.length - 1;
-    const p = panels[i], f = Math.max(0, Math.min(1, (y - p.offsetTop) / p.offsetHeight));
-    signals.style.setProperty("--x", (i + f) / panels.length);
+    const s = spans(), y = scrollY + innerHeight / 2;
+    let i = s.findIndex(([, end]) => y < end);
+    if (i < 0) i = s.length - 1;
+    const f = Math.max(0, Math.min(1, (y - s[i][0]) / (s[i][1] - s[i][0])));
+    signals.style.setProperty("--x", (i + f) / s.length);
+    pins.forEach((p, j) => p.classList.toggle("active", j === i));
   };
   addEventListener("scroll", () => queued || (queued = requestAnimationFrame(track)), { passive: true });
   addEventListener("resize", track);
+  addEventListener("load", track);
   track();
 }
 
@@ -299,6 +318,9 @@ if (mux) {
   const arts = [...out.querySelectorAll(".proj")];
   const list = mux.querySelector(".mux-in");
   const sel = mux.querySelector(".mux-sel");
+  const name = document.createElement("span");  // project name beside sel (shown on phones)
+  name.className = "mux-name";
+  sel.after(name);
   const bits = Math.max(1, Math.ceil(Math.log2(arts.length)));
   const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   let cur = 0;
@@ -322,6 +344,7 @@ if (mux) {
     const li = inputs[cur].parentElement;  // keep the selected input in view without scrolling the page
     list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
     sel.textContent = `sel = ${bits}'b${cur.toString(2).padStart(bits, "0")}`;
+    name.textContent = (arts[cur].querySelector(".cap-head span") || arts[cur].querySelector("h3")).textContent;  // short signal name
     out.scrollTo({ left: cur * out.clientWidth, behavior: instant || !smooth ? "instant" : "smooth" });
     if (user) history.replaceState(null, "", "#projects/" + arts[cur].dataset.slug);
     hideTips.forEach((hide) => hide());
@@ -353,6 +376,21 @@ if (mux) {
   });
   addEventListener("resize", layout);
 
+  // phones: each diagram starts folded behind a toggle (CSS only hides it on small screens)
+  arts.forEach((art) => {
+    const visual = art.querySelector(".visual"), b = document.createElement("button");
+    if (!visual) return;
+    b.type = "button";
+    b.className = "diagram-toggle";
+    b.textContent = "Show diagram";
+    b.setAttribute("aria-expanded", "false");
+    b.addEventListener("click", () => {
+      const open = b.getAttribute("aria-expanded") !== "true";
+      b.setAttribute("aria-expanded", open);
+      b.textContent = open ? "Hide diagram" : "Show diagram";
+    });
+    visual.before(b);
+  });
 
   cur = Math.max(0, arts.findIndex((a) => a.dataset.slug === deepLink));
   layout();
