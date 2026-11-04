@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://andychiem19.github.io/sitemap.xml
