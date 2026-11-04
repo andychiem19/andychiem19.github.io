@@ -580,7 +580,9 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .tl .cap-title:has(.tl-view) span { margin-left: auto; }
 .tl-list { display: none; list-style: none; margin: 0 0 1.5rem; }
 .tl.list .tl-list { display: grid; grid-template-columns: auto auto 1fr auto auto; column-gap: 1rem; }
-.tl.list .tl-capture, .tl.list .zoom, .tl.list .tl-hint, .tl.list .cap-title span { display: none; }
+.tl.list .tl-capture, .tl.list .zoom, .tl.list .cap-title span { display: none; }
+.tl-hint .l, .tl.list .tl-hint .w { display: none; }  /* hint wording follows the view: "bar" vs "entry" */
+.tl.list .tl-hint .l { display: inline; }
 .tl.list .tl-capture + .tl-list + .cap-title { margin-top: 0.5rem; }
 .tl-list li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid color-mix(in srgb, var(--grid) 50%, transparent); font-size: 0.75rem; }
 .tl-list li:last-child { border-bottom: 0; }
