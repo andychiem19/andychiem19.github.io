@@ -327,9 +327,9 @@ if (mux) {
     const li = document.createElement("li"), b = document.createElement("button");
     b.type = "button";
     b.className = "mux-pin" + (art.querySelector(".cap-head.wip") ? " wip" : "");
-    b.innerHTML = `<span class="idx">in${i}</span><span class="nm"></span><span class="sig"></span>`;
-    b.querySelector(".nm").textContent = art.querySelector("h3").textContent;
-    b.querySelector(".sig").textContent = sigName(art);  // short name, used on phones
+    b.innerHTML = `<span class="idx">in${i}</span><span class="nm"></span>`;
+    b.querySelector(".nm").textContent = sigName(art);  // short signal name; the full title shows on hover
+    b.title = art.querySelector("h3").textContent;
     b.addEventListener("click", () => select(i, true));
     li.append(b);
     list.append(li);
