@@ -848,7 +848,9 @@ html.doc { scroll-snap-type: none; }
   .mux-out { margin-left: 0; }
   /* the desktop mux turned sideways and shrunk, short signal names as inputs */
   .mux { grid-template-columns: minmax(0, 1fr); grid-template-areas: "in" "sym" "ctrl" "out"; row-gap: 0; }
-  .mux-in { display: flex; gap: 0.5rem; max-height: none; overflow-x: auto; padding: 0.1rem 0.1rem 1rem; scrollbar-width: none; }
+  /* a timeline: the selected input sits centered with its neighbors either side (end padding is set by script.js) */
+  .mux-in { display: flex; gap: 0.5rem; max-height: none; overflow: hidden; padding: 0.1rem 0.1rem 1rem;
+    mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); }
   .mux-in li { flex: none; }
   .mux-in li::after { left: 50%; top: 100%; width: 1.5px; height: 1rem; margin: 0; }
   .mux-pin { gap: 0.45rem; padding: 0.4rem 0.5rem; font-size: 0.7rem; }

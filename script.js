@@ -494,18 +494,19 @@ if (mux) {
 
   // the readout (sel and the lit input) follows i; select() also moves the track and commits the choice
   let shown = -1, steering = false;
-  function readout(i, force) {
+  const phone = matchMedia("(max-width: 800px)");
+  function readout(i, force, instant) {
     if (i === shown && !force) return;
     shown = i;
     inputs.forEach((b, j) => b.setAttribute("aria-current", j === i));
     const li = inputs[i].parentElement;  // keep the selected input in view without scrolling the page
-    list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
+    list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2, behavior: phone.matches && smooth && !instant ? "smooth" : "instant" });
     sel.textContent = `sel = ${bits}'b${i.toString(2).padStart(bits, "0")}`;
   }
   function select(i, user, instant) {
     cur = (i + arts.length) % arts.length;
     arts.forEach((a, j) => (a.inert = j !== cur));
-    readout(cur, true);
+    readout(cur, true, instant);
     // a glide to the target shouldn't drive the readout through the projects in between
     const left = cur * out.clientWidth;
     steering = !instant && smooth && Math.abs(out.scrollLeft - left) > 1;
@@ -516,6 +517,10 @@ if (mux) {
   const layout = () => {
     const sym = mux.querySelector(".mux-sym");  // side style: the output wire leaves the mux at its middle
     mux.style.setProperty("--wire-y", sym.offsetTop + sym.offsetHeight / 2 + "px");
+    // on phones, pad the input row so the first and last inputs can scroll to its center too
+    const half = (li) => (phone.matches ? (list.clientWidth - li.offsetWidth) / 2 + "px" : "");
+    list.style.paddingLeft = half(list.firstElementChild);
+    list.style.paddingRight = half(list.lastElementChild);
     select(cur, false, true);
   };
 
