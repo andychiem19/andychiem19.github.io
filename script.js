@@ -418,7 +418,7 @@ if (tlBox) {
     sub?.querySelectorAll("dt").forEach((dt) => {
       const dd = dt.nextElementSibling, k = dt.textContent;
       if (k === "gpa") info += " · GPA " + dd.textContent;
-      else if (k === "note") { note.textContent = dd.textContent; note.classList.toggle("todo", dd.classList.contains("todo")); }
+      else if (k === "note" && !dd.classList.contains("todo")) note.textContent = dd.textContent;  // unwritten notes stay hidden
       else fields.append(dt.cloneNode(true), dd.cloneNode(true));
     });
     $("img").src = lbl.querySelector("img").src;
