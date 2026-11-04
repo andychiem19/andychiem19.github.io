@@ -74,6 +74,77 @@ if (toggle) {
   });
 }
 
+// Skills read as a SystemVerilog assign: assign stack = {python, cocotb, ethernet};
+// (names become identifiers; inside a writeup's spec table the row already names it, so just the concatenation)
+document.querySelectorAll(".chips").forEach((ul) => {
+  ul.querySelectorAll("li").forEach((li) => (li.textContent = li.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")));
+  const tok = (html) => Object.assign(document.createElement("li"), { className: "sv", innerHTML: html, ariaHidden: "true" });
+  const named = !ul.closest(".spec");
+  ul.prepend(tok(named ? '<b class="kw">assign</b> <span class="id">stack</span> = {' : "{"));
+  ul.append(tok(named ? "};" : "}"));
+});
+
+// RUN: run the capture like a simulator. Sim time advances a clock tick at a time, the traces redraw behind the
+// "now" line, and the log prints each line whole at its moment in sim time (the lines come from the <pre> in index.html)
+const run = document.querySelector(".run"), simlog = document.getElementById("simlog");
+if (run && simlog) {
+  const wave = document.querySelector(".wave"), trig = document.querySelector(".cap-bar .trig");
+  const lines = simlog.textContent.trim().split("\n").map((l) => l.trim());
+  const kind = (l) => (l.startsWith("$") ? "cmd" : l.startsWith("**") ? "pass" : "msg");
+  const line = (l) => Object.assign(document.createElement("span"), { className: kind(l), textContent: l });
+  const print = (n) => { while (simlog.children.length < n) simlog.append(line(lines[simlog.children.length])); };
+  const clock = Object.assign(document.createElement("span"), { className: "simtime", hidden: true });
+  const front = Object.assign(document.createElement("span"), { className: "simfront" });
+  front.setAttribute("aria-hidden", "true");
+  trig.after(clock);
+  const TICK = 24, NS = 10;  // px per clock (the ruler tick), ns per clock
+  // a real sim runs in uneven bursts: 1-3 clocks per step, irregular gaps, the odd longer stall
+  const gap = () => (Math.random() < 0.12 ? 350 + Math.random() * 300 : 70 + Math.random() * 150);
+  const hold = (l) => 250 + l.length * 10;  // the sim halts while a log line prints, long enough to read it
+  const instant = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let timer;
+  const status = (s) => { trig.textContent = s; trig.classList.toggle("running", s === "Running"); };
+  const stop = () => {
+    clearTimeout(timer);
+    front.remove();
+    simlog.hidden = clock.hidden = true;
+    status("Triggered");
+    run.textContent = "▶ Run";
+    run.setAttribute("aria-expanded", "false");
+  };
+  const start = () => {
+    clearTimeout(timer);
+    simlog.replaceChildren();
+    simlog.hidden = clock.hidden = false;
+    run.textContent = "■ Stop";
+    run.setAttribute("aria-expanded", "true");
+    const x0 = wave.querySelector(".ruler").offsetLeft, ticks = Math.ceil((wave.clientWidth - x0) / TICK);
+    const finish = () => { front.remove(); print(lines.length); clock.textContent = `Now: ${ticks * NS} ns`; status("Finished"); };
+    if (instant) return finish();
+    let t = 0;
+    status("Running");
+    clock.textContent = "Now: 0 ns";
+    front.style.left = x0 + "px";
+    wave.append(front);
+    print(1);  // the command line
+    const step = () => {
+      // messages are spread over the run (the result lands at the end); print one at a time, holding the sim each time
+      const n = simlog.children.length;
+      if (n < 1 + Math.floor((t / ticks) * (lines.length - 1))) {
+        print(n + 1);
+        return (timer = setTimeout(step, hold(lines[n])));
+      }
+      if (t >= ticks) return finish();
+      t = Math.min(ticks, t + 1 + Math.floor(Math.random() * 3));
+      front.style.left = x0 + t * TICK + "px";
+      clock.textContent = `Now: ${t * NS} ns`;
+      timer = setTimeout(step, gap());
+    };
+    timer = setTimeout(step, gap());
+  };
+  run.addEventListener("click", () => (simlog.hidden ? start() : stop()));
+}
+
 // Writeups: build the signal nav from the section headings (one signal per <h2>)
 const heads = [...document.querySelectorAll(".doc-body h2")];
 if (heads.length && !document.querySelector(".signals")) {
@@ -216,9 +287,9 @@ if (detent) {
   }));
 }
 
-// Block diagrams and the timeline: hover, focus or tap a block to see what it does in a tooltip next to it
+// Block diagrams: hover, focus or tap a block to see what it does in a tooltip next to it
 const hideTips = [];
-document.querySelectorAll(".diagram-box, .tl-capture").forEach((box) => {
+document.querySelectorAll(".diagram-box").forEach((box) => {
   box.querySelector(".diagram-info")?.remove();
   const tip = document.createElement("div");
   tip.className = "tip";
@@ -308,6 +379,68 @@ if (edu && exp) {
   const [l, r] = document.querySelectorAll(".zoom line");
   l?.setAttribute("x1", a * 100); l?.setAttribute("y1", 0); l?.setAttribute("x2", 0); l?.setAttribute("y2", 100);
   r?.setAttribute("x1", b * 100); r?.setAttribute("y1", 0); r?.setAttribute("x2", 100); r?.setAttribute("y2", 100);
+}
+
+// Timeline inspector: click (or Enter on) a bar for a details card, from the row's <dl class="tl-sub">. On desktop the
+// card floats beside the bar inside the timeline; on phones it's a sheet pinned to the bottom of the screen. Either
+// way it never adds page height, so reading it doesn't push the page toward the projects.
+const tlBox = document.querySelector(".tl");
+if (tlBox) {
+  const card = document.createElement("section");
+  card.className = "inspect";
+  card.hidden = true;
+  card.setAttribute("aria-live", "polite");
+  card.innerHTML = '<header><img alt=""><span class="ins-sig"></span><button type="button" class="ins-close" aria-label="Close details">×</button></header>' +
+    '<div class="ins-body"><h3></h3><p class="ins-info"></p><dl class="ins-fields"></dl><p class="ins-note"></p></div>';
+  tlBox.append(card);
+  const $ = (s) => card.querySelector(s);
+  const sheet = matchMedia("(max-width: 800px)");
+  let cur = null;
+  const close = () => { card.hidden = true; cur?.classList.remove("active"); cur = null; };
+  const place = () => {
+    card.style.left = card.style.top = "";
+    if (!cur || sheet.matches) return;
+    const box = tlBox.getBoundingClientRect(), r = cur.getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight;
+    const left = Math.max(0, Math.min(r.left - box.left, box.width - w));
+    const below = r.bottom - box.top + 8, above = r.top - box.top - h - 8;
+    card.style.left = left + "px";
+    card.style.top = (below + h <= box.height || above < 0 ? below : above) + "px";  // below the bar unless it would spill out
+  };
+  const open = (v) => {
+    if (cur === v) return close();
+    cur?.classList.remove("active");
+    (cur = v).classList.add("active");
+    const row = v.closest(".tl-row"), lbl = row.querySelector(".tl-lbl"), sub = row.querySelector(".tl-sub");
+    const fields = $(".ins-fields"), note = $(".ins-note");
+    let info = v.dataset.info;
+    fields.replaceChildren();
+    note.textContent = "";
+    sub?.querySelectorAll("dt").forEach((dt) => {
+      const dd = dt.nextElementSibling, k = dt.textContent;
+      if (k === "gpa") info += " · GPA " + dd.textContent;
+      else if (k === "note" && !dd.classList.contains("todo")) note.textContent = dd.textContent;  // unwritten notes stay hidden
+      else fields.append(dt.cloneNode(true), dd.cloneNode(true));
+    });
+    $("img").src = lbl.querySelector("img").src;
+    $(".ins-sig").textContent = "Inspect · " + lbl.textContent.trim();
+    $("h3").textContent = v.dataset.name;
+    $(".ins-info").textContent = info;
+    fields.hidden = !fields.children.length;
+    note.hidden = !note.textContent;
+    card.hidden = false;
+    place();
+  };
+  tlBox.querySelectorAll(".tl-row .val").forEach((v) => {
+    v.tabIndex = 0;
+    v.setAttribute("role", "button");
+    v.addEventListener("click", (e) => { e.stopPropagation(); open(v); });
+    v.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), open(v)));
+  });
+  card.addEventListener("click", (e) => e.stopPropagation());
+  $(".ins-close").addEventListener("click", close);
+  document.addEventListener("click", () => cur && close());
+  addEventListener("keydown", (e) => e.key === "Escape" && cur && close());
+  addEventListener("resize", place);
 }
 
 // Projects mux: every <article class="proj"> is an input; sel picks which one the output track shows

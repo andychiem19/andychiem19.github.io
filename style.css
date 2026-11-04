@@ -41,6 +41,7 @@
   --green: #1f8a4c;    /* status: complete */
   --body: #2a2e37;     /* long-form reading text */
   --shadow: rgba(22, 24, 29, 0.14);
+  --kw: #8a3ab9;       /* syntax highlight: keywords */
   --font: "IBM Plex Sans", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
 }
@@ -48,7 +49,7 @@
 @media screen {
   :root[data-theme="dark"] {
     --package: #15171c; --die: #1c1f26; --grid: #2b2f3a; --silk: #e6e8ee; --muted: #8a90a0;
-    --wafer: #9aa5ff; --amber: #f0b94a; --green: #6fcf97; --body: #c5c9d3; --shadow: rgba(0, 0, 0, 0.45);
+    --wafer: #9aa5ff; --amber: #f0b94a; --green: #6fcf97; --body: #c5c9d3; --shadow: rgba(0, 0, 0, 0.45); --kw: #c792ea;
   }
 }
 
@@ -101,12 +102,13 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .content p + p { margin-top: 1rem; }
 
 /* Skills: one line written like an assignment, stack = {python, cocotb, ethernet} */
+/* Skills: a SystemVerilog continuous assign, syntax-highlighted (script.js adds the keyword and punctuation) */
 .chips { display: flex; flex-wrap: wrap; align-items: baseline; list-style: none; margin: 1.25rem 0; padding: 0; color: var(--muted); font: 500 0.75rem/1.5 var(--mono); }
-.chips::before { content: "stack = {"; white-space: pre; }
-.chips::after { content: "}"; }
-.chips li { color: var(--wafer); text-transform: lowercase; }
-.chips li:not(:last-child)::after { content: ", "; color: var(--muted); white-space: pre; }
-.spec .chips::before { content: "{"; }  /* the spec row already names it */
+.chips li { color: var(--wafer); white-space: pre; }
+.chips li:not(.sv):has(+ li:not(.sv))::after { content: ", "; color: var(--muted); }  /* commas trail the name, so wraps break after them */
+.chips .sv { color: var(--muted); }
+.chips .kw { color: var(--kw); font-weight: 600; }
+.chips .id { color: var(--silk); }
 .proj h3 { font-family: var(--mono); font-size: clamp(1.1rem, 1.5vw, 1.4rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 0.75rem; }
 .content .subtitle { color: var(--silk); font-size: 1.15rem; line-height: 1.45; margin: 0 0 0.75rem; }
 .content .org { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.6rem; font-size: 0.95rem; margin: 0 0 1rem; }
@@ -129,6 +131,38 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
   letter-spacing: 0.08em;
 }
 .trig { display: inline-flex; align-items: center; gap: 0.5rem; }
+/* RUN: opens the about-me sim log under the capture (script.js types it out) */
+.cap-bar { justify-content: flex-start; gap: 0.75rem; }
+.cap-bar .theme-toggle { margin-left: auto; }
+.run {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--wafer);
+  background: var(--wafer);
+  color: var(--package);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.run:focus-visible { background: none; color: var(--wafer); outline: none; }
+@media (hover: hover) { .run:hover { background: none; color: var(--wafer); } }  /* no sticky hover after a tap */
+.simlog {
+  margin: 1.5rem 0 0;
+  padding: 1rem 1.2rem;
+  background: var(--die);
+  border: 1px solid var(--grid);
+  border-left: 3px solid var(--wafer);
+  color: var(--silk);
+  font: 0.85rem/1.7 var(--mono);
+  white-space: pre-wrap;
+}
+.simlog span { display: block; padding-left: 2ch; text-indent: -2ch; }  /* wrapped lines hang under the text, past "# " */
+.simlog .cmd { color: var(--muted); }
+.simlog .pass { color: var(--green); }
+/* while running: an amber LED, the sim time, and a cover over the time not simulated yet (its edge is the "now" line) */
+.trig.running::before { background: var(--amber); animation: blink 0.6s steps(1) infinite; }
+.simtime { color: var(--silk); }
+.simfront { position: absolute; top: -1.2rem; right: 0; bottom: -0.5rem; z-index: 3; background: var(--package); border-left: 1.5px solid var(--amber); pointer-events: none; }
 .trig::before { content: ""; width: 7px; height: 7px; background: var(--green); animation: glow 2.4s ease-in-out infinite; }
 .theme-toggle {
   padding: 0.3rem 0.6rem;
@@ -516,6 +550,25 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .tl .val:hover, .tl .val.active { background: var(--wafer); color: var(--package); }
 .tl .val:hover::before, .tl .val.active::before { content: none; }
 .tl .val:focus-visible { outline: none; background: var(--wafer); color: var(--package); }
+/* inspector: a details card for the selected bar (built by script.js from each row's .tl-sub) */
+.tl { position: relative; }
+.tl-sub { display: none; }
+.tl .val { cursor: pointer; }
+.tl-hint { margin-top: 1rem; color: var(--muted); font-size: 0.7rem; letter-spacing: 0.04em; }
+.tl-hint::before { content: "▸ "; color: var(--wafer); }
+.inspect { position: absolute; z-index: 6; width: min(31rem, 100%); border: 1px solid var(--grid); border-left: 3px solid var(--wafer); background: var(--package); box-shadow: 0 8px 22px var(--shadow); }
+.inspect header { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.55rem; background: var(--die); border-bottom: 1px solid var(--grid); color: var(--muted); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.inspect header img { width: 28px; height: 20px; object-fit: contain; }
+.ins-close { margin-left: auto; padding: 0 0.35rem; border: 0; background: none; color: var(--muted); font: 1.05rem/1 var(--mono); cursor: pointer; }
+.ins-close:hover, .ins-close:focus-visible { color: var(--wafer); outline: none; }
+.ins-body { padding: 0.7rem 0.85rem 0.8rem; }
+.inspect h3 { color: var(--silk); font-size: 0.9rem; font-weight: 600; }
+.ins-info { margin-top: 0.15rem; color: var(--muted); font-size: 0.7rem; line-height: 1.45; white-space: nowrap; }
+.ins-fields { display: grid; grid-template-columns: max-content 1fr; gap: 0.15rem 0.75rem; margin-top: 0.6rem; font-size: 0.7rem; line-height: 1.45; }
+.ins-fields dt { color: var(--muted); }
+.ins-fields dd { color: var(--silk); }
+.ins-note { margin-top: 0.6rem; color: var(--silk); font-family: var(--font); font-size: 0.9rem; line-height: 1.45; }
+.tl .val:focus:not(:focus-visible) { outline: none; }
 .tl-ruler { position: absolute; top: 0; left: var(--lbl); right: 0; height: 1.2rem; border-bottom: 1px solid var(--grid); }
 .tl-ruler i { position: absolute; left: calc(var(--f) * 100%); bottom: 0; height: 0.4rem; border-left: 1px solid var(--grid); }
 .tl-ruler i::after { content: attr(data-t); position: absolute; bottom: 0.45rem; left: 0; transform: translateX(-50%); color: var(--muted); font-size: 0.62rem; font-style: normal; line-height: 1; }
@@ -796,7 +849,7 @@ html.doc { scroll-snap-type: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .status::before, .status.done::before, .trig::before, .cap-head.wip i { animation: none; box-shadow: none; }
+  .status::before, .status.done::before, .trig::before, .cap-head.wip i, .trig.running::before { animation: none; box-shadow: none; }
   .wave::after { display: none; }
 }
 
@@ -842,12 +895,16 @@ html.doc { scroll-snap-type: none; }
   .tl-capture { --lbl: 2.6rem; row-gap: 0.4rem; padding-top: 1.5rem; }
   .tl-lbl { font-size: 0; }
   .tl-lbl img { width: 32px; height: 26px; }
+
   .tl-trace { height: 1.75rem; }
   .tl .val { --x: 0.45rem; padding: 0 calc(var(--x) + 0.1rem); font-size: 0.6rem; line-height: 1.75rem; letter-spacing: 0.02em; }
   .tl .val .more { display: none; }
   .tl-ruler i::after { font-size: 0.5rem; }
   .tl-now::before { font-size: 0.5rem; }
   .zoom { width: calc(100% - 2.6rem); height: 1.5rem; margin-left: 2.6rem; }
+  /* the details card becomes a sheet pinned to the bottom of the screen, scrolling inside itself if long */
+  .ins-info { white-space: normal; }
+  .inspect { position: fixed; left: 0; right: 0; bottom: 0; width: auto; max-height: 55vh; overflow-y: auto; border: 0; border-top: 3px solid var(--wafer); box-shadow: 0 -8px 22px var(--shadow); }
   .visual.diagram-box { aspect-ratio: auto; }
   .sdiagram { width: 400px; }  /* 2D diagrams keep readable text and scroll sideways in their box */
   .doc-body .sdiagram { width: 640px; }
@@ -861,6 +918,7 @@ html.doc { scroll-snap-type: none; }
   .hero h1 { font-size: clamp(1.6rem, 8.5vw, 2.5rem); }
   .val { font-size: 0.8rem; }
   .ports .val { font-size: 0.7rem; }
+  .simlog { padding: 0.8rem 0.9rem; font-size: 0.72rem; }
   .doc-body .path { flex-direction: column; align-items: flex-start; gap: 1rem; }
   .doc-body .path li { flex: none; padding: 0.6rem 0.8rem 0.55rem; }
   .doc-body .path li + li::before { top: calc(-1rem - 1px); left: 1.25rem; width: 1px; height: 1rem; }
@@ -876,7 +934,7 @@ html.doc { scroll-snap-type: none; }
   @page { size: letter; margin: 0.6in 0.65in 0.75in; }
   html { scroll-snap-type: none; }
   html, body { background: #fff; font-size: 15px; }
-  .signals, .px, .diagram-info, .tip, .pdf-link, .doc-nav, .cap-bar, .cap-head { display: none !important; }
+  .signals, .px, .diagram-info, .tip, .pdf-link, .doc-nav, .cap-bar, .cap-head, .simlog { display: none !important; }
   .status::before { animation: none; box-shadow: none; }
 
   /* home page: headlines, diagrams with their hover details, and links; the full writeups live on the site */

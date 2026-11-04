@@ -38,6 +38,7 @@
     <section class="panel hero" id="home">
       <div class="capture">
         <div class="cap-bar">
+          <button class="run" type="button" aria-expanded="false" aria-controls="simlog">▶ Run</button>
           <span class="trig">Triggered</span>
           <button class="theme-toggle" type="button">Dark</button>
         </div>
@@ -61,6 +62,14 @@
           </div>
           <span class="cursor" aria-hidden="true">T0</span>
         </div>
+        <!-- About me: RUN types these lines out as a simulator log. Edit the text here; lines starting with "$" are
+             commands, "#" messages, "**" the result. -->
+        <pre class="simlog" id="simlog" hidden>$ run -all
+# Hi! I'm an aspiring design verification engineer.
+# I take on challenges, and motivate others to do so too.
+# I've worked with FPGAs, SerDes, 100GbE, and production telecommunications hardware.
+# I recently joined C2S2, a first-of-its-kind undergraduate silicon team that's taped out ten chips.
+** PASS</pre>
         <!-- Shown only in print / the portfolio PDF -->
         <p class="print-only site-link">Interactive portfolio: <a href="https://andychiem19.github.io/">andychiem19.github.io</a></p>
       </div>
@@ -68,7 +77,9 @@
 
     <!-- Timeline: education on a year axis, experience in a zoomed month window. Rows are placed by
          data-start / data-end (YYYY-MM, inclusive; leave data-end off for "present"); newest on top.
-         Text in .more is dropped on phones, so keep the short label first. -->
+         Text in .more is dropped on phones, so keep the short label first. Clicking a value opens its details
+         (the row's <dl class="tl-sub">: where, gpa, clubs, note) in an inspector pane; replace "your one-liner here"
+         with your own note and remove class="todo". -->
     <section class="panel timeline" id="timeline">
       <div class="tl reveal">
         <h2 class="cap-title">Education <span>2020 → 2029 · 1 tick = 1 yr</span></h2>
@@ -76,22 +87,26 @@
           <div class="tl-row">
             <span class="tl-lbl"><img src="assets/logos/cornell.svg" alt="">cornell</span>
             <span class="tl-trace"><span class="val" data-start="2026-08" data-end="2029-05" data-name="Cornell University"
-              data-info="Bachelor of Science, Electrical and Computer Engineering · 2026 – 2029">Cornell<span class="more"> · BS ECE</span></span></span>
+              data-info="B.S. Electrical &amp; Computer Engineering · 2026 – 2029">Cornell<span class="more"> · BS ECE</span></span></span>
+            <dl class="tl-sub"><dt>where</dt><dd>Ithaca, NY</dd><dt>clubs</dt><dd>IEEE · Big Red Billiards Club · Blockchain</dd><dt>note</dt><dd class="todo">your one-liner here</dd></dl>
           </div>
           <div class="tl-row">
             <span class="tl-lbl"><img src="assets/logos/drexel.svg" alt="">drexel</span>
             <span class="tl-trace"><span class="val" data-start="2024-09" data-end="2026-06" data-name="Drexel University"
-              data-info="Bachelor of Science, Electrical and Computer Engineering · 2024 – 2026">Drexel<span class="more"> · BS ECE</span></span></span>
+              data-info="B.S. Electrical &amp; Computer Engineering · 2024 – 2026">Drexel<span class="more"> · BS ECE</span></span></span>
+            <dl class="tl-sub"><dt>where</dt><dd>Philadelphia, PA</dd><dt>gpa</dt><dd>3.7 / 4.0</dd><dt>clubs</dt><dd>Army ROTC · SASE · Electric Racing</dd><dt>note</dt><dd>At Drexel, I engaged in undergraduate research and gained valuable industry experience through a co-op at WMI. Outside school, I enjoyed rucking to the Please Touch Museum with Task Force Dragon, and getting Thai tea from Pete's Little Lunch Box.</dd></dl>
           </div>
           <div class="tl-row">
             <span class="tl-lbl"><img src="assets/logos/ib.svg" alt="">ib</span>
             <span class="tl-trace"><span class="val" data-start="2022-09" data-end="2024-06" data-name="International Baccalaureate"
               data-info="IB Diploma Programme at Central High School · 2022 – 2024">IB<span class="more"> Diploma</span></span></span>
+            <dl class="tl-sub"><dt>where</dt><dd>Philadelphia, PA (at Central High School)</dd><dt>note</dt><dd class="todo">your one-liner here</dd></dl>
           </div>
           <div class="tl-row">
             <span class="tl-lbl"><img src="assets/logos/chs.svg" alt="">chs</span>
             <span class="tl-trace"><span class="val" data-start="2020-09" data-end="2024-06" data-name="Central High School"
               data-info="Bachelor of Arts · 2020 – 2024">Central<span class="more"> HS · BA</span></span></span>
+            <dl class="tl-sub"><dt>where</dt><dd>Philadelphia, PA</dd><dt>gpa</dt><dd>4.35 / 4.0</dd><dt>clubs</dt><dd>VP, CHS String Orchestra · President, Martial Arts Club</dd><dt>note</dt><dd class="todo">your one-liner here</dd></dl>
           </div>
         </div>
         <svg class="zoom" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -103,18 +118,22 @@
             <span class="tl-lbl"><img src="assets/logos/c2s2.svg" alt="">c2s2</span>
             <span class="tl-trace"><span class="val" data-start="2026-11" data-name="Cornell Custom Silicon Systems"
               data-info="Digital Subteam Member · Nov 2026 – present">C2S2<span class="more"> · Digital</span></span></span>
+            <dl class="tl-sub"><dt>where</dt><dd>Ithaca, NY</dd><dt>note</dt><dd class="todo">your one-liner here</dd></dl>
           </div>
           <div class="tl-row">
             <span class="tl-lbl"><img src="assets/logos/wmi.svg" alt="">wmi</span>
             <span class="tl-trace"><span class="val" data-start="2026-03" data-end="2026-08" data-name="Woodward McCoach, Inc."
               data-info="FPGA Development Engineer (internship) · Mar – Aug 2026">FPGA<span class="more"> Dev Engineer</span></span></span>
+            <dl class="tl-sub"><dt>where</dt><dd>West Chester, PA</dd><dt>note</dt><dd class="todo">your one-liner here</dd></dl>
           </div>
           <div class="tl-row">
             <span class="tl-lbl"><img src="assets/logos/vandal.svg" alt="">vandal</span>
             <span class="tl-trace"><span class="val" data-start="2025-11" data-end="2026-05" data-name="Drexel VLSI and Algorithms Lab (VANDAL)"
               data-info="Research Assistant · Nov 2025 – May 2026">Research<span class="more"> Asst.</span></span></span>
+            <dl class="tl-sub"><dt>where</dt><dd>Philadelphia, PA</dd><dt>note</dt><dd class="todo">your one-liner here</dd></dl>
           </div>
         </div>
+        <p class="tl-hint">click any bar to inspect it</p>
       </div>
     </section>
 
