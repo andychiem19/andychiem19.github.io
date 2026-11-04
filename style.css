@@ -550,6 +550,16 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .tl .val:hover, .tl .val.active { background: var(--wafer); color: var(--package); }
 .tl .val:hover::before, .tl .val.active::before { content: none; }
 .tl .val:focus-visible { outline: none; background: var(--wafer); color: var(--package); }
+/* expandable rows: ▸ opens child signals (.where, .gpa, .clubs, .note) under the row */
+.tl-sub, .tl-row[hidden] { display: none; }  /* .tl-row sets display: grid, which would beat [hidden] */
+.tl-exp { flex: none; width: 1rem; margin-right: -0.3rem; padding: 0; border: 0; background: none; color: var(--muted); font: 0.8rem var(--mono); cursor: pointer; }  /* own size: phones zero the label text */
+.tl-exp[aria-expanded="true"], .tl-exp:hover, .tl-exp:focus-visible { color: var(--wafer); outline: none; }
+.tl-row.child .tl-lbl { padding-left: 1.9rem; font-size: 0.7rem; }
+.tl-row.child .tl-trace { height: 1.6rem; }
+.tl-row.child .val { --x: 0.5rem; font-size: 0.7rem; line-height: 1.6rem; letter-spacing: 0; text-transform: none; cursor: default; }
+.tl-row.child .val:hover { background: var(--muted); color: var(--silk); }
+.tl-row.child .val:hover::before { content: ""; }
+.tl-row.child .val.todo { color: var(--muted); font-style: italic; }
 .tl-ruler { position: absolute; top: 0; left: var(--lbl); right: 0; height: 1.2rem; border-bottom: 1px solid var(--grid); }
 .tl-ruler i { position: absolute; left: calc(var(--f) * 100%); bottom: 0; height: 0.4rem; border-left: 1px solid var(--grid); }
 .tl-ruler i::after { content: attr(data-t); position: absolute; bottom: 0.45rem; left: 0; transform: translateX(-50%); color: var(--muted); font-size: 0.62rem; font-style: normal; line-height: 1; }
@@ -873,15 +883,18 @@ html.doc { scroll-snap-type: none; }
   .diagram-toggle[aria-expanded="true"]::after { content: "▴"; }
   .diagram-toggle[aria-expanded="false"] + .visual { display: none; }
   /* timeline stays horizontal, compressed: logo-only labels and short values (full details on tap) */
-  .tl-capture { --lbl: 2.6rem; row-gap: 0.4rem; padding-top: 1.5rem; }
+  .tl-capture { --lbl: 3.4rem; row-gap: 0.4rem; padding-top: 1.5rem; }  /* room for ▸ + logo */
   .tl-lbl { font-size: 0; }
   .tl-lbl img { width: 32px; height: 26px; }
+  .tl-row.child .tl-lbl { padding-left: 0.3rem; font-size: 0.55rem; }
+  .tl-row.child .tl-trace { height: auto; }
+  .tl-row.child .val { position: static; width: auto; padding: 0.25rem calc(var(--x) + 0.3rem); line-height: 1.35; white-space: normal; }  /* phones: full width, wrapping */
   .tl-trace { height: 1.75rem; }
   .tl .val { --x: 0.45rem; padding: 0 calc(var(--x) + 0.1rem); font-size: 0.6rem; line-height: 1.75rem; letter-spacing: 0.02em; }
   .tl .val .more { display: none; }
   .tl-ruler i::after { font-size: 0.5rem; }
   .tl-now::before { font-size: 0.5rem; }
-  .zoom { width: calc(100% - 2.6rem); height: 1.5rem; margin-left: 2.6rem; }
+  .zoom { width: calc(100% - 3.4rem); height: 1.5rem; margin-left: 3.4rem; }
   .visual.diagram-box { aspect-ratio: auto; }
   .sdiagram { width: 400px; }  /* 2D diagrams keep readable text and scroll sideways in their box */
   .doc-body .sdiagram { width: 640px; }

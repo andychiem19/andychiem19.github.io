@@ -381,6 +381,50 @@ if (edu && exp) {
   r?.setAttribute("x1", b * 100); r?.setAttribute("y1", 0); r?.setAttribute("x2", 100); r?.setAttribute("y2", 100);
 }
 
+// Timeline rows expand like a bus in a waveform viewer: ▸ opens child signals (from the row's <dl class="tl-sub">)
+// underneath. Each child value starts at its parent's dates and widens to fit its text.
+document.querySelectorAll(".tl-row").forEach((row) => {
+  const sub = row.querySelector(".tl-sub");
+  if (!sub) return;
+  const parent = row.querySelector(".val"), lbl = row.querySelector(".tl-lbl");
+  const kids = [...sub.querySelectorAll("dt")].map((dt) => {
+    const dd = dt.nextElementSibling, kid = document.createElement("div");
+    kid.className = "tl-row child";
+    kid.hidden = true;
+    kid.innerHTML = '<span class="tl-lbl"></span><span class="tl-trace"><span class="val"></span></span>';
+    kid.querySelector(".tl-lbl").textContent = "." + dt.textContent;
+    const v = kid.querySelector(".val");
+    v.textContent = dd.textContent;
+    v.classList.toggle("todo", dd.classList.contains("todo"));
+    return kid;
+  });
+  row.after(...kids);
+  const fit = () => kids.forEach((kid) => {
+    const v = kid.querySelector(".val"), w = kid.querySelector(".tl-trace").clientWidth;
+    v.style.width = "max-content";
+    const need = Math.min(1, (v.offsetWidth + 2) / w), pa = +getComputedStyle(parent).getPropertyValue("--a"), pb = +getComputedStyle(parent).getPropertyValue("--b");
+    v.style.width = "";
+    const a = Math.max(0, Math.min(pa, 1 - need));
+    v.style.setProperty("--a", a);
+    v.style.setProperty("--b", Math.max(pb, a + need));
+  });
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "tl-exp";
+  b.setAttribute("aria-expanded", "false");
+  b.setAttribute("aria-label", "Show details");
+  b.textContent = "▸";
+  b.addEventListener("click", () => {
+    const open = b.getAttribute("aria-expanded") !== "true";
+    b.setAttribute("aria-expanded", open);
+    b.textContent = open ? "▾" : "▸";
+    kids.forEach((k) => (k.hidden = !open));
+    if (open) fit();
+  });
+  lbl.prepend(b);
+  addEventListener("resize", () => b.getAttribute("aria-expanded") === "true" && fit());
+});
+
 // Projects mux: every <article class="proj"> is an input; sel picks which one the output track shows
 const mux = document.querySelector(".mux");
 if (mux) {
