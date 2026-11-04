@@ -69,11 +69,17 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
   });
 }
 
-// Theme toggle: light by default, dark only when picked here; the choice is remembered (each page applies it before first paint)
+// Theme: follows the system until picked with the toggle; the pick is remembered (each page applies it before first paint)
 const toggle = document.querySelector(".theme-toggle");
+const isDark = () => document.documentElement.dataset.theme === "dark";
+const label = () => toggle && (toggle.textContent = isDark() ? "Light" : "Dark");
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+  try { if (localStorage.getItem("theme")) return; } catch (err) {}
+  document.documentElement.dataset.theme = e.matches ? "dark" : "light";
+  label();
+  document.querySelectorAll(".reveal").forEach((el) => el._px && recolor(el));
+});
 if (toggle) {
-  const isDark = () => document.documentElement.dataset.theme === "dark";
-  const label = () => (toggle.textContent = isDark() ? "Light" : "Dark");
   label();
   toggle.addEventListener("click", () => {
     const theme = isDark() ? "light" : "dark";
