@@ -74,41 +74,56 @@ if (toggle) {
   });
 }
 
-// RUN: type the about-me out as a simulator log under the hero (the lines come from the <pre> in index.html)
+// RUN: run the capture like a simulator. Sim time advances a clock tick at a time, the traces redraw behind the
+// "now" line, and the log prints each line whole at its moment in sim time (the lines come from the <pre> in index.html)
 const run = document.querySelector(".run"), simlog = document.getElementById("simlog");
 if (run && simlog) {
+  const wave = document.querySelector(".wave"), trig = document.querySelector(".cap-bar .trig");
   const lines = simlog.textContent.trim().split("\n").map((l) => l.trim());
   const kind = (l) => (l.startsWith("$") ? "cmd" : l.startsWith("**") ? "pass" : "msg");
+  const line = (l) => Object.assign(document.createElement("span"), { className: kind(l), textContent: l });
+  const print = (n) => { while (simlog.children.length < n) simlog.append(line(lines[simlog.children.length])); };
+  const clock = Object.assign(document.createElement("span"), { className: "simtime", hidden: true });
+  const front = Object.assign(document.createElement("span"), { className: "simfront" });
+  front.setAttribute("aria-hidden", "true");
+  trig.after(clock);
+  const TICK = 24, NS = 10, STEP = 85;  // px per clock (the ruler tick), ns per clock, ms per clock
   const instant = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let timer;
-  const set = (on) => {
-    run.textContent = on ? "■ Stop" : "▶ Run";
-    run.setAttribute("aria-expanded", on);
-    simlog.hidden = !on;
+  const status = (s) => { trig.textContent = s; trig.classList.toggle("running", s === "Running"); };
+  const stop = () => {
+    clearTimeout(timer);
+    front.remove();
+    simlog.hidden = clock.hidden = true;
+    status("Triggered");
+    run.textContent = "▶ Run";
+    run.setAttribute("aria-expanded", "false");
   };
   const start = () => {
     clearTimeout(timer);
     simlog.replaceChildren();
-    set(true);
-    const spans = lines.map((l) => Object.assign(document.createElement("span"), { className: kind(l) }));
-    if (instant) {
-      spans.forEach((s, i) => { s.textContent = lines[i]; simlog.append(s); });
-      return spans.at(-1).classList.add("caret");
-    }
-    simlog.setAttribute("aria-busy", "true");
-    let li = 0, ci = 0;
+    simlog.hidden = clock.hidden = false;
+    run.textContent = "■ Stop";
+    run.setAttribute("aria-expanded", "true");
+    const x0 = wave.querySelector(".ruler").offsetLeft, ticks = Math.ceil((wave.clientWidth - x0) / TICK);
+    const finish = () => { front.remove(); print(lines.length); clock.textContent = `Now: ${ticks * NS} ns`; status("Finished"); };
+    if (instant) return finish();
+    let t = 0;
+    status("Running");
+    clock.textContent = "Now: 0 ns";
+    front.style.left = x0 + "px";
+    wave.append(front);
+    print(1);  // the command line
     const step = () => {
-      const s = spans[li];
-      if (ci === 0) { spans[li - 1]?.classList.remove("caret"); s.classList.add("caret"); simlog.append(s); }
-      s.textContent = lines[li].slice(0, ++ci);
-      if (ci < lines[li].length) return (timer = setTimeout(step, 18));
-      li++, ci = 0;
-      if (li < lines.length) timer = setTimeout(step, 260);
-      else simlog.setAttribute("aria-busy", "false");
+      t++;
+      front.style.left = x0 + t * TICK + "px";
+      clock.textContent = `Now: ${t * NS} ns`;
+      print(1 + Math.floor((t / ticks) * (lines.length - 1)));  // messages spread over the run, the result at the end
+      timer = t < ticks ? setTimeout(step, STEP) : (finish(), 0);
     };
-    step();
+    timer = setTimeout(step, STEP);
   };
-  run.addEventListener("click", () => (simlog.hidden ? start() : (clearTimeout(timer), set(false))));
+  run.addEventListener("click", () => (simlog.hidden ? start() : stop()));
 }
 
 // Writeups: build the signal nav from the section headings (one signal per <h2>)

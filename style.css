@@ -157,7 +157,10 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .simlog span { display: block; padding-left: 2ch; text-indent: -2ch; }  /* wrapped lines hang under the text, past "# " */
 .simlog .cmd { color: var(--muted); }
 .simlog .pass { color: var(--green); }
-.simlog .caret::after { content: "▋"; margin-left: 0.15ch; color: var(--wafer); animation: blink 1s steps(1) infinite; }
+/* while running: an amber LED, the sim time, and a cover over the time not simulated yet (its edge is the "now" line) */
+.trig.running::before { background: var(--amber); animation: blink 0.6s steps(1) infinite; }
+.simtime { color: var(--silk); }
+.simfront { position: absolute; top: -1.2rem; right: 0; bottom: -0.5rem; z-index: 3; background: var(--package); border-left: 1.5px solid var(--amber); pointer-events: none; }
 .trig::before { content: ""; width: 7px; height: 7px; background: var(--green); animation: glow 2.4s ease-in-out infinite; }
 .theme-toggle {
   padding: 0.3rem 0.6rem;
@@ -825,7 +828,7 @@ html.doc { scroll-snap-type: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .status::before, .status.done::before, .trig::before, .cap-head.wip i, .simlog .caret::after { animation: none; box-shadow: none; }
+  .status::before, .status.done::before, .trig::before, .cap-head.wip i, .trig.running::before { animation: none; box-shadow: none; }
   .wave::after { display: none; }
 }
 
