@@ -318,33 +318,35 @@ if (mux) {
   const arts = [...out.querySelectorAll(".proj")];
   const list = mux.querySelector(".mux-in");
   const sel = mux.querySelector(".mux-sel");
-  const name = document.createElement("span");  // project name beside sel (shown on phones)
-  name.className = "mux-name";
-  sel.after(name);
   const bits = Math.max(1, Math.ceil(Math.log2(arts.length)));
   const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   let cur = 0;
+  const sigName = (art) => (art.querySelector(".cap-head span") || art.querySelector("h3")).textContent;
 
   const inputs = arts.map((art, i) => {
     const li = document.createElement("li"), b = document.createElement("button");
     b.type = "button";
     b.className = "mux-pin" + (art.querySelector(".cap-head.wip") ? " wip" : "");
-    b.innerHTML = `<span class="idx">in${i}</span><span class="nm"></span>`;
+    b.innerHTML = `<span class="idx">in${i}</span><span class="nm"></span><span class="sig"></span>`;
     b.querySelector(".nm").textContent = art.querySelector("h3").textContent;
+    b.querySelector(".sig").textContent = sigName(art);  // short name, used on phones
     b.addEventListener("click", () => select(i, true));
     li.append(b);
     list.append(li);
     return b;
   });
 
+  // the readout (sel and the lit input) follows i; select() also moves the track and commits the choice
+  function readout(i) {
+    inputs.forEach((b, j) => b.setAttribute("aria-current", j === i));
+    const li = inputs[i].parentElement;  // keep the selected input in view without scrolling the page
+    list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
+    sel.textContent = `sel = ${bits}'b${i.toString(2).padStart(bits, "0")}`;
+  }
   function select(i, user, instant) {
     cur = (i + arts.length) % arts.length;
     arts.forEach((a, j) => (a.inert = j !== cur));
-    inputs.forEach((b, j) => b.setAttribute("aria-current", j === cur));
-    const li = inputs[cur].parentElement;  // keep the selected input in view without scrolling the page
-    list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
-    sel.textContent = `sel = ${bits}'b${cur.toString(2).padStart(bits, "0")}`;
-    name.textContent = (arts[cur].querySelector(".cap-head span") || arts[cur].querySelector("h3")).textContent;  // short signal name
+    readout(cur);
     out.scrollTo({ left: cur * out.clientWidth, behavior: instant || !smooth ? "instant" : "smooth" });
     if (user) history.replaceState(null, "", "#projects/" + arts[cur].dataset.slug);
     hideTips.forEach((hide) => hide());
@@ -358,6 +360,7 @@ if (mux) {
   // a swipe or trackpad scroll on the track selects where it lands
   let settle;
   out.addEventListener("scroll", () => {
+    readout(Math.min(arts.length - 1, Math.max(0, Math.round(out.scrollLeft / out.clientWidth))));  // update live while swiping
     clearTimeout(settle);
     settle = setTimeout(() => {
       const i = Math.round(out.scrollLeft / out.clientWidth);
