@@ -6,7 +6,7 @@ const { chromium } = require("playwright");
 
 const SITE = "https://andychiem19.github.io/";
 const FOOTER = `<div style="width:100%;padding:0 0.65in;display:flex;justify-content:space-between;
-  font:8px Georgia,serif;color:#555b69"><span>Andy Chiem · andychiem19.github.io</span><span class="pageNumber"></span></div>`;
+  font:8px Helvetica,Arial,sans-serif;color:#555b69"><span>Andy Chiem · andychiem19.github.io</span><span class="pageNumber"></span></div>`;
 
 (async () => {
   const [siteDir = ".", out = "portfolio.pdf"] = process.argv.slice(2);

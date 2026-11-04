@@ -1,13 +1,13 @@
 @font-face {
-  font-family: "Charter";
-  src: url("fonts/charter_regular.woff2") format("woff2");
+  font-family: "IBM Plex Sans";
+  src: url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: "Charter";
-  src: url("fonts/charter_bold.woff2") format("woff2");
-  font-weight: 700;
+  font-family: "IBM Plex Sans";
+  src: url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
+  font-weight: 600 700;
   font-display: swap;
 }
 @font-face {
@@ -41,7 +41,7 @@
   --green: #1f8a4c;    /* status: complete */
   --body: #2a2e37;     /* long-form reading text */
   --shadow: rgba(22, 24, 29, 0.14);
-  --font: "Charter", "Bitstream Charter", "Sitka Text", Cambria, serif;
+  --font: "IBM Plex Sans", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 /* dark: only when picked with the toggle (screen only; print stays light) */
@@ -100,25 +100,13 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 .content p { color: var(--muted); }
 .content p + p { margin-top: 1rem; }
 
-/* Skill tags: small outlined hexagons, the same shape as the hero's bus values */
-.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; margin: 1.25rem 0; padding: 0; }
-.chips li {
-  --x: 0.4rem;
-  position: relative;
-  z-index: 0;
-  padding: 0.3rem calc(var(--x) + 0.35rem);
-  background: var(--muted);
-  clip-path: polygon(0 50%, var(--x) 0, calc(100% - var(--x)) 0, 100% 50%, calc(100% - var(--x)) 100%, var(--x) 100%);
-  color: var(--silk);
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-/* the fill shows through as a 1px outline */
-.chips li::before { content: ""; position: absolute; inset: 1px 1.5px; z-index: -1; background: var(--package); clip-path: inherit; }
+/* Skills: one line written like an assignment, stack = {python, cocotb, ethernet} */
+.chips { display: flex; flex-wrap: wrap; align-items: baseline; list-style: none; margin: 1.25rem 0; padding: 0; color: var(--muted); font: 500 0.75rem/1.5 var(--mono); }
+.chips::before { content: "stack = {"; white-space: pre; }
+.chips::after { content: "}"; }
+.chips li { color: var(--wafer); text-transform: lowercase; }
+.chips li:not(:last-child)::after { content: ", "; color: var(--muted); white-space: pre; }
+.spec .chips::before { content: "{"; }  /* the spec row already names it */
 .proj h3 { font-family: var(--mono); font-size: clamp(1.1rem, 1.5vw, 1.4rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 0.75rem; }
 .content .subtitle { color: var(--silk); font-size: 1.15rem; line-height: 1.45; margin: 0 0 0.75rem; }
 .content .org { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.6rem; font-size: 0.95rem; margin: 0 0 1rem; }

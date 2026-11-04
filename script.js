@@ -344,7 +344,7 @@ if (mux) {
     const li = inputs[cur].parentElement;  // keep the selected input in view without scrolling the page
     list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
     sel.textContent = `sel = ${bits}'b${cur.toString(2).padStart(bits, "0")}`;
-    name.textContent = arts[cur].querySelector("h3").textContent;
+    name.textContent = (arts[cur].querySelector(".cap-head span") || arts[cur].querySelector("h3")).textContent;  // short signal name
     out.scrollTo({ left: cur * out.clientWidth, behavior: instant || !smooth ? "instant" : "smooth" });
     if (user) history.replaceState(null, "", "#projects/" + arts[cur].dataset.slug);
     hideTips.forEach((hide) => hide());
