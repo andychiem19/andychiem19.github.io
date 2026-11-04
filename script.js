@@ -23,6 +23,15 @@ function cover(el) {
   ctx.fillRect(0, 0, c.width, c.height);
 }
 
+// after a theme switch, repaint whatever cells are still covering in the new background
+function recolor(el) {
+  const ctx = el._px.getContext("2d");
+  ctx.globalCompositeOperation = "source-in";
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--package");
+  ctx.fillRect(0, 0, el._px.width, el._px.height);
+  ctx.globalCompositeOperation = "source-over";
+}
+
 function build(el) {
   cover(el);
   const ctx = el._px.getContext("2d");
@@ -71,6 +80,7 @@ if (toggle) {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem("theme", theme); } catch (e) {}
     label();
+    document.querySelectorAll(".reveal").forEach((el) => el._px && recolor(el));
   });
 }
 
