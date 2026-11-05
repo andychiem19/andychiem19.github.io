@@ -601,19 +601,14 @@ if (mux) {
     if (!phone.matches) list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
     sel.textContent = `sel = ${bits}'b${i.toString(2).padStart(bits, "0")}`;
   }
-  // desktop: a glitch hard cut instead of a slide. The old project breaks up for a few frames, the track jumps,
-  // and the new one settles in with a short glitch of its own. A new pick mid-cut restarts it toward the latest.
+  // desktop: no slide. Like a real mux the output switches at once when sel changes, then the new project shows a
+  // brief hazard (a frame or two of jitter) as it settles. A new pick mid-hazard just switches again.
   let cutTimers = [];
-  const stopCut = () => { cutTimers.forEach(clearTimeout); cutTimers = []; arts.forEach((a) => a.classList.remove("glitch-out", "glitch-in")); };
+  const stopCut = () => { cutTimers.forEach(clearTimeout); cutTimers = []; arts.forEach((a) => a.classList.remove("glitch-in")); };
   function cut(to) {
-    const from = arts[Math.min(arts.length - 1, Math.round(out.scrollLeft / out.clientWidth))];
-    from.classList.add("glitch-out");
-    cutTimers.push(setTimeout(() => {
-      from.classList.remove("glitch-out");
-      out.scrollTo({ left: to * out.clientWidth, behavior: "instant" });
-      arts[to].classList.add("glitch-in");
-      cutTimers.push(setTimeout(() => arts[to].classList.remove("glitch-in"), 70));
-    }, 130));
+    out.scrollTo({ left: to * out.clientWidth, behavior: "instant" });
+    arts[to].classList.add("glitch-in");
+    cutTimers.push(setTimeout(() => arts[to].classList.remove("glitch-in"), 60));
   }
   function select(i, user, instant) {
     cur = (i + arts.length) % arts.length;
