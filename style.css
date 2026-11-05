@@ -677,6 +677,14 @@ button { touch-action: manipulation; }  /* fast repeated taps shouldn't zoom on 
 /* output: a horizontal track, one project per stop (native swipe on touch) */
 .mux-out { font-family: var(--font); grid-area: out; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
 .mux-out::-webkit-scrollbar { display: none; }
+/* desktop: projects switch at once like a mux output (script.js), so the track itself doesn't scroll */
+@media (min-width: 801px) { .mux-out { overflow: hidden; } }
+.proj.glitch-in { animation: glitch-in 60ms steps(1); }  /* the switching hazard */
+@keyframes glitch-in {
+  0%   { clip-path: inset(0 0 12% 0); transform: translateX(3px); text-shadow: 1px 0 var(--amber), -1px 0 var(--wafer); }
+  50%  { clip-path: inset(6% 0 0 0); transform: translateX(-2px); text-shadow: -1px 0 var(--amber), 1px 0 var(--wafer); }
+}
+@media (prefers-reduced-motion: reduce) { .proj.glitch-in { animation: none; } }
 .proj { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2.25rem; align-items: center; align-content: center; padding: 0.25rem; }  /* every slide centred in the track */
 .proj .content { max-width: none; }
 .proj .visual { max-width: none; width: 100%; }

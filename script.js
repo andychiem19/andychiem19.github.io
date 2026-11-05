@@ -601,14 +601,29 @@ if (mux) {
     if (!phone.matches) list.scrollTo({ left: li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2, top: li.offsetTop - (list.clientHeight - li.offsetHeight) / 2 });
     sel.textContent = `sel = ${bits}'b${i.toString(2).padStart(bits, "0")}`;
   }
+  // desktop: no slide. Like a real mux the output switches at once when sel changes, then the new project shows a
+  // brief hazard (a frame or two of jitter) as it settles. A new pick mid-hazard just switches again.
+  let cutTimers = [];
+  const stopCut = () => { cutTimers.forEach(clearTimeout); cutTimers = []; arts.forEach((a) => a.classList.remove("glitch-in")); };
+  function cut(to) {
+    out.scrollTo({ left: to * out.clientWidth, behavior: "instant" });
+    arts[to].classList.add("glitch-in");
+    cutTimers.push(setTimeout(() => arts[to].classList.remove("glitch-in"), 60));
+  }
   function select(i, user, instant) {
     cur = (i + arts.length) % arts.length;
     arts.forEach((a, j) => (a.inert = j !== cur));
     readout(cur, true);
-    // a glide to the target shouldn't drive the readout through the projects in between
+    stopCut();
     const left = cur * out.clientWidth;
-    steering = !instant && smooth && Math.abs(out.scrollLeft - left) > 1;
-    out.scrollTo({ left, behavior: steering ? "smooth" : "instant" });
+    if (!phone.matches && !instant && smooth && Math.abs(out.scrollLeft - left) > 1) {
+      steering = false;
+      cut(cur);
+    } else {
+      // phones: a glide to the target shouldn't drive the readout through the projects in between
+      steering = !instant && smooth && Math.abs(out.scrollLeft - left) > 1;
+      out.scrollTo({ left, behavior: steering ? "smooth" : "instant" });
+    }
     follow();
     if (user) history.replaceState(null, "", "#projects/" + arts[cur].dataset.slug);
     hideTips.forEach((hide) => hide());
@@ -626,6 +641,7 @@ if (mux) {
   // a swipe or trackpad scroll on the track selects where it lands
   let settle;
   out.addEventListener("scroll", () => {
+    if (!phone.matches) return;  // desktop: the track only moves by a cut
     // update live while swiping, once the track is well into another project (so a snap-back doesn't flip it)
     follow();
     const pos = out.scrollLeft / out.clientWidth;
@@ -640,6 +656,18 @@ if (mux) {
   }, { passive: true });
   // a hand on the track takes over from a glide
   ["touchstart", "wheel"].forEach((t) => out.addEventListener(t, () => (steering = false), { passive: true }));
+  // desktop: the track doesn't scroll; a sideways trackpad swipe cuts to the next or previous project, once per gesture
+  let swipe = 0, lastSwipe = 0, swiped = false;
+  out.addEventListener("wheel", (e) => {
+    if (phone.matches || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+    e.preventDefault();  // and no browser back/forward swipe
+    const now = performance.now(), gap = now - lastSwipe;
+    lastSwipe = now;
+    if (gap > 150) { swipe = 0; swiped = false; }  // a new gesture
+    if (swiped) return;  // swallow the rest of this one, momentum included
+    swipe += e.deltaMode === 1 ? e.deltaX * 16 : e.deltaX;
+    if (Math.abs(swipe) >= 60) { swiped = true; select(cur + Math.sign(swipe), true); }
+  }, { passive: false });
 
   mux.querySelector(".mux-prev").addEventListener("click", () => select(cur - 1, true));
   mux.querySelector(".mux-next").addEventListener("click", () => select(cur + 1, true));
