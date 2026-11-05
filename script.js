@@ -612,8 +612,8 @@ if (mux) {
       from.classList.remove("glitch-out");
       out.scrollTo({ left: to * out.clientWidth, behavior: "instant" });
       arts[to].classList.add("glitch-in");
-      cutTimers.push(setTimeout(() => arts[to].classList.remove("glitch-in"), 90));
-    }, 160));
+      cutTimers.push(setTimeout(() => arts[to].classList.remove("glitch-in"), 70));
+    }, 130));
   }
   function select(i, user, instant) {
     cur = (i + arts.length) % arts.length;
