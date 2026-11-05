@@ -677,6 +677,23 @@ button { touch-action: manipulation; }  /* fast repeated taps shouldn't zoom on 
 /* output: a horizontal track, one project per stop (native swipe on touch) */
 .mux-out { font-family: var(--font); grid-area: out; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
 .mux-out::-webkit-scrollbar { display: none; }
+/* desktop: projects change by a glitch hard cut (script.js), so the track itself doesn't scroll */
+@media (min-width: 801px) { .mux-out { overflow: hidden; } }
+.proj.glitch-out { animation: glitch-out 160ms steps(1) forwards; }
+.proj.glitch-in { animation: glitch-in 90ms steps(1); }
+@keyframes glitch-out {
+  0%   { clip-path: inset(0); transform: none; text-shadow: 2px 0 var(--amber), -2px 0 var(--wafer); }
+  20%  { clip-path: inset(6% 0 50% 0); transform: translateX(-12px); text-shadow: 3px 0 var(--amber), -3px 0 var(--wafer); }
+  40%  { clip-path: inset(46% 0 14% 0); transform: translateX(14px); text-shadow: -3px 0 var(--amber), 3px 0 var(--wafer); }
+  60%  { clip-path: inset(20% 0 44% 0); transform: translateX(-6px); }
+  80%  { clip-path: inset(72% 0 6% 0); transform: translateX(9px); }
+  100% { clip-path: inset(50% 0 50% 0); }
+}
+@keyframes glitch-in {
+  0%   { clip-path: inset(0 0 40% 0); transform: translateX(7px); text-shadow: 2px 0 var(--amber), -2px 0 var(--wafer); }
+  50%  { clip-path: inset(28% 0 0 0); transform: translateX(-4px); text-shadow: -2px 0 var(--amber), 2px 0 var(--wafer); }
+}
+@media (prefers-reduced-motion: reduce) { .proj.glitch-out, .proj.glitch-in { animation: none; } }
 .proj { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2.25rem; align-items: center; align-content: center; padding: 0.25rem; }  /* every slide centred in the track */
 .proj .content { max-width: none; }
 .proj .visual { max-width: none; width: 100%; }
