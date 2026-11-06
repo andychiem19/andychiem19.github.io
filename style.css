@@ -602,6 +602,8 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .on-touch { display: none; }
 @media (hover: none) { .on-touch { display: inline; } .on-mouse { display: none; } }
 kbd { display: inline-block; padding: 0 0.35em; border: 1px solid var(--grid); border-bottom-width: 2px; border-radius: 3px; background: var(--die); color: var(--silk); font: 500 0.65rem/1.5 var(--mono); vertical-align: 0.05em; }
+kbd.click { vertical-align: -0.3em; }  /* a mouse-pointer keycap, sitting on the text line */
+kbd.click svg { display: block; width: 0.55rem; height: 1.2em; padding: 0.15em 0; fill: currentColor; }
 .mux-ctrl { flex-wrap: wrap; }
 .mux-hint { flex-basis: 100%; margin-top: 0.1rem; color: var(--muted); font-size: 0.7rem; letter-spacing: 0.04em; }
 .inspect { position: absolute; z-index: 6; width: min(31rem, 100%); border: 1px solid var(--grid); border-left: 3px solid var(--wafer); background: var(--package); box-shadow: 0 8px 22px var(--shadow); }
