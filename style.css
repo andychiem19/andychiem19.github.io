@@ -163,6 +163,17 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 }
 .run:focus-visible { background: none; color: var(--wafer); outline: none; }
 @media (hover: hover) { .run:hover { background: none; color: var(--wafer); } }  /* no sticky hover after a tap */
+/* until the first run: RUN sends out a slow ping, and a ghost prompt shows where the log will print */
+.run { position: relative; }
+.run.idle::after { content: ""; position: absolute; inset: -1px; border: 1px solid var(--wafer); pointer-events: none; animation: ping 2.4s ease-out infinite; }
+@keyframes ping { 0% { inset: -1px; opacity: 0.9; } 60%, 100% { inset: -8px; opacity: 0; } }
+.sim-idle { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; width: 100%; margin: 1.5rem 0 0; padding: 1rem 1.2rem; border: 1px dashed var(--grid); border-left: 3px solid var(--wafer); background: none; color: var(--muted); font: 0.85rem/1.7 var(--mono); text-align: left; cursor: pointer; }
+.sim-idle[hidden] { display: none; }
+.sim-idle i { display: inline-block; width: 0.55em; height: 1.1em; margin-left: 0.4em; vertical-align: -0.15em; background: var(--wafer); animation: blink 1.2s steps(1) infinite; }
+.sim-idle .cmt { color: var(--green); }
+.sim-idle kbd { align-self: center; }
+.sim-idle:hover, .sim-idle:focus-visible { border-style: solid; color: var(--silk); outline: none; }
+@media (prefers-reduced-motion: reduce) { .run.idle::after, .sim-idle i { animation: none; } }
 .simlog {
   margin: 1.5rem 0 0;
   padding: 1rem 1.2rem;
@@ -948,6 +959,7 @@ html.doc { scroll-snap-type: none; }
   .val { font-size: 0.8rem; }
   .ports .val { font-size: 0.7rem; }
   .simlog { padding: 0.8rem 0.9rem; font-size: 0.72rem; }
+  .sim-idle { padding: 0.8rem 0.9rem; font-size: 0.72rem; }
 }
 
 /* Print / PDF: a light, paper-friendly version of the same design (tools/build-pdf.js prints with this) */
@@ -960,7 +972,7 @@ html.doc { scroll-snap-type: none; }
   @page { size: letter; margin: 0.6in 0.65in 0.75in; }
   html { scroll-snap-type: none; }
   html, body { background: #fff; font-size: 15px; }
-  .signals, .px, .diagram-info, .tip, .pdf-link, .doc-nav, .cap-bar, .cap-head, .simlog { display: none !important; }
+  .signals, .px, .diagram-info, .tip, .pdf-link, .doc-nav, .cap-bar, .cap-head, .simlog, .sim-idle { display: none !important; }
   .status::before { animation: none; box-shadow: none; }
 
   /* home page: headlines, diagrams with their hover details, and links; the full writeups live on the site */
