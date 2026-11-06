@@ -137,13 +137,6 @@ if (run && simlog) {
   const front = Object.assign(document.createElement("span"), { className: "simfront" });
   front.setAttribute("aria-hidden", "true");
   trig.after(clock);
-  // until the first run, RUN pings and a ghost prompt under the capture says what it does (clicking it runs too)
-  const idle = Object.assign(document.createElement("button"), { type: "button", className: "sim-idle" });
-  idle.innerHTML = '<span>$ run -all<i aria-hidden="true"></i></span><kbd class="on-mouse">↵</kbd><span class="on-touch cmt">// tap to run</span>';
-  idle.setAttribute("aria-label", "Run the sim");
-  simlog.before(idle);
-  idle.addEventListener("click", () => start());
-  run.classList.add("idle");
   const TICK = 24, NS = 10;  // px per clock (the ruler tick), ns per clock
   // a real sim runs in uneven bursts: 1-3 clocks per step, irregular gaps, the odd longer stall
   const gap = () => (Math.random() < 0.12 ? 350 + Math.random() * 300 : 70 + Math.random() * 150);
@@ -155,7 +148,6 @@ if (run && simlog) {
     clearTimeout(timer);
     front.remove();
     simlog.hidden = clock.hidden = true;
-    idle.hidden = false;
     status("Triggered");
     run.textContent = "▶ Run";
     run.setAttribute("aria-expanded", "false");
@@ -164,8 +156,6 @@ if (run && simlog) {
     clearTimeout(timer);
     simlog.replaceChildren();
     simlog.hidden = clock.hidden = false;
-    idle.hidden = true;
-    run.classList.remove("idle");  // it's been found; stop pinging
     run.textContent = "■ Stop";
     run.setAttribute("aria-expanded", "true");
     const x0 = wave.querySelector(".ruler").offsetLeft, ticks = Math.ceil((wave.clientWidth - x0) / TICK);
@@ -193,16 +183,6 @@ if (run && simlog) {
     timer = setTimeout(step, gap());
   };
   run.addEventListener("click", () => (simlog.hidden ? start() : stop()));
-  // Enter on the front page runs it (unless focus is on something Enter already presses)
-  const hero = run.closest(".panel");
-  addEventListener("keydown", (e) => {
-    if (e.key !== "Enter" || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || !simlog.hidden) return;
-    if (e.target.closest?.("a, button, input, textarea, select, [role=button]")) return;
-    const r = hero.getBoundingClientRect();
-    if (r.top > innerHeight / 2 || r.bottom < innerHeight / 2) return;
-    e.preventDefault();
-    start();
-  });
 }
 
 // Writeups: build the signal nav from the section headings (one signal per <h2>)
@@ -697,15 +677,6 @@ if (mux) {
     if (r.top > innerHeight / 2 || r.bottom < innerHeight / 2) return;
     e.preventDefault();
     select(cur + (e.key === "ArrowRight" ? 1 : -1), true);
-  });
-  // Enter opens the selected project's writeup (or its GitHub)
-  addEventListener("keydown", (e) => {
-    if (e.key !== "Enter" || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-    if (e.target.closest?.("a, button, input, textarea, select, [role=button]")) return;
-    const r = panel.getBoundingClientRect(), a = arts[cur].querySelector(".links a");
-    if (!a || r.top > innerHeight / 2 || r.bottom < innerHeight / 2) return;
-    e.preventDefault();
-    a.click();
   });
   addEventListener("resize", layout);
 

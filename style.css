@@ -163,17 +163,6 @@ h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; margin-bottom: 
 }
 .run:focus-visible { background: none; color: var(--wafer); outline: none; }
 @media (hover: hover) { .run:hover { background: none; color: var(--wafer); } }  /* no sticky hover after a tap */
-/* until the first run: RUN sends out a slow ping, and a ghost prompt shows where the log will print */
-.run { position: relative; }
-.run.idle::after { content: ""; position: absolute; inset: -1px; border: 1px solid var(--wafer); pointer-events: none; animation: ping 2.4s ease-out infinite; }
-@keyframes ping { 0% { inset: -1px; opacity: 0.9; } 60%, 100% { inset: -8px; opacity: 0; } }
-.sim-idle { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; width: 100%; margin: 1.5rem 0 0; padding: 1rem 1.2rem; border: 1px dashed var(--grid); border-left: 3px solid var(--wafer); background: none; color: var(--muted); font: 0.85rem/1.7 var(--mono); text-align: left; cursor: pointer; }
-.sim-idle[hidden] { display: none; }
-.sim-idle i { display: inline-block; width: 0.55em; height: 1.1em; margin-left: 0.4em; vertical-align: -0.15em; background: var(--wafer); animation: blink 1.2s steps(1) infinite; }
-.sim-idle .cmt { color: var(--green); }
-.sim-idle kbd { align-self: center; }
-.sim-idle:hover, .sim-idle:focus-visible { border-style: solid; color: var(--silk); outline: none; }
-@media (prefers-reduced-motion: reduce) { .run.idle::after, .sim-idle i { animation: none; } }
 .simlog {
   margin: 1.5rem 0 0;
   padding: 1rem 1.2rem;
@@ -607,16 +596,10 @@ footer { font-size: 0.85rem; color: var(--muted); }
 .tl-role { color: var(--body); }
 .tl-meta { color: var(--muted); font-size: 0.7rem; }
 .tl-when { color: var(--wafer); text-align: right; white-space: nowrap; }
-.tl-hint { margin-top: 1rem; color: var(--wafer); font-size: 0.75rem; letter-spacing: 0.04em; }
-.tl-hint::before, .mux-hint::before { content: "▸ "; color: var(--wafer); }
-/* hints: mouse/keyboard wording with keycaps, or touch wording */
-.on-touch { display: none; }
-@media (hover: none) { .on-touch { display: inline; } .on-mouse { display: none; } }
-kbd { display: inline-block; padding: 0 0.35em; border: 1px solid var(--grid); border-bottom-width: 2px; border-radius: 3px; background: var(--die); color: var(--silk); font: 500 0.65rem/1.5 var(--mono); vertical-align: 0.05em; }
-kbd.click { vertical-align: -0.3em; }  /* a mouse-pointer keycap, sitting on the text line */
-kbd.click svg { display: block; width: 0.55rem; height: 1.2em; padding: 0.15em 0; fill: currentColor; }
-.mux-ctrl { flex-wrap: wrap; }
-.mux-hint { flex-basis: 100%; margin-top: 0.1rem; color: var(--muted); font-size: 0.7rem; letter-spacing: 0.04em; }
+.tl-hint { margin-top: 1rem; color: var(--muted); font-size: 0.7rem; letter-spacing: 0.04em; }
+.tl-hint::before { content: "▸ "; color: var(--wafer); }
+.tl-hint .on-touch { display: none; }
+@media (hover: none) { .tl-hint .on-touch { display: inline; } .tl-hint .on-mouse { display: none; } }
 .inspect { position: absolute; z-index: 6; width: min(31rem, 100%); border: 1px solid var(--grid); border-left: 3px solid var(--wafer); background: var(--package); box-shadow: 0 8px 22px var(--shadow); }
 .inspect header { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.55rem; background: var(--die); border-bottom: 1px solid var(--grid); color: var(--muted); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; }
 .inspect header img { width: 28px; height: 20px; object-fit: contain; }
@@ -921,7 +904,6 @@ html.doc { scroll-snap-type: none; }
   .mux-sym { justify-self: stretch; width: auto; height: 1.7rem; clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%); font-size: 0.6rem; }
   .mux-sym b { writing-mode: horizontal-tb; transform: none; }
   .mux-ctrl { position: relative; justify-content: center; padding: 0.9rem 0 1.1rem; }
-  .mux-hint { text-align: center; }
   .mux-ctrl::before { content: ""; position: absolute; top: 0; left: 50%; width: 1.5px; height: 0.8rem; background: var(--wafer); }
   /* timeline stays horizontal, compressed: logo-only labels and short values (full details on tap) */
   .tl-capture { --lbl: 2.6rem; row-gap: 0.4rem; padding-top: 1.5rem; }
@@ -959,7 +941,6 @@ html.doc { scroll-snap-type: none; }
   .val { font-size: 0.8rem; }
   .ports .val { font-size: 0.7rem; }
   .simlog { padding: 0.8rem 0.9rem; font-size: 0.72rem; }
-  .sim-idle { padding: 0.8rem 0.9rem; font-size: 0.72rem; }
 }
 
 /* Print / PDF: a light, paper-friendly version of the same design (tools/build-pdf.js prints with this) */
@@ -972,7 +953,7 @@ html.doc { scroll-snap-type: none; }
   @page { size: letter; margin: 0.6in 0.65in 0.75in; }
   html { scroll-snap-type: none; }
   html, body { background: #fff; font-size: 15px; }
-  .signals, .px, .diagram-info, .tip, .pdf-link, .doc-nav, .cap-bar, .cap-head, .simlog, .sim-idle { display: none !important; }
+  .signals, .px, .diagram-info, .tip, .pdf-link, .doc-nav, .cap-bar, .cap-head, .simlog { display: none !important; }
   .status::before { animation: none; box-shadow: none; }
 
   /* home page: headlines, diagrams with their hover details, and links; the full writeups live on the site */
